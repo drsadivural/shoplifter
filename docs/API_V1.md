@@ -209,3 +209,22 @@ Command payloads: `discover {job_id, interface, timeout_s, cidr}` → result `{d
 | POST | `/v1/privacy/requests/{id}/complete` | `{expected_version, status: "completed"|"rejected", resolution}` |
 | GET | `/v1/audit/verify` | recompute the audit hash chain `{valid, checked, head}` (org.manage) |
 | GET | `/healthz`, `/readyz` | liveness / dependency readiness |
+
+## Clarifications (resolved during implementation)
+- `/v1/incidents` and `/v1/search` also accept comma-separated `status`/`channel`, `priority`, `open=1`,
+  `assignee=none`; list items include `store_timezone` for display.
+- `/v1/dashboard` also returns `preview` (latest camera snapshot), `cameras.analyzing`, `acknowledged_today`, `timezone`.
+- Edge `event_id` is a deterministic UUIDv5 computed by the edge over org/camera/track/window/channel; it is
+  also the `Idempotency-Key`. This is the one identifier the edge mints (it must be stable across retries).
+- Command acks: `provision_camera` acks `succeeded` only when readiness is `ready`, otherwise `failed` with
+  `error` = first error code and full `{readiness, report}`; the API still records the report. `activate_camera`
+  acks `succeeded` with honest per-channel states (`unavailable` + reason when no model/SDK is installed); the
+  API sets `analysis_state=analyzing` only if some channel is `running`. `gallery_update` acks
+  `failed`/`face_sdk_unavailable`. `model_rollout` reports local installation status only (no download endpoint).
+- `credential_sealed` plaintext is JSON `{"username", "password"}` sealed with libsodium SealedBox to the
+  edge's X25519 key.
+- Evidence: one `PUT .../evidence` per file (clip `video/mp4` or frame `image/jpeg`, detected from bytes);
+  the event's `evidence_sha256` refers to the primary clip.
+- `clock_offset_ms` = edge clock − server clock (from the HTTP `Date` header; 1 s resolution).
+- Signed path = raw percent-encoded path plus query string exactly as sent.
+- Readiness reports may carry extra diagnostic keys; the API stores the documented subset plus `conformance`.
