@@ -16,14 +16,17 @@ import {
   type DateFormatOptions,
 } from '../lib/format';
 import { APP_EN, APP_JA } from './app';
+import { APP_EN_B, APP_JA_B } from './app-b';
+import { APP_EN_C, APP_JA_C } from './app-c';
+import { APP_EN_D, APP_JA_D } from './app-d';
 import designJa from './design-ja.generated.json';
 
 export const LOCALES: readonly Locale[] = ['en', 'ja'];
 export const LOCALE_STORAGE_KEY = 'rg.locale';
 
 export const CATALOGS: Record<Locale, Readonly<Record<string, string>>> = {
-  en: APP_EN,
-  ja: { ...(designJa as Record<string, string>), ...APP_JA },
+  en: { ...APP_EN, ...APP_EN_B, ...APP_EN_C, ...APP_EN_D },
+  ja: { ...(designJa as Record<string, string>), ...APP_JA, ...APP_JA_B, ...APP_JA_C, ...APP_JA_D },
 };
 
 export type TVars = Record<string, string | number>;

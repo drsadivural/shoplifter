@@ -4,6 +4,9 @@
 // Screens without an entry render <NotYetImplemented> (with the page header) automatically.
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
 import type { ScreenId } from './screens.generated';
+import { PAGES_B } from './routes.group-b';
+import { PAGES_C } from './routes.group-c';
+import { PAGES_D } from './routes.group-d';
 
 export type PageComponent = LazyExoticComponent<ComponentType>;
 
@@ -16,6 +19,9 @@ export const PAGES: Partial<Record<ScreenId, PageComponent>> = {
   'web-20': lazy(() => import('./pages/alert-detail')),
   'web-53': lazy(() => import('./pages/empty')),
   'web-54': lazy(() => import('./pages/error')),
+  ...PAGES_B,
+  ...PAGES_C,
+  ...PAGES_D,
 };
 
 /** Non-catalog public page used by the invitation flow (/web/invite?token=...). */
