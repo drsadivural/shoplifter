@@ -1,0 +1,51 @@
+[Unit]
+Description=Ayonix RetailGuard store edge appliance
+Documentation=file:///opt/retailguard-edge/README.md
+Wants=network-online.target time-sync.target
+After=network-online.target time-sync.target
+
+[Service]
+Type=simple
+User=retailguard-edge
+Group=retailguard-edge
+# Installed per README: uv-managed venv under /opt/retailguard-edge
+ExecStart=/opt/retailguard-edge/.venv/bin/retailguard-edge run
+Environment=RETAILGUARD_EDGE_CONFIG=/etc/retailguard-edge/config.toml
+Environment=RETAILGUARD_EDGE_STATE_DIR=/var/lib/retailguard-edge
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+
+# State: /var/lib/retailguard-edge (0700, owned by the service user)
+StateDirectory=retailguard-edge
+StateDirectoryMode=0700
+UMask=0077
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/retailguard-edge
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectProc=invisible
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+# Cloud metadata / link-local is never a camera target (also enforced in code).
+IPAddressDeny=169.254.0.0/16 fe80::/10
+
+[Install]
+WantedBy=multi-user.target

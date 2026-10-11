@@ -20,7 +20,7 @@ echo "==> Building web console"
 (cd "$BUILD/apps/web" && npm ci --no-audit --no-fund && npm run build)
 
 echo "==> Starting database, migrating, restarting services"
-sudo RG_VERSION="$VERSION" docker compose -f "$BUILD/infra/docker-compose.prod.yml" --env-file "$ENV_FILE" up -d --remove-orphans
+sudo RG_VERSION="$VERSION" docker compose -f "$ROOT/infra/docker-compose.prod.yml" --env-file "$ENV_FILE" up -d --remove-orphans
 
 echo "==> Publishing web build"
 sudo mkdir -p "$WEB_ROOT.new"
