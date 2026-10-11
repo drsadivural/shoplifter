@@ -50,7 +50,7 @@ struct AlertsView: View {
                 PermissionDeniedView()
             } else {
                 filterBar
-                LoadableView(state: state, retry: load) { items in
+                LoadableView(state: state, retry: { await load() }) { items in
                     if items.isEmpty {
                         if isDefaultView {
                             AllCaughtUpView()
