@@ -12,7 +12,7 @@ import { useI18n } from '../../i18n';
 import { screenPath } from '../../routes.meta';
 import { useSession } from '../../session/SessionProvider';
 import { ChannelLabel, OutcomePill } from '../domain';
-import { Checkbox, FormField, TextAreaField, TextField, TextInput } from '../forms';
+import { Checkbox, FormField, TextField, TextInput } from '../forms';
 import { Icon } from '../Icon';
 import { AuthenticatedImage } from '../media';
 import { ConfirmDialog, Modal } from '../Modal';
@@ -21,7 +21,7 @@ import { Badge, Button, ButtonLink, Card, KeyValueList, Notice } from '../primit
 import { RouteStateBoundary } from '../RouteStateBoundary';
 import { ConflictBanner, EmptyState, UnavailableNotice } from '../states';
 import { gd, type ProfileDetailD } from './api';
-import { addDays, isoToZonedDate, todayIn, zonedDateToIso } from './dates';
+import { addDays, isoToZonedDate, isoToZonedDateTime, nowIn, todayIn, zonedDateTimeToIso, zonedDateToIso } from './dates';
 import { apiErrorText, fieldMessage, isVersionConflict } from './errors';
 import { ProfilePhotos } from './ProfilePhotos';
 import { GalleryStatePill, ProfileHistory, ProfileStatusPill, StoreMultiSelect, StoreNames } from './ui';
@@ -180,7 +180,7 @@ function Ready({
             <h2 className="gd-ref mono-ish">{p.reference}</h2>
             <ProfileStatusPill status={p.status} />
           </div>
-          {!watch && p.display_name ? <p className="gd-person-name">{p.display_name}</p> : null}
+          {p.display_name ? <p className="gd-person-name">{p.display_name}</p> : null}
           <KeyValueList
             items={[
               ...(watch
@@ -199,28 +199,36 @@ function Ready({
                 : []),
               ...(watch
                 ? [
+                    { label: t('watchlist|Name'), value: p.display_name || <span className="muted">{t('Not recorded')}</span> },
+                    { label: t('watchlist|Last seen'), value: p.last_seen_at ? fmt.dateTime(p.last_seen_at, tz) : <span className="muted">{t('Not recorded')}</span> },
+                  ]
+                : []),
+              // Older records may carry a linked incident; it is shown when present.
+              ...(watch && p.source_incident_id
+                ? [
                     {
                       label: t('Supporting incident'),
-                      value: p.source_incident_id ? (
+                      value: (
                         <span>
                           <Link to={screenPath('web-24', { id: p.source_incident_id })}>{source?.ref ?? t('Open incident')}</Link>{' '}
                           {source ? <OutcomePill outcome={source.outcome} /> : null}
                         </span>
-                      ) : (
-                        '—'
                       ),
                     },
                   ]
                 : []),
               { label: !watch ? t('Enrollment date') : t('Created'), value: fmt.date(p.created_at, tz) },
-              { label: t('Review date'), value: p.review_at ? fmt.date(p.review_at, tz) : '—' },
               { label: t('Expiry'), value: p.expires_at ? fmt.date(p.expires_at, tz) : '—' },
             ]}
           />
           {watch ? (
             <>
-              <h3 className="gd-subhead">{t('Evidence basis')}</h3>
-              <p className="gd-prewrap">{p.basis || <span className="muted">{t('Not recorded')}</span>}</p>
+              {p.basis ? (
+                <>
+                  <h3 className="gd-subhead">{t('Evidence basis')}</h3>
+                  <p className="gd-prewrap">{p.basis}</p>
+                </>
+              ) : null}
               <Notice tone="warning">{t('A watchlist match is only a candidate for a person to review. It is never proof of wrongdoing.')}</Notice>
             </>
           ) : (
@@ -395,11 +403,10 @@ function EditProfile({
   const maxDate = maxDays ? addDays(today, maxDays) : undefined;
   const initial = {
     display_name: p.display_name ?? '',
-    basis: p.basis ?? '',
+    last_seen: isoToZonedDateTime(p.last_seen_at, tz),
     role_context: p.role_context ?? '',
     notice_recorded: Boolean(p.notice_recorded),
     store_ids: p.store_ids,
-    review: isoToZonedDate(p.review_at, tz),
     expiry: isoToZonedDate(p.expires_at, tz),
   };
   const [f, setF] = useState(initial);
@@ -407,7 +414,7 @@ function EditProfile({
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((x) => ({ ...x, [k]: v }));
 
   const sameStores = [...f.store_ids].sort().join(',') === [...initial.store_ids].sort().join(',');
-  const material = (watch && f.basis.trim() !== initial.basis) || !sameStores || f.expiry !== initial.expiry;
+  const material = !sameStores || f.expiry !== initial.expiry;
 
   const save = useMutation((body: Record<string, unknown> & { expected_version: number }) => gd.profiles.update(p.id, body), {
     successMessage: t('Profile updated'),
@@ -437,20 +444,17 @@ function EditProfile({
     else if (f.expiry !== initial.expiry && f.expiry <= today) e.expires_at = t('Choose a future date.');
     else if (maxDate && f.expiry !== initial.expiry && f.expiry > maxDate)
       e.expires_at = t('Choose a date within {n} days of today (organization privacy policy).', { n: maxDays! });
-    if (f.review && f.review !== initial.review && (f.review <= today || f.review > f.expiry))
-      e.review_at = t('The review date must be after today and on or before the expiry date.');
-    if (watch && f.basis.trim().length < 10) e.basis = t('Describe the evidence basis in at least 10 characters.');
+    if (watch && f.last_seen && f.last_seen > nowIn(tz)) e.last_seen_at = t('The last-seen time cannot be in the future.');
     if (!watch && !f.display_name.trim()) e.display_name = t('This field is required.');
     setErrors(e);
     if (Object.keys(e).length) return;
     const body: Record<string, unknown> & { expected_version: number } = { expected_version: p.version };
-    if (watch && f.basis.trim() !== initial.basis) body.basis = f.basis.trim();
-    if (!watch && f.display_name.trim() !== initial.display_name) body.display_name = f.display_name.trim();
+    if (f.display_name.trim() !== initial.display_name) body.display_name = f.display_name.trim();
+    if (watch && f.last_seen !== initial.last_seen) body.last_seen_at = f.last_seen ? zonedDateTimeToIso(f.last_seen, tz) : null;
     if (!watch && f.role_context.trim() !== initial.role_context) body.role_context = f.role_context.trim() || null;
     if (!watch && f.notice_recorded !== initial.notice_recorded) body.notice_recorded = f.notice_recorded;
     if (!sameStores) body.store_ids = f.store_ids;
     if (f.expiry !== initial.expiry) body.expires_at = zonedDateToIso(f.expiry, tz, 'end');
-    if (f.review !== initial.review) body.review_at = f.review ? zonedDateToIso(f.review, tz, 'start') : null;
     if (Object.keys(body).length === 1) {
       onClose();
       return;
@@ -464,7 +468,7 @@ function EditProfile({
         {p.status === 'approved' ? (
           <Notice tone="warning" title={t('Material changes reset approval')}>
             {watch
-              ? t('Changing the evidence basis, store scope or expiry returns this approved profile to review. It stops being used until it is approved again.')
+              ? t('Changing the store scope or expiry returns this approved profile to review. It stops being used until it is approved again.')
               : t('Changing the store assignment or expiry returns this approved profile to review. It stops being used until it is approved again.')}
           </Notice>
         ) : null}
@@ -474,7 +478,12 @@ function EditProfile({
           </p>
         ) : null}
         {watch ? (
-          <TextAreaField label={t('Evidence basis')} required maxLength={4000} value={f.basis} onChange={(e) => set('basis', e.target.value)} error={errors.basis} />
+          <div className="form-grid">
+            <TextField label={t('watchlist|Name')} hint={t('Leave blank if the name is not known.')} maxLength={120} value={f.display_name} onChange={(e) => set('display_name', e.target.value)} error={errors.display_name} />
+            <FormField label={t('watchlist|Last seen')} hint={t('Times use {tz}.', { tz })} error={errors.last_seen_at}>
+              {(cp) => <TextInput {...cp} type="datetime-local" max={nowIn(tz)} value={f.last_seen} onChange={(e) => set('last_seen', e.target.value)} />}
+            </FormField>
+          </div>
         ) : (
           <div className="form-grid">
             <TextField label={t('Display name')} required maxLength={120} value={f.display_name} onChange={(e) => set('display_name', e.target.value)} error={errors.display_name} />
@@ -490,9 +499,6 @@ function EditProfile({
           hint={t('Only stores assigned to you are listed.')}
         />
         <div className="form-grid">
-          <FormField label={t('Review date')} error={errors.review_at}>
-            {(cp) => <TextInput {...cp} type="date" value={f.review} max={f.expiry || maxDate} onChange={(e) => set('review', e.target.value)} />}
-          </FormField>
           <FormField label={t('Expiry')} required error={errors.expires_at} hint={maxDays ? t('Maximum {n} days (organization privacy policy).', { n: maxDays }) : undefined}>
             {(cp) => <TextInput {...cp} type="date" value={f.expiry} max={maxDate} onChange={(e) => set('expiry', e.target.value)} />}
           </FormField>

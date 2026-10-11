@@ -13,16 +13,15 @@ import type { ProfileKind } from '../../api/types';
 import { useI18n } from '../../i18n';
 import { screenPath } from '../../routes.meta';
 import { useSession } from '../../session/SessionProvider';
-import { Checkbox, FormField, TextAreaField, TextField, TextInput } from '../forms';
+import { Checkbox, FormField, TextField, TextInput } from '../forms';
 import { ConfirmDialog } from '../Modal';
 import { PageHeader } from '../PageHeader';
 import { Button, ButtonLink, Card, KeyValueList, Notice } from '../primitives';
 import { RouteStateBoundary } from '../RouteStateBoundary';
 import { ConflictBanner, EmptyState } from '../states';
 import { gd, type ProfileDetailD } from './api';
-import { addDays, todayIn, zonedDateToIso } from './dates';
+import { addDays, nowIn, todayIn, zonedDateTimeToIso, zonedDateToIso } from './dates';
 import { apiErrorText, fieldMessage, isVersionConflict } from './errors';
-import { IncidentPicker, type PickedIncident } from './IncidentPicker';
 import { ProfilePhotos } from './ProfilePhotos';
 import { ProfileStatusPill, StoreMultiSelect, StoreNames } from './ui';
 
@@ -98,12 +97,10 @@ function ProfileStep({ kind, onCreated }: { kind: ProfileKind; onCreated: (id: s
 
   const [reference, setReference] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [basis, setBasis] = useState('');
-  const [incident, setIncident] = useState<PickedIncident | null>(null);
+  const [lastSeen, setLastSeen] = useState('');
   const [storeIds, setStoreIds] = useState<string[]>(store ? [store.id] : []);
   const [roleContext, setRoleContext] = useState('');
   const [notice, setNotice] = useState(false);
-  const [reviewDate, setReviewDate] = useState('');
   const [expiry, setExpiry] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -134,11 +131,8 @@ function ProfileStep({ kind, onCreated }: { kind: ProfileKind; onCreated: (id: s
     if (!expiry) e.expires_at = req;
     else if (expiry <= today) e.expires_at = t('Choose a future date.');
     else if (maxDate && expiry > maxDate) e.expires_at = t('Choose a date within {n} days of today (organization privacy policy).', { n: maxDays! });
-    if (reviewDate && (reviewDate <= today || (expiry && reviewDate > expiry)))
-      e.review_at = t('The review date must be after today and on or before the expiry date.');
     if (kind === 'watchlist') {
-      if (!incident) e.source_incident_id = t('Choose the confirmed incident that supports this enrollment.');
-      if (basis.trim().length < 10) e.basis = t('Describe the evidence basis in at least 10 characters.');
+      if (lastSeen && lastSeen > nowIn(tz)) e.last_seen_at = t('The last-seen time cannot be in the future.');
     } else {
       if (!displayName.trim()) e.display_name = req;
       if (!notice) e.notice_recorded = t('Record that the staff member received the photo notice.');
@@ -156,11 +150,10 @@ function ProfileStep({ kind, onCreated }: { kind: ProfileKind; onCreated: (id: s
       reference: reference.trim(),
       store_ids: storeIds,
       expires_at: zonedDateToIso(expiry, tz, 'end'),
-      review_at: reviewDate ? zonedDateToIso(reviewDate, tz, 'start') : null,
     };
     if (kind === 'watchlist') {
-      body.basis = basis.trim();
-      body.source_incident_id = incident!.id;
+      body.display_name = displayName.trim();
+      body.last_seen_at = lastSeen ? zonedDateTimeToIso(lastSeen, tz) : null;
     } else {
       body.display_name = displayName.trim();
       body.role_context = roleContext.trim() || null;
@@ -180,7 +173,7 @@ function ProfileStep({ kind, onCreated }: { kind: ProfileKind; onCreated: (id: s
             <div className="form-grid">
               <TextField
                 label={kind === 'watchlist' ? t('Reference ID') : t('Employee ID')}
-                hint={kind === 'watchlist' ? t('Internal reference only. Do not enter a name or speculative identity.') : t('The employee number used by your organization.')}
+                hint={kind === 'watchlist' ? t('Internal reference number for this record.') : t('The employee number used by your organization.')}
                 required
                 maxLength={80}
                 value={reference}
@@ -197,21 +190,21 @@ function ProfileStep({ kind, onCreated }: { kind: ProfileKind; onCreated: (id: s
                   onChange={(e) => setDisplayName(e.target.value)}
                   error={err('display_name')}
                 />
-              ) : null}
+              ) : (
+                <TextField
+                  label={t('watchlist|Name')}
+                  hint={t('Leave blank if the name is not known.')}
+                  maxLength={120}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  error={err('display_name')}
+                />
+              )}
             </div>
             {kind === 'watchlist' ? (
-              <>
-                <IncidentPicker value={incident} onChange={setIncident} error={err('source_incident_id')} />
-                <TextAreaField
-                  label={t('Enrollment reason')}
-                  hint={t('Evidence basis: what the reviewed footage and records show, and why enrollment is necessary for this purpose.')}
-                  required
-                  maxLength={4000}
-                  value={basis}
-                  onChange={(e) => setBasis(e.target.value)}
-                  error={err('basis')}
-                />
-              </>
+              <FormField label={t('watchlist|Last seen')} hint={t('Date and time the person was last seen. Times use {tz}.', { tz })} error={err('last_seen_at')}>
+                {(p) => <TextInput {...p} type="datetime-local" max={nowIn(tz)} value={lastSeen} onChange={(e) => setLastSeen(e.target.value)} />}
+              </FormField>
             ) : null}
             <StoreMultiSelect
               label={kind === 'watchlist' ? t('Store scope') : t('Store assignment')}
@@ -259,9 +252,6 @@ function ProfileStep({ kind, onCreated }: { kind: ProfileKind; onCreated: (id: s
               </>
             ) : null}
             <div className="form-grid">
-              <FormField label={t('Review date')} hint={t('Optional. When this enrollment should be reviewed again.')} error={err('review_at')}>
-                {(p) => <TextInput {...p} type="date" min={addDays(today, 1)} max={expiry || maxDate} value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} />}
-              </FormField>
               <FormField
                 label={t('Expiry')}
                 required
@@ -296,7 +286,7 @@ function ProfileStep({ kind, onCreated }: { kind: ProfileKind; onCreated: (id: s
           <p>{t('Photos are added after the draft is saved. A draft is never used for matching.')}</p>
           <Notice tone="info">
             {kind === 'watchlist'
-              ? t('After you request review, a different person with approval rights checks the evidence, each photo, the scope and the expiry. A watchlist match is only ever a candidate for review.')
+              ? t('After you request review, a different person with approval rights checks the name, each photo, the scope and the expiry. A watchlist match is only ever a candidate for review.')
               : t('After you request review, a staff manager approves the photos and the profile. Staff recognition annotates work context and never suppresses checkout exceptions.')}
           </Notice>
         </Card>
@@ -368,29 +358,14 @@ function DraftStep({
               ...(profile.kind === 'staff' ? [{ label: t('Display name'), value: profile.display_name || '—' }] : []),
               ...(profile.kind === 'watchlist'
                 ? [
-                    {
-                      label: t('Supporting incident'),
-                      value: profile.source_incident_id ? (
-                        <Link to={screenPath('web-24', { id: profile.source_incident_id })}>
-                          {profile.linked_incidents.find((i) => i.id === profile.source_incident_id)?.ref ?? t('Open incident')}
-                        </Link>
-                      ) : (
-                        '—'
-                      ),
-                    },
+                    { label: t('watchlist|Name'), value: profile.display_name || '—' },
+                    { label: t('watchlist|Last seen'), value: profile.last_seen_at ? fmt.dateTime(profile.last_seen_at, tz) : '—' },
                   ]
                 : []),
               { label: profile.kind === 'watchlist' ? t('Store scope') : t('Store assignment'), value: <StoreNames ids={profile.store_ids} /> },
-              { label: t('Review date'), value: profile.review_at ? fmt.date(profile.review_at, tz) : '—' },
               { label: t('Expiry'), value: profile.expires_at ? fmt.date(profile.expires_at, tz) : '—' },
             ]}
           />
-          {profile.kind === 'watchlist' && profile.basis ? (
-            <>
-              <h3 className="gd-subhead">{t('Enrollment reason')}</h3>
-              <p className="gd-prewrap">{profile.basis}</p>
-            </>
-          ) : null}
           <p className="muted small">
             {t('Version {n}', { n: profile.version })} · <Link to={detail}>{t('Open profile')}</Link>
           </p>
@@ -413,7 +388,7 @@ function DraftStep({
               <>
                 <p className="small">
                   {profile.kind === 'watchlist'
-                    ? t('A different reviewer must approve. Approval requires the supporting incident to be confirmed by a person, at least one approved photo and an unexpired profile.')
+                    ? t('A different reviewer must approve. Approval requires at least one approved photo and an unexpired profile.')
                     : t('A staff manager approves the photos and the profile before it is used.')}
                 </p>
                 <Button onClick={() => setSubmitOpen(true)}>{t('Request review')}</Button>

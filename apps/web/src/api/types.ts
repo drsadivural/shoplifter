@@ -340,6 +340,8 @@ export interface Profile {
   status: ProfileStatus;
   expires_at: Timestamp | null;
   review_at: Timestamp | null;
+  /** When the enrolled subject was last seen (entered by the enrolling user). */
+  last_seen_at?: Timestamp | null;
   role_context: string | null;
   notice_recorded: boolean | null;
   photo_count: number;

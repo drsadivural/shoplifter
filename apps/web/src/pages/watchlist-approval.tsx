@@ -98,7 +98,7 @@ export default function WatchlistApprovalPage() {
           ) : null}
           {!id ? (
             <Card>
-              <EmptyState compact icon="watchlist" title={t('Select an enrollment to review')} description={t('Check the evidence basis, the source incident outcome, each photo, the scope and the expiry before deciding.')} />
+              <EmptyState compact icon="watchlist" title={t('Select an enrollment to review')} description={t('Check the name, last-seen time, each photo, the scope and the expiry before deciding.')} />
             </Card>
           ) : (
             <RouteStateBoundary query={detail} permission="watchlist.approve">
@@ -178,7 +178,8 @@ function ReviewPanel({
   );
 
   const checks: { ok: boolean; label: string }[] = [
-    { ok: outcome === 'confirmed', label: t('Source incident confirmed by a person') },
+    // A linked incident is optional; when one is linked it must be human-confirmed.
+    ...(p.source_incident_id ? [{ ok: outcome === 'confirmed', label: t('Source incident confirmed by a person') }] : []),
     { ok: approvedPhotos > 0, label: t('At least one approved photo') },
     { ok: !expired, label: t('Expiry is in the future') },
     { ok: !own, label: t('Reviewer is not the person who created the enrollment') },
@@ -187,15 +188,21 @@ function ReviewPanel({
   return (
     <>
       <div className="grid gd-two">
-        <Card title={t('Evidence basis')} titleAddon={<Badge tone="warning">{t('Review required')}</Badge>}>
+        <Card title={t('Profile')} titleAddon={<Badge tone="warning">{t('Review required')}</Badge>}>
           <div className="gd-person-head">
             <h2 className="gd-ref mono-ish">{p.reference}</h2>
             <ProfileStatusPill status={p.status} />
           </div>
-          <p className="gd-prewrap">{p.basis || <span className="muted">{t('Not recorded')}</span>}</p>
-          <h3 className="gd-subhead">{t('Supporting incident')}</h3>
+          <KeyValueList
+            items={[
+              { label: t('watchlist|Name'), value: p.display_name || <span className="muted">{t('Not recorded')}</span> },
+              { label: t('watchlist|Last seen'), value: p.last_seen_at ? fmt.dateTime(p.last_seen_at, tz, { withZone: true }) : <span className="muted">{t('Not recorded')}</span> },
+            ]}
+          />
+          {p.basis ? <p className="gd-prewrap">{p.basis}</p> : null}
           {p.source_incident_id ? (
             <div>
+              <h3 className="gd-subhead">{t('Supporting incident')}</h3>
               <Link to={screenPath('web-24', { id: p.source_incident_id })}>{incident.data?.ref ?? source?.ref ?? t('Open incident')}</Link>{' '}
               <OutcomePill outcome={outcome} />
               {incident.data ? (
@@ -213,14 +220,11 @@ function ReviewPanel({
                 <Notice tone="critical">{t('The source incident is not recorded as a confirmed incident. Approval will be refused until a person confirms it.')}</Notice>
               ) : null}
             </div>
-          ) : (
-            <Notice tone="critical">{t('No supporting incident is recorded. Approval will be refused.')}</Notice>
-          )}
+          ) : null}
           <h3 className="gd-subhead">{t('Scope')}</h3>
           <KeyValueList
             items={[
               { label: t('Store scope'), value: <StoreNames ids={p.store_ids} /> },
-              { label: t('Review date'), value: p.review_at ? fmt.date(p.review_at, tz) : '—' },
               { label: t('Expiry'), value: p.expires_at ? fmt.date(p.expires_at, tz) : '—' },
               { label: t('Created'), value: fmt.dateTime(p.created_at, tz, { withZone: true }) },
             ]}

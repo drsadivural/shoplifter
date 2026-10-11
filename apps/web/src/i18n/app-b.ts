@@ -84,6 +84,12 @@ export const APP_EN_B: Record<string, string> = {
 };
 
 export const APP_JA_B: Record<string, string> = {
+  'Choose a store in the header first.': '先に画面上部で店舗を選択してください。',
+  'Enter the ONVIF username for this password.': 'このパスワードに対応するONVIFユーザー名を入力してください。',
+  'ONVIF username': 'ONVIFユーザー名',
+  'Read-only camera account. Used for the cameras you add from the results.': '閲覧専用のカメラアカウントです。検索結果から追加するカメラに使用します。',
+  'ONVIF password': 'ONVIFパスワード',
+  'Enter the edge network interface, then search. Only devices that actually answer are listed.': 'エッジ端末のネットワークインターフェースを入力して検索してください。実際に応答した機器のみ表示されます。',
   // ---- shared group B
   'Review before saving': '保存前の確認',
   'Saved changes appear in the audit log': '保存した変更は監査ログに記録されます',
