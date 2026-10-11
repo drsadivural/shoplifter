@@ -148,13 +148,14 @@ Verified on Linux (Swift 6.1.3, x86_64):
   the incident action state machine, outcome form validation, push payload
   allow-listing, image header validation and workspace URL policy.
 - Every app-target Swift file passes `swiftc -parse` (syntax only).
+- CI (`.github/workflows/ci.yml`, job `ios-app`, macOS 15 runner): `xcodegen generate` succeeds and the
+  `RetailGuard` scheme builds for the iOS Simulator without signing (`** BUILD SUCCEEDED **`, 2026-10-11,
+  after two compile fixes: main-actor default arguments in `AppState.init` and a defaulted `load()`
+  passed as a retry closure).
 
 NOT verified (requires a Mac / Xcode / devices):
 
-- The app target and `RetailGuardTests` have never been compiled or type-checked
-  (SwiftUI/UIKit/AVFoundation are unavailable on Linux). Expect a first-build
-  fix-up pass.
-- `xcodegen generate` has not been run; the project spec is unvalidated.
+- `RetailGuardTests` has not been run (CI builds the app target only).
 - No simulator or device runs, no UI/accessibility audit (Dynamic Type,
   VoiceOver, contrast), no screenshot comparison against the mockups.
 - No Keychain, Face ID, camera, PhotosPicker, AVKit playback or Charts runtime

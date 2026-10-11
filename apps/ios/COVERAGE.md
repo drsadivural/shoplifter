@@ -4,10 +4,10 @@ Source of truth for screen IDs/fields: `design/screens.json` (platform `ios`) an
 `docs/SCREEN_SPEC.md`. API contract: `docs/API_V1.md`. Paths below are relative
 to `apps/ios/RetailGuard/`.
 
-Status legend: **Implemented (unbuilt)** = SwiftUI source written and syntax-checked
-(`swiftc -parse`) on Linux, wired to the API through `RetailGuardCore`, but **not
-compiled, run or screenshot-verified** (no Xcode/simulator in the authoring
-environment). Nothing in this table has been device-tested.
+Status legend: **Implemented (compiled in CI)** = SwiftUI source wired to the API through
+`RetailGuardCore` and compiled for the iOS Simulator by the macOS CI runner (`ios-app` job,
+`** BUILD SUCCEEDED **`). It has **not** been run on a simulator or device, screenshot-verified,
+or tested with APNs / Face ID / camera hardware.
 
 Common states: every data screen renders `Loading` (`LoadingStateView`), `Error`
 with request ID + Retry (`FailureStateView`), `Offline` (banner + last data kept),
