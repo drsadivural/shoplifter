@@ -139,6 +139,8 @@ public struct Profile: Codable, Sendable, Equatable, Identifiable {
     public let status: ProfileStatus
     public let expiresAt: Date?
     public let reviewAt: Date?
+    /// When the enrolled subject was last seen (entered by the enrolling user).
+    public let lastSeenAt: Date?
     public let roleContext: String?
     public let noticeRecorded: Bool?
     public let photoCount: Int
@@ -160,6 +162,7 @@ public struct Profile: Codable, Sendable, Equatable, Identifiable {
         case storeIds = "store_ids"
         case expiresAt = "expires_at"
         case reviewAt = "review_at"
+        case lastSeenAt = "last_seen_at"
         case roleContext = "role_context"
         case noticeRecorded = "notice_recorded"
         case photoCount = "photo_count"
@@ -183,6 +186,7 @@ public struct Profile: Codable, Sendable, Equatable, Identifiable {
         status = try c.decode(ProfileStatus.self, forKey: .status)
         expiresAt = try c.decodeIfPresent(Date.self, forKey: .expiresAt)
         reviewAt = try c.decodeIfPresent(Date.self, forKey: .reviewAt)
+        lastSeenAt = try c.decodeIfPresent(Date.self, forKey: .lastSeenAt)
         roleContext = try c.decodeIfPresent(String.self, forKey: .roleContext)
         noticeRecorded = try c.decodeIfPresent(Bool.self, forKey: .noticeRecorded)
         photoCount = try c.decodeIfPresent(Int.self, forKey: .photoCount) ?? 0
@@ -229,34 +233,30 @@ public struct Profile: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
+/// POST /v1/profiles body for a watchlist draft. Name and last-seen time are optional; omitted
+/// optionals are not encoded.
 public struct CreateWatchlistProfile: Encodable, Sendable {
     public let kind = "watchlist"
     public let reference: String
     public let displayName: String?
-    public let basis: String
-    public let sourceIncidentId: String
+    public let lastSeenAt: Date?
     public let storeIds: [String]
     public let expiresAt: Date
-    public let reviewAt: Date
 
-    public init(reference: String, displayName: String?, basis: String, sourceIncidentId: String,
-                storeIds: [String], expiresAt: Date, reviewAt: Date) {
+    public init(reference: String, displayName: String?, lastSeenAt: Date?, storeIds: [String], expiresAt: Date) {
         self.reference = reference
         self.displayName = displayName
-        self.basis = basis
-        self.sourceIncidentId = sourceIncidentId
+        self.lastSeenAt = lastSeenAt
         self.storeIds = storeIds
         self.expiresAt = expiresAt
-        self.reviewAt = reviewAt
     }
 
     enum CodingKeys: String, CodingKey {
-        case kind, reference, basis
+        case kind, reference
         case displayName = "display_name"
-        case sourceIncidentId = "source_incident_id"
+        case lastSeenAt = "last_seen_at"
         case storeIds = "store_ids"
         case expiresAt = "expires_at"
-        case reviewAt = "review_at"
     }
 }
 

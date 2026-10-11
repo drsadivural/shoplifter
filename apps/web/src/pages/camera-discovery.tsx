@@ -11,10 +11,10 @@ import type { ApiError } from '../api/client';
 import { endpoints } from '../api/endpoints';
 import { errorMessageKey, useApiQuery, useMutation } from '../api/hooks';
 import type { Camera, DiscoveryJob } from '../api/types';
-import { SelectField, TextField, fieldErrorText } from '../components/forms';
+import { TextField, fieldErrorText } from '../components/forms';
 import { gb } from '../components/groupb/api';
 import { CredentialFields, EdgeRequiredNotice, onvifProfiles } from '../components/groupb/camera-forms';
-import { StoreSelect, WizardSteps, useScopedStore } from '../components/groupb/ui';
+import { WizardSteps, useScopedStore } from '../components/groupb/ui';
 import { Modal } from '../components/Modal';
 import { PageHeader } from '../components/PageHeader';
 import { Badge, Button, ButtonLink, Card, Notice, Spinner } from '../components/primitives';
@@ -26,23 +26,27 @@ import '../styles/group-b.css';
 
 type Device = DiscoveryJob['devices'][number];
 
-const TIMEOUTS = [3, 5, 10, 15, 30];
+/** Discovery probe window on the edge (seconds). */
+const SCAN_TIMEOUT_S = 5;
 
 export default function CameraDiscoveryPage() {
   const { t, locale } = useI18n();
-  const { can, stores } = useSession();
-  const scoped = useScopedStore();
+  const { can } = useSession();
+  // The store comes from the header store selector.
+  const store = useScopedStore().store;
+  const storeId = store?.id ?? '';
   const [params, setParams] = useSearchParams();
   const jobId = params.get('job');
-  const [storeId, setStoreId] = useState(scoped.store?.id ?? '');
   const [iface, setIface] = useState('');
-  const [timeout, setTimeoutS] = useState('5');
-  const [cidr, setCidr] = useState('');
+  // ONVIF credentials are kept in memory only and used for each camera added from the results;
+  // they are sealed to the store edge's key by the API and never stored readable in the cloud.
+  const [onvifUser, setOnvifUser] = useState('');
+  const [onvifPass, setOnvifPass] = useState('');
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [unavailable, setUnavailable] = useState<ApiError | null>(null);
 
   const start = useMutation(
-    (body: { store_id: string; interface: string; timeout_s: number; cidr?: string }) => endpoints.discovery.start(body),
+    (body: { store_id: string; interface: string; timeout_s: number }) => endpoints.discovery.start(body),
     {
       successMessage: t('Discovery started on the store edge'),
       onSuccess: (job) => {
@@ -75,15 +79,14 @@ export default function CameraDiscoveryPage() {
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const next: Record<string, string> = {};
-    if (!storeId) next.store_id = t('field_error|required');
+    if (!storeId) next.store_id = t('Choose a store in the header first.');
     if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(iface.trim())) next.interface = t('Enter the IPv4 address of the edge network interface, for example 192.168.10.5.');
-    if (cidr.trim() && !/^\d{1,3}(\.\d{1,3}){3}\/\d{1,2}$/.test(cidr.trim())) next.cidr = t('Enter a private network range such as 192.168.10.0/24, or leave it empty.');
+    if (onvifPass && !onvifUser.trim()) next.onvif_username = t('Enter the ONVIF username for this password.');
     setErrors(next);
     if (Object.keys(next).length) return;
-    void start.run({ store_id: storeId, interface: iface.trim(), timeout_s: Number(timeout), cidr: cidr.trim() || undefined });
+    void start.run({ store_id: storeId, interface: iface.trim(), timeout_s: SCAN_TIMEOUT_S });
   };
 
-  const store = stores.find((s) => s.id === storeId);
   return (
     <>
       <PageHeader screenId="web-11" subtitle={store ? `${store.name} · ${t('Find ONVIF cameras on the store network through the edge appliance.')}` : undefined} />
@@ -92,7 +95,6 @@ export default function CameraDiscoveryPage() {
         <Card title={t('Scan from the store LAN')}>
           <form onSubmit={submit} noValidate>
             <div className="form-grid">
-              <StoreSelect value={storeId} onChange={(id) => setStoreId(id)} error={errors.store_id} />
               <TextField
                 label={t('Network interface')}
                 required
@@ -106,25 +108,33 @@ export default function CameraDiscoveryPage() {
                 error={errors.interface}
                 hint={t('IPv4 address of the edge appliance on the camera network. Probes are sent from this interface only.')}
               />
-              <SelectField
-                label={t('Scan timeout')}
-                value={timeout}
-                onChange={(e) => setTimeoutS(e.target.value)}
-                options={TIMEOUTS.map((s) => ({ value: String(s), label: t('{n} seconds', { n: s }) }))}
-                error={errors.timeout_s}
+              <TextField
+                label={t('ONVIF username')}
+                autoComplete="off"
+                maxLength={120}
+                value={onvifUser}
+                onChange={(e) => {
+                  setOnvifUser(e.target.value);
+                  setErrors((x) => ({ ...x, onvif_username: null }));
+                }}
+                error={errors.onvif_username}
+                hint={t('Read-only camera account. Used for the cameras you add from the results.')}
               />
               <TextField
-                label={t('Allowed range (optional)')}
-                value={cidr}
-                onChange={(e) => {
-                  setCidr(e.target.value);
-                  setErrors((x) => ({ ...x, cidr: null }));
-                }}
-                placeholder="192.168.10.0/24"
-                error={errors.cidr}
-                hint={t('Only replies from this private range are kept.')}
+                label={t('ONVIF password')}
+                type="password"
+                autoComplete="new-password"
+                maxLength={256}
+                value={onvifPass}
+                onChange={(e) => setOnvifPass(e.target.value)}
+                hint={t('Encrypted to the store edge appliance. It is never shown again or stored readable in the cloud.')}
               />
             </div>
+            {errors.store_id ? (
+              <div className="field-error" role="alert">
+                {errors.store_id}
+              </div>
+            ) : null}
             <div className="action-row">
               <Button type="submit" pending={start.pending} icon="search">
                 {t('Search')}
@@ -152,9 +162,9 @@ export default function CameraDiscoveryPage() {
         </Card>
         <Card title={t('Discovered devices')}>
           {jobId ? (
-            <JobResults jobId={jobId} />
+            <JobResults jobId={jobId} onvifUsername={onvifUser} onvifPassword={onvifPass} />
           ) : (
-            <EmptyState compact icon="search" title={t('No scan yet')} description={t('Choose the store and interface, then search. Only devices that actually answer are listed.')} />
+            <EmptyState compact icon="search" title={t('No scan yet')} description={t('Enter the edge network interface, then search. Only devices that actually answer are listed.')} />
           )}
         </Card>
       </div>
@@ -162,7 +172,7 @@ export default function CameraDiscoveryPage() {
   );
 }
 
-function JobResults({ jobId }: { jobId: string }) {
+function JobResults({ jobId, onvifUsername, onvifPassword }: { jobId: string; onvifUsername: string; onvifPassword: string }) {
   const { t, fmt } = useI18n();
   const [polling, setPolling] = useState(true);
   const q = useApiQuery((signal) => gb.discovery(jobId, { signal }), [jobId], { pollMs: polling ? 2_000 : undefined });
@@ -238,6 +248,8 @@ function JobResults({ jobId }: { jobId: string }) {
       <AddDiscoveredDialog
         jobId={jobId}
         storeId={job.store_id}
+        defaultUsername={onvifUsername}
+        defaultPassword={onvifPassword}
         device={adding}
         onClose={() => setAdding(null)}
         onAdded={(d, c) => {
@@ -252,12 +264,16 @@ function JobResults({ jobId }: { jobId: string }) {
 function AddDiscoveredDialog({
   jobId,
   storeId,
+  defaultUsername,
+  defaultPassword,
   device,
   onClose,
   onAdded,
 }: {
   jobId: string;
   storeId?: string;
+  defaultUsername: string;
+  defaultPassword: string;
   device: Device | null;
   onClose: () => void;
   onAdded: (d: Device, c: Camera) => void;
@@ -275,8 +291,8 @@ function AddDiscoveredDialog({
     setOpenFor(device.endpoint);
     setName([device.vendor, device.model].filter(Boolean).join(' ') || '');
     setLocation('');
-    setUsername('');
-    setPassword('');
+    setUsername(defaultUsername);
+    setPassword(defaultPassword);
     setErrors({});
     setEdgeRequired(false);
   }

@@ -6595,6 +6595,18 @@
             "type": "boolean",
             "title": "Notice Recorded",
             "default": false
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
           }
         },
         "type": "object",
@@ -6709,6 +6721,18 @@
               }
             ],
             "title": "Notice Recorded"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
           }
         },
         "type": "object",

@@ -51,3 +51,25 @@ export function isoToZonedDate(iso: string | null | undefined, timeZone: string)
   const s = formatDate(iso, timeZone);
   return s === '—' ? '' : s;
 }
+
+/** "2026-12-01T14:30" (store wall clock, <input type="datetime-local">) -> UTC ISO string. */
+export function zonedDateTimeToIso(value: string, timeZone: string): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  if (!m) return null;
+  const guess = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5]), 0);
+  const offset = wallClock(new Date(guess), timeZone) - guess;
+  const offset2 = wallClock(new Date(guess - offset), timeZone) - (guess - offset);
+  return new Date(guess - offset2).toISOString().replace('.000Z', 'Z');
+}
+
+/** ISO timestamp -> "YYYY-MM-DDTHH:mm" store wall clock for <input type="datetime-local"> ('' when absent). */
+export function isoToZonedDateTime(iso: string | null | undefined, timeZone: string): string {
+  if (!iso) return '';
+  const t = wallClock(new Date(iso), timeZone);
+  return Number.isNaN(t) ? '' : new Date(t).toISOString().slice(0, 16);
+}
+
+/** Current store wall clock as "YYYY-MM-DDTHH:mm" (upper bound for "last seen"). */
+export function nowIn(timeZone: string, now: Date = new Date()): string {
+  return new Date(wallClock(now, timeZone)).toISOString().slice(0, 16);
+}

@@ -10,7 +10,7 @@ enum Route: Hashable {
     case searchResults(SearchRequest)       // ios-17
     case watchlist                          // ios-18
     case profile(String)                    // ios-19
-    case subjectEnroll(sourceIncidentId: String?) // ios-20
+    case subjectEnroll // ios-20
     case staff                              // ios-21
     case staffEnroll                        // ios-22
     case photoCapture(profileId: String)    // ios-23
@@ -46,7 +46,7 @@ struct RouteDestination: View {
         case .searchResults(let request): SearchResultsView(request: request)
         case .watchlist: ProfileListView(kind: .watchlist)
         case .profile(let id): ProfileDetailView(profileId: id)
-        case .subjectEnroll(let source): SubjectEnrollView(sourceIncidentId: source)
+        case .subjectEnroll: SubjectEnrollView()
         case .staff: ProfileListView(kind: .staff)
         case .staffEnroll: StaffEnrollView()
         case .photoCapture(let profileId): PhotoCaptureView(profileId: profileId)

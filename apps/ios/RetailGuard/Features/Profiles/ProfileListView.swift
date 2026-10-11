@@ -59,7 +59,7 @@ struct ProfileListView: View {
             if canManage {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        appState.open(kind == .watchlist ? .subjectEnroll(sourceIncidentId: nil) : .staffEnroll)
+                        appState.open(kind == .watchlist ? .subjectEnroll : .staffEnroll)
                     } label: {
                         Image(systemName: "plus").rgTapTarget()
                     }

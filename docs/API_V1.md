@@ -141,15 +141,15 @@ Command payloads: `discover {job_id, interface, timeout_s, cidr}` → result `{d
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/v1/profiles?kind=staff|watchlist&status=&q=&store_id=` | items `Profile` |
-| POST | `/v1/profiles` | watchlist: `{kind:"watchlist", reference, display_name?, basis, source_incident_id, store_ids, expires_at, review_at}`; staff: `{kind:"staff", reference (employee ID), display_name, store_ids, role_context, notice_recorded: true, expires_at}` → Profile `status: "draft"` |
+| POST | `/v1/profiles` | watchlist: `{kind:"watchlist", reference, display_name? (氏名), last_seen_at? (RFC 3339, not in the future), basis?, source_incident_id?, store_ids, expires_at}`; staff: `{kind:"staff", reference (employee ID), display_name, store_ids, role_context, notice_recorded: true, expires_at}` → Profile `status: "draft"` |
 | GET/PATCH | `/v1/profiles/{id}` | GET adds `photos`, `linked_incidents`, `history`; PATCH `{expected_version, ...}` — material changes on approved profile move it back to `pending_review` |
 | POST | `/v1/profiles/{id}/photos` | multipart: `file` (JPEG/PNG ≤ 8 MB, ≥ 200×200 px, ≤ 40 MP), `provenance` (text) → Photo. EXIF stripped, re-encoded. |
 | POST | `/v1/profiles/{id}/photos/{photo_id}/review` | `{decision: "approved"|"rejected", reason}` |
 | DELETE | `/v1/profiles/{id}/photos/{photo_id}` | deletes media + any templates |
-| POST | `/v1/profiles/{id}/{action}` | action ∈ `submit, approve, reject, suspend, reinstate, delete`; body `{expected_version, reason}`. Approver must differ from creator. Watchlist approval requires a source incident with a human outcome of `confirmed` and ≥1 approved photo. |
+| POST | `/v1/profiles/{id}/{action}` | action ∈ `submit, approve, reject, suspend, reinstate, delete`; body `{expected_version, reason}`. Approver must differ from creator. Watchlist approval requires ≥1 approved photo and an unexpired profile; a linked source incident is optional, but when one is linked its human outcome must be `confirmed`. |
 | GET | `/v1/photos?kind=&status=` | photo library items `Photo` |
 
-`Profile = {id, kind, reference, display_name, basis, source_incident_id, store_ids, status: "draft"|"pending_review"|"approved"|"suspended"|"expired"|"deleted", expires_at, review_at, role_context, notice_recorded, photo_count, approved_photo_count, gallery_state: "not_in_gallery"|"face_sdk_unavailable"|"in_gallery", created_by, approved_by, version, created_at}`
+`Profile = {id, kind, reference, display_name, last_seen_at, basis, source_incident_id, store_ids, status: "draft"|"pending_review"|"approved"|"suspended"|"expired"|"deleted", expires_at, review_at, role_context, notice_recorded, photo_count, approved_photo_count, gallery_state: "not_in_gallery"|"face_sdk_unavailable"|"in_gallery", created_by, approved_by, version, created_at}`
 `Photo = {id, profile_id, profile_kind, profile_reference, media_id, thumb_media_id, width, height, status: "pending"|"approved"|"rejected"|"deleted", quality: {image: {sharpness, brightness, width, height}, face: {status: "unavailable", reason: "face_sdk_unavailable"}}, provenance, created_at}`
 
 ## Incidents, cases, exports

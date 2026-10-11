@@ -56,8 +56,13 @@ struct ProfileDetailView: View {
                 profile.galleryState.presentation.badge
             }
             KeyValueRow(label: profile.kind == .watchlist ? L("Reference ID") : L("Employee ID"), value: profile.reference)
-            if let name = profile.displayName, !name.isEmpty {
-                KeyValueRow(label: profile.kind == .watchlist ? L("Display name") : L("Name"), value: name)
+            if profile.kind == .watchlist {
+                KeyValueRow(label: L("Name"), value: (profile.displayName?.isEmpty == false) ? profile.displayName! : L("Not recorded"))
+                KeyValueRow(label: L("Last seen"),
+                            value: profile.lastSeenAt.map { appState.format($0, storeId: profile.storeIds.first, includeZone: true) }
+                                ?? L("Not recorded"))
+            } else if let name = profile.displayName, !name.isEmpty {
+                KeyValueRow(label: L("Name"), value: name)
             }
             if profile.galleryState == .faceSDKUnavailable {
                 FieldHint(text: L("Face templates are not created: the licensed face SDK is not installed. The profile cannot be matched until it is."))
@@ -68,10 +73,12 @@ struct ProfileDetailView: View {
 
         photosSection(profile)
 
+        // Older watchlist records may carry an evidence basis or linked incident; shown only when present.
+        if profile.kind == .staff || profile.basis?.isEmpty == false || profile.sourceIncidentId != nil {
         VStack(alignment: .leading, spacing: 8) {
             SectionTitle(text: profile.kind == .watchlist ? L("Evidence basis") : L("Photo notice"))
             if profile.kind == .watchlist {
-                Text(profile.basis ?? L("Not recorded")).font(.subheadline)
+                if let basis = profile.basis, !basis.isEmpty { Text(basis).font(.subheadline) }
                 if let source = profile.sourceIncidentId {
                     Button {
                         appState.open(.incident(source))
@@ -87,14 +94,15 @@ struct ProfileDetailView: View {
             }
         }
         .rgCard()
+        }
 
         VStack(alignment: .leading, spacing: 8) {
             SectionTitle(text: L("Scope"))
             KeyValueRow(label: L("Store scope"), value: storeNames(profile.storeIds))
             KeyValueRow(label: L("Expiry"), value: appState.format(profile.expiresAt, storeId: profile.storeIds.first, style: .date),
                         valueTone: (profile.expiresAt ?? .distantFuture) < Date() ? .critical : nil)
-            if profile.kind == .watchlist {
-                KeyValueRow(label: L("Review date"), value: appState.format(profile.reviewAt, storeId: profile.storeIds.first, style: .date))
+            if profile.kind == .watchlist, let reviewAt = profile.reviewAt {
+                KeyValueRow(label: L("Review date"), value: appState.format(reviewAt, storeId: profile.storeIds.first, style: .date))
             }
             if let creator = profile.createdBy?.displayName { KeyValueRow(label: L("Created by"), value: creator) }
             if let approver = profile.approvedBy?.displayName { KeyValueRow(label: L("Approved by"), value: approver) }

@@ -139,7 +139,7 @@ export function PeopleDirectory({ kind }: { kind: ProfileKind }) {
               title={kind === 'watchlist' ? t('No enrolled subjects') : t('No staff enrolled')}
               description={
                 kind === 'watchlist'
-                  ? t('Subjects are enrolled only from incidents a person reviewed and confirmed, with an evidence basis, store scope, expiry and a second reviewer’s approval.')
+                  ? t('Each enrollment needs reference photos, a store scope, an expiry and a second reviewer’s approval.')
                   : t('Staff enrollment is separate from user accounts. Enroll staff with their employee ID, assigned stores, a recorded photo notice and an expiry.')
               }
               action={
@@ -213,7 +213,7 @@ function ProfileCard({
         <strong className="mono-ish">{p.reference}</strong>
         <ProfileStatusPill status={p.status} />
       </div>
-      {kind === 'staff' && p.display_name ? <div className="gd-person-name">{p.display_name}</div> : null}
+      {p.display_name ? <div className="gd-person-name">{p.display_name}</div> : null}
       <dl className="gd-person-fields">
         <div>
           <dt>{kind === 'watchlist' ? t('Store scope') : t('Store')}</dt>
@@ -225,6 +225,12 @@ function ProfileCard({
           <dt>{kind === 'watchlist' ? t('Reference photos') : t('Photos')}</dt>
           <dd>{t('{approved} approved of {total}', { approved: p.approved_photo_count, total: p.photo_count })}</dd>
         </div>
+        {kind === 'watchlist' ? (
+          <div>
+            <dt>{t('watchlist|Last seen')}</dt>
+            <dd>{p.last_seen_at ? fmt.dateTime(p.last_seen_at, tz) : '—'}</dd>
+          </div>
+        ) : null}
         {kind === 'staff' ? (
           <div>
             <dt>{t('Enrollment date')}</dt>

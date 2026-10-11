@@ -4,6 +4,8 @@
 
 /** English overrides: only where the English differs from the key text after "|". */
 export const APP_EN_D: Record<string, string> = {
+  'watchlist|Name': 'Name',
+  'watchlist|Last seen': 'Last seen',
   'quality|too_dark': 'Too dark',
   'quality|overexposed': 'Overexposed',
   'quality|blurry': 'Blurry',
@@ -76,6 +78,17 @@ export const APP_EN_D: Record<string, string> = {
 };
 
 export const APP_JA_D: Record<string, string> = {
+  'watchlist|Name': '氏名',
+  'watchlist|Last seen': '最終目撃日時',
+  'The last-seen time cannot be in the future.': '最終目撃日時に未来の日時は指定できません。',
+  'Internal reference number for this record.': 'この記録の社内管理番号です。',
+  'Leave blank if the name is not known.': '氏名が不明な場合は空欄のままにしてください。',
+  'Date and time the person was last seen. Times use {tz}.': '最後に目撃された日時です。時刻は{tz}で表示します。',
+  'A different reviewer must approve. Approval requires at least one approved photo and an unexpired profile.': '承認は登録者とは別の担当者が行います。承認済みの写真が1枚以上あり、有効期限内であることが必要です。',
+  'Each enrollment needs reference photos, a store scope, an expiry and a second reviewer’s approval.': '登録には登録写真、対象店舗、有効期限、および別の担当者による承認が必要です。',
+  'Changing the store scope or expiry returns this approved profile to review. It stops being used until it is approved again.': '対象店舗または有効期限を変更すると、承認済みの登録は再確認に戻り、再承認されるまで使用されません。',
+  'Times use {tz}.': '時刻は{tz}で表示します。',
+  'Check the name, last-seen time, each photo, the scope and the expiry before deciding.': '判断の前に、氏名、最終目撃日時、各写真、対象店舗、有効期限を確認してください。',
   // ---- shared vocabulary
   'profile|Draft': '下書き',
   'profile|Pending approval': '承認待ち',
@@ -222,8 +235,7 @@ export const APP_JA_D: Record<string, string> = {
   'Save draft': '下書きを保存',
   'Draft saved. Add reference photos next.': '下書きを保存しました。次に登録写真を追加してください。',
   'Photos are added after the draft is saved. A draft is never used for matching.': '写真は下書きの保存後に追加します。下書きが照合に使われることはありません。',
-  'After you request review, a different person with approval rights checks the evidence, each photo, the scope and the expiry. A watchlist match is only ever a candidate for review.':
-    '確認を依頼すると、承認権限を持つ別の担当者が根拠、各写真、適用範囲、有効期限を確認します。照合結果は常に確認のための候補です。',
+  'After you request review, a different person with approval rights checks the name, each photo, the scope and the expiry. A watchlist match is only ever a candidate for review.': '確認を依頼すると、承認権限を持つ別の担当者が氏名、各写真、対象店舗、有効期限を確認します。照合結果は常に確認のための候補です。',
   'After you request review, a staff manager approves the photos and the profile. Staff recognition annotates work context and never suppresses checkout exceptions.':
     '確認を依頼すると、スタッフ管理者が写真と登録内容を承認します。スタッフの識別は作業状況の補足情報であり、レジ例外を抑止しません。',
   'Supporting incident': '根拠となる事案',

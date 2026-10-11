@@ -122,6 +122,7 @@ final class ModelDecodingTests: XCTestCase {
         XCTAssertEqual(photo.quality?.face?.isAvailable, false)
         XCTAssertEqual(profile.linkedIncidents?.map(\.id), ["inc-31", "inc-35"])
         XCTAssertEqual(profile.history?.first?.actor?.displayName, "Ken")
+        XCTAssertNil(profile.lastSeenAt)
 
         // Separation of duties: the creator may not approve; another approver may.
         let approver: Set<String> = ["watchlist.approve", "watchlist.manage"]
@@ -218,5 +219,36 @@ final class ModelDecodingTests: XCTestCase {
         let config = try decode(AuthConfig.self, #"{"oidc_enabled": false, "password_login": true, "mfa_required_roles": ["org_admin","investigator"], "support_contact": null}"#)
         XCTAssertFalse(config.oidcEnabled)
         XCTAssertNil(config.supportContact)
+    }
+
+    func testDecodesWatchlistNameAndLastSeen() throws {
+        let json = """
+        {"id": "prof-2", "kind": "watchlist", "reference": "WL-0008", "display_name": "山田 太郎",
+         "last_seen_at": "2026-10-10T09:45:00Z", "basis": "", "source_incident_id": null,
+         "store_ids": ["\(Fixtures.storeId)"], "status": "draft", "expires_at": "2027-03-31T14:59:59Z",
+         "photo_count": 0, "approved_photo_count": 0, "gallery_state": "not_in_gallery", "version": 1}
+        """
+        let profile = try decode(Profile.self, json)
+        XCTAssertEqual(profile.title, "山田 太郎")
+        XCTAssertEqual(profile.lastSeenAt, date("2026-10-10T09:45:00Z"))
+        XCTAssertNil(profile.sourceIncidentId)
+    }
+
+    func testEncodesWatchlistCreateWithoutIncidentOrReason() throws {
+        let encoder = RetailGuardJSON.makeEncoder()
+        let full = CreateWatchlistProfile(reference: "WL-0009", displayName: "Suzuki", lastSeenAt: date("2026-10-10T09:45:00Z"),
+                                          storeIds: ["s-1"], expiresAt: date("2027-03-31T14:59:59Z"))
+        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: encoder.encode(full)) as? [String: Any])
+        XCTAssertEqual(body["kind"] as? String, "watchlist")
+        XCTAssertEqual(body["display_name"] as? String, "Suzuki")
+        XCTAssertEqual(body["last_seen_at"] as? String, "2026-10-10T09:45:00Z")
+        XCTAssertNil(body["source_incident_id"])
+        XCTAssertNil(body["basis"])
+        XCTAssertNil(body["review_at"])
+        let minimal = CreateWatchlistProfile(reference: "WL-0010", displayName: nil, lastSeenAt: nil,
+                                             storeIds: ["s-1"], expiresAt: date("2027-03-31T14:59:59Z"))
+        let body2 = try XCTUnwrap(JSONSerialization.jsonObject(with: encoder.encode(minimal)) as? [String: Any])
+        XCTAssertNil(body2["display_name"])
+        XCTAssertNil(body2["last_seen_at"])
     }
 }

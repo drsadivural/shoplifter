@@ -31,8 +31,11 @@ def test_watchlist_enrollment_requires_confirmed_incident_photo_and_second_appro
     inc = admin.post("/v1/incidents", json={"store_id": store["id"], "description": "Observed concealment"}).json()
     base = {"kind": "watchlist", "reference": "WL-0001", "basis": "Confirmed concealment incident reviewed on footage",
             "store_ids": [store["id"]], "expires_at": "2027-06-30T00:00:00Z"}
-    assert store_admin.post("/v1/profiles", json=base).status_code == 422  # source incident required
-    p = store_admin.post("/v1/profiles", json=dict(base, source_incident_id=inc["id"])).json()
+    # future "last seen" is rejected
+    assert store_admin.post("/v1/profiles", json=dict(base, reference="WL-F", last_seen_at="2099-01-01T00:00:00Z")).status_code == 422
+    p = store_admin.post("/v1/profiles", json=dict(base, source_incident_id=inc["id"], display_name="Yamada Taro",
+                                                   last_seen_at="2026-10-10T05:30:00Z")).json()
+    assert p["display_name"] == "Yamada Taro" and p["last_seen_at"] == "2026-10-10T05:30:00Z"
     assert p["status"] == "draft"
     act = lambda cl, a, prof, reason="ok": cl.post(f"/v1/profiles/{prof['id']}/{a}", json={"expected_version": prof["version"], "reason": reason})
     assert act(store_admin, "submit", p).json()["code"] == "photo_required"
@@ -94,3 +97,23 @@ def test_staff_requires_notice_and_expiry_limits(org):
     assert admin.post("/v1/profiles", json=dict(base, notice_recorded=True, expires_at="2020-01-01T00:00:00Z")).status_code == 422
     assert admin.post("/v1/profiles", json=dict(base, notice_recorded=True, expires_at="2040-01-01T00:00:00Z")).status_code == 422
     assert admin.post("/v1/profiles", json=dict(base, notice_recorded=True)).status_code == 201
+
+
+def test_watchlist_without_linked_incident_or_reason_can_be_approved_by_second_reviewer(org):
+    app, admin, store = org["app"], org["admin"], org["store"]
+    store_admin, _ = invite_and_login(app, admin, "store_admin", [store["id"]])
+    p = store_admin.post("/v1/profiles", json={"kind": "watchlist", "reference": "WL-NOINC", "display_name": "Suzuki Ichiro",
+                                               "last_seen_at": "2026-10-09T12:00:00Z", "store_ids": [store["id"]],
+                                               "expires_at": "2027-03-31T00:00:00Z"})
+    assert p.status_code == 201, p.text
+    p = p.json()
+    assert p["source_incident_id"] is None and p["basis"] == ""
+    photo = upload(store_admin, p["id"], jpeg_with_gps()).json()
+    p = store_admin.get(f"/v1/profiles/{p['id']}").json()
+    p = store_admin.post(f"/v1/profiles/{p['id']}/submit", json={"expected_version": p["version"], "reason": "ready"}).json()
+    admin.post(f"/v1/profiles/{p['id']}/photos/{photo['id']}/review", json={"decision": "approved", "reason": "clear"})
+    p = admin.get(f"/v1/profiles/{p['id']}").json()
+    # still needs a different approver than the creator
+    assert store_admin.post(f"/v1/profiles/{p['id']}/approve", json={"expected_version": p["version"], "reason": "x"}).status_code == 403
+    r = admin.post(f"/v1/profiles/{p['id']}/approve", json={"expected_version": p["version"], "reason": "Reviewed photos"})
+    assert r.status_code == 200 and r.json()["status"] == "approved"

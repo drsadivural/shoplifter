@@ -33,6 +33,7 @@ class ProfileIn(BaseModel):
     review_at: datetime | None = None
     role_context: str | None = Field(default=None, max_length=200)
     notice_recorded: bool = False
+    last_seen_at: datetime | None = None
 
 
 class ProfilePatch(BaseModel):
@@ -45,6 +46,7 @@ class ProfilePatch(BaseModel):
     review_at: datetime | None = None
     role_context: str | None = Field(default=None, max_length=200)
     notice_recorded: bool | None = None
+    last_seen_at: datetime | None = None
 
 
 class ActionIn(BaseModel):
@@ -131,14 +133,22 @@ def _validate_common(c: Ctx, kind: str, store_ids, expires_at: datetime, review_
         raise invalid("expires_at", f"max_{max_days}_days")
     if review_at is not None and not now() < _aware(review_at) <= expires_at:
         raise invalid("review_at", "must_be_before_expiry")
-    if kind == "watchlist":
-        if source_incident_id is None:
-            raise invalid("source_incident_id", "required")
+    if kind == "watchlist" and source_incident_id is not None:
+        # Optional link to a reviewed incident; when present it must be inside the actor's scope.
         inc = c.tx.one("SELECT store_id FROM incidents WHERE id=%s", (source_incident_id,))
         if not inc:
             raise invalid("source_incident_id", "not_found")
         c.actor.require_store(str(inc["store_id"]))
     return ids
+
+
+def _last_seen(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    value = _aware(value)
+    if value > now() + timedelta(minutes=5):
+        raise invalid("last_seen_at", "future")
+    return value
 
 
 @router.get("/profiles")
@@ -167,8 +177,7 @@ def create_profile(body: ProfileIn, c: Ctx = Depends(ctx)) -> dict:
         raise invalid("kind")
     c.actor.require(manage_perm(body.kind))
     ids = _validate_common(c, body.kind, body.store_ids, body.expires_at, body.review_at, body.source_incident_id)
-    if body.kind == "watchlist" and len(body.basis.strip()) < 10:
-        raise invalid("basis", "evidence_basis_required")
+    last_seen = _last_seen(body.last_seen_at)
     if body.kind == "staff":
         if not body.display_name.strip():
             raise invalid("display_name", "required")
@@ -178,11 +187,11 @@ def create_profile(body: ProfileIn, c: Ctx = Depends(ctx)) -> dict:
         raise ApiError(422, "validation_failed", "This reference ID is already used", field_errors={"reference": "duplicate"})
     pid = uuid.uuid4()
     c.tx.run("""INSERT INTO profiles (id, org_id, kind, reference, display_name, basis, role_context, notice_recorded,
-                source_incident_id, status, created_by, expires_at, review_at, gallery_state)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,'draft',%s,%s,%s,'not_in_gallery')""",
+                source_incident_id, status, created_by, expires_at, review_at, gallery_state, last_seen_at)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,'draft',%s,%s,%s,'not_in_gallery',%s)""",
              (pid, c.actor.org_id, body.kind, body.reference.strip(), body.display_name.strip(), body.basis.strip(),
               body.role_context, body.notice_recorded, body.source_incident_id if body.kind == "watchlist" else None,
-              c.actor.user_id, _aware(body.expires_at), body.review_at))
+              c.actor.user_id, _aware(body.expires_at), body.review_at, last_seen))
     for s in ids:
         c.tx.run("INSERT INTO profile_scopes (org_id, profile_id, store_id) VALUES (%s,%s,%s)", (c.actor.org_id, pid, s))
     audit(c.tx, c.actor.org_id, f"profile.{body.kind}_created", "profile", pid, actor=c.actor,
@@ -231,6 +240,8 @@ def patch_profile(profile_id: uuid.UUID, body: ProfilePatch, c: Ctx = Depends(ct
         ids = _validate_common(c, r["kind"], changes.get("store_ids") or scopes(c.tx, profile_id),
                                changes.get("expires_at") or r["expires_at"], changes.get("review_at", r["review_at"]),
                                changes.get("source_incident_id", r["source_incident_id"]))
+    if "last_seen_at" in changes:
+        changes["last_seen_at"] = _last_seen(changes["last_seen_at"])
     material = any(k in changes for k in MATERIAL)
     cols = {k: v for k, v in changes.items() if k != "store_ids"}
     if cols:
@@ -391,7 +402,8 @@ def profile_action(profile_id: uuid.UUID, action: str, body: ActionIn, c: Ctx = 
             raise ApiError(422, "approved_photo_required", "Approve at least one photo after checking its quality")
         if _aware(r["expires_at"]) <= now():
             raise ApiError(422, "profile_expired", "Extend the expiry before approval")
-        if r["kind"] == "watchlist":
+        if r["kind"] == "watchlist" and r["source_incident_id"] is not None:
+            # A linked incident is optional, but if one is linked it must be human-confirmed.
             inc = c.tx.one("SELECT outcome, status FROM incidents WHERE id=%s", (r["source_incident_id"],))
             if not inc or inc["outcome"] != "confirmed":
                 raise ApiError(422, "source_incident_not_confirmed",
