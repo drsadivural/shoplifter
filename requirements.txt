@@ -1,0 +1,2 @@
+# Local reference components use only Python standard library (Python 3.12).
+# Production services/dependencies are defined and pinned during Claude implementation.

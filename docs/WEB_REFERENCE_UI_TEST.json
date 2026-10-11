@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "checks": [
+    "Login",
+    "Create manual incident",
+    "Acknowledge",
+    "Record outcome",
+    "Enroll profile",
+    "Upload/display photo",
+    "Japanese toggle",
+    "Dark mode",
+    "Persisted audit",
+    "Sign out"
+  ],
+  "scope": "Local connected reference UI only; no ML, APNs or native build validation"
+}

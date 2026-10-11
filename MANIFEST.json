@@ -1,0 +1,3663 @@
+{
+  "product": "Ayonix RetailGuard",
+  "screens": 88,
+  "individual_mockups": 352,
+  "files": {
+    ".env.example": {
+      "sha256": "8f0f700e44206e4ccc00acbce4777b158c7432423aae1679dcb45e06dc82e601",
+      "bytes": 238
+    },
+    ".github/workflows/reference-checks.yml": {
+      "sha256": "f2810a8194ffc4114b7730ff4486b3cd288a10ecb750a7d5fdaa4a7c2d4f63ec",
+      "bytes": 412
+    },
+    ".gitignore": {
+      "sha256": "d5966b5dfa095474d206dd75b6ef0e3c54e4c6e3aabc04e82023ffd4fcd9a22b",
+      "bytes": 241
+    },
+    "CLAUDE.md": {
+      "sha256": "c95deac31a3784694452b63eee2b016476e452889cf667cea6c3109c57ea8f93",
+      "bytes": 2822
+    },
+    "CLAUDE_CODE_JOB.md": {
+      "sha256": "91731d0b627512ad5ea8ac10ab41532fff315ed084505925f8ef64761b269003",
+      "bytes": 12679
+    },
+    "LICENSE": {
+      "sha256": "b7849099d1e20a2061ed92fa99367338753d1a550f2eb2005af58c8f4313a0db",
+      "bytes": 1365
+    },
+    "README.md": {
+      "sha256": "006c03b5b4f9c0da7d58935b0537f2ee2fd76f051b0322ce265c52c7734f8581",
+      "bytes": 4374
+    },
+    "START_HERE.md": {
+      "sha256": "d2e90406b77a41989b4608386cb628caa58d457c5382e68844a27ffb0020aa29",
+      "bytes": 2543
+    },
+    "assets/PROMPT.txt": {
+      "sha256": "74dddf79eda079a7d4cb7c00541a13c2530860d4f89e917b912a684e0d40b679",
+      "bytes": 974
+    },
+    "assets/README.md": {
+      "sha256": "de801e84c9fd7639719cf85a5d24aee094e50eddc4f2d3b91976943d55e70f39",
+      "bytes": 672
+    },
+    "assets/fonts/400.css": {
+      "sha256": "cf1f535457f6be737b8d2eb4d31a8aec082db2560b8610a0894130eb856198d3",
+      "bytes": 101247
+    },
+    "assets/fonts/700.css": {
+      "sha256": "ffeea7cc5d77505f2509b62afd55679ccc1922254c823230d792be10d7e94220",
+      "bytes": 101247
+    },
+    "assets/fonts/OFL.txt": {
+      "sha256": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3",
+      "bytes": 4314
+    },
+    "assets/fonts/noto-sans-jp-0-400-normal.woff": {
+      "sha256": "c4aa9e6ebd32ae697b7292d32d9ca94c16b5519a6ccff5bf1eb6549b0bada8dc",
+      "bytes": 56984
+    },
+    "assets/fonts/noto-sans-jp-0-400-normal.woff2": {
+      "sha256": "d05a2579b7f2a0851fdd5bcb7f6ecfbdb40195bfe1553a665de33ef26441a3d3",
+      "bytes": 43840
+    },
+    "assets/fonts/noto-sans-jp-0-700-normal.woff": {
+      "sha256": "b492009a589ab127a1d948bbde92fabec5d22ca7bead50808ada3c93c7559aa5",
+      "bytes": 57344
+    },
+    "assets/fonts/noto-sans-jp-0-700-normal.woff2": {
+      "sha256": "1a4aff4cba720806775ab1bffb5ba45c95c94b153345070106cbeb6c53358a29",
+      "bytes": 45024
+    },
+    "assets/fonts/noto-sans-jp-1-400-normal.woff": {
+      "sha256": "06a63ac544bcc85a340c70bb4cf21a3f37fcd52a95f4b5050b5c30799f4c2742",
+      "bytes": 48368
+    },
+    "assets/fonts/noto-sans-jp-1-400-normal.woff2": {
+      "sha256": "a1f36d79ed3d7f91cf451e80476b2c3c64ba18e8f324033c8373e6422e5b4f59",
+      "bytes": 37156
+    },
+    "assets/fonts/noto-sans-jp-1-700-normal.woff": {
+      "sha256": "d344c457ad78630fe3ddff25502f6f742b8f275077ccf3894e292dcf987d67cc",
+      "bytes": 48352
+    },
+    "assets/fonts/noto-sans-jp-1-700-normal.woff2": {
+      "sha256": "d9b842c0d2c9323356d7a0822f62cdf83fd18720d9790d1950f12ee127f22a69",
+      "bytes": 37672
+    },
+    "assets/fonts/noto-sans-jp-10-400-normal.woff": {
+      "sha256": "d07fd0ee24552dbc9fb84c0d5f79e5f7839d866086bd9f46abf8d7b753891241",
+      "bytes": 51860
+    },
+    "assets/fonts/noto-sans-jp-10-400-normal.woff2": {
+      "sha256": "e45deda61f9f16a7954fc53d42f12c11da420b7f4cc548f2c17694e610a63fa1",
+      "bytes": 40000
+    },
+    "assets/fonts/noto-sans-jp-10-700-normal.woff": {
+      "sha256": "ea49f32eb550cbaaa40af49b85e0b5fc0f47cdb2079680e6bc9833853cee3f0a",
+      "bytes": 52724
+    },
+    "assets/fonts/noto-sans-jp-10-700-normal.woff2": {
+      "sha256": "04faaf1f70eb0c1c2354df477bcb56a76bdd4e02bdbdac039395c95ab6554100",
+      "bytes": 40788
+    },
+    "assets/fonts/noto-sans-jp-100-400-normal.woff": {
+      "sha256": "a3e8f24f2a0fa5ea7cd26f8b3a5d0df97f3b2bce3a13a3c2f0d6f05da6c5c8b7",
+      "bytes": 14080
+    },
+    "assets/fonts/noto-sans-jp-100-400-normal.woff2": {
+      "sha256": "1f952f25420a0f179ea67afd0a6598bc9582bf960624d25c343580355e5510df",
+      "bytes": 11088
+    },
+    "assets/fonts/noto-sans-jp-100-700-normal.woff": {
+      "sha256": "5688b9ae1eabd3471eca1158abd855d903fedf09898f471037d240837f1893a9",
+      "bytes": 14088
+    },
+    "assets/fonts/noto-sans-jp-100-700-normal.woff2": {
+      "sha256": "5e4d5461bf0523f08c9451b28159cb2a9affe63bfb9cc1c5fb98a0f7dea96678",
+      "bytes": 11316
+    },
+    "assets/fonts/noto-sans-jp-101-400-normal.woff": {
+      "sha256": "8572b1671f061db045d7a1ec702ac89122ad8708a96b174e2c7540fcf0aac18a",
+      "bytes": 11260
+    },
+    "assets/fonts/noto-sans-jp-101-400-normal.woff2": {
+      "sha256": "6868522f98a716c05a8ab801c9544e6d1cc9379d68bb10e7357c162b79107d77",
+      "bytes": 8820
+    },
+    "assets/fonts/noto-sans-jp-101-700-normal.woff": {
+      "sha256": "e734d7fd850e63526c279ce6b3f3cbd5334981cb6169af4c3b342ced50d140a8",
+      "bytes": 11212
+    },
+    "assets/fonts/noto-sans-jp-101-700-normal.woff2": {
+      "sha256": "5128f0beca54ea49d85315cee5bd46444e0165e64adb492545e8faa225cc0cbf",
+      "bytes": 8876
+    },
+    "assets/fonts/noto-sans-jp-102-400-normal.woff": {
+      "sha256": "82ab25b5781c8c10e7ae54dad5e5623d237a29fb5e603abf850e7cdc487fe843",
+      "bytes": 12280
+    },
+    "assets/fonts/noto-sans-jp-102-400-normal.woff2": {
+      "sha256": "5611d49f081433d0d37c4b1feb9b478fadfd97dbafa606db7ff4db9ccdbab44b",
+      "bytes": 9688
+    },
+    "assets/fonts/noto-sans-jp-102-700-normal.woff": {
+      "sha256": "a5c43bf54875e2323c9bb70e34939005dfa1e3c7eb25f2d025c8e59ea87fea41",
+      "bytes": 12252
+    },
+    "assets/fonts/noto-sans-jp-102-700-normal.woff2": {
+      "sha256": "d7e7467a51981d0901257cc0214f8f7e2c45c62cc643206465b2413a1a4d7170",
+      "bytes": 9840
+    },
+    "assets/fonts/noto-sans-jp-103-400-normal.woff": {
+      "sha256": "18e402dbb069a508563cdc35163679bfcd4681256d831065e94784437e871259",
+      "bytes": 12060
+    },
+    "assets/fonts/noto-sans-jp-103-400-normal.woff2": {
+      "sha256": "ee1b4b470218bbc67901d3a62037be0d235516105cb3abdb3d1e8182097a8daf",
+      "bytes": 9312
+    },
+    "assets/fonts/noto-sans-jp-103-700-normal.woff": {
+      "sha256": "479deec87e1ac192a31732c2de7c94a8a7f6533d2f47ef9becfcb9811b115a23",
+      "bytes": 11944
+    },
+    "assets/fonts/noto-sans-jp-103-700-normal.woff2": {
+      "sha256": "a434ebddf9872b48c902b8218675dea03b0f0248c010c27f70a6dfdca34a1878",
+      "bytes": 9384
+    },
+    "assets/fonts/noto-sans-jp-104-400-normal.woff": {
+      "sha256": "bf53af5e3a2acb437b76ef69c0c0f40e3c2f12ec518395befa5020a0c0a24adb",
+      "bytes": 12596
+    },
+    "assets/fonts/noto-sans-jp-104-400-normal.woff2": {
+      "sha256": "0110124db0d18b024840ae646687397f3b07bc98b3cdb709cc3427199c28a715",
+      "bytes": 9832
+    },
+    "assets/fonts/noto-sans-jp-104-700-normal.woff": {
+      "sha256": "cb7bc5a8ab9cbe35a953714347f81aa2f2d7bb9d99f198326cbe68a99dce7687",
+      "bytes": 12624
+    },
+    "assets/fonts/noto-sans-jp-104-700-normal.woff2": {
+      "sha256": "a1ab5ebd7f04aab3a54ff5a58b340f8b54ca63786330e0adebab4ea9c52cc02a",
+      "bytes": 9984
+    },
+    "assets/fonts/noto-sans-jp-105-400-normal.woff": {
+      "sha256": "fcd29ce1773a1b3d6952253067a45c625baca85bacd1af63d6a1bf1ba40e53dc",
+      "bytes": 12248
+    },
+    "assets/fonts/noto-sans-jp-105-400-normal.woff2": {
+      "sha256": "2aa3b207724f56b8bee3e9205a64bcf402d93a344aca6b7c626071d9bb498702",
+      "bytes": 9756
+    },
+    "assets/fonts/noto-sans-jp-105-700-normal.woff": {
+      "sha256": "3eab58e3dcd1c971490b659fc75abdbcc783cfc543f888577c6df96958cbd98b",
+      "bytes": 12284
+    },
+    "assets/fonts/noto-sans-jp-105-700-normal.woff2": {
+      "sha256": "9ebade95c410ba32ae9f3f24a03406e3052bf6b42a134ddb957d80da7ba3786b",
+      "bytes": 9876
+    },
+    "assets/fonts/noto-sans-jp-106-400-normal.woff": {
+      "sha256": "c2296a2aeeca4813cd13dfadf7dce7cd83fedcd7d60efb0fb19ec56a357a5128",
+      "bytes": 13688
+    },
+    "assets/fonts/noto-sans-jp-106-400-normal.woff2": {
+      "sha256": "6ec4291517abe6aaa893183b6fba07f3a408934449aea2d4d5b0311a7155de80",
+      "bytes": 10636
+    },
+    "assets/fonts/noto-sans-jp-106-700-normal.woff": {
+      "sha256": "a01452bcf26597732745e2e6d90e3217517c04eb618a58059231ef6ec6b84806",
+      "bytes": 13576
+    },
+    "assets/fonts/noto-sans-jp-106-700-normal.woff2": {
+      "sha256": "555c5f8c914b0b18762c313a0ff88c7c0a3c3a906372314b4f1f17a53f1c1d78",
+      "bytes": 10860
+    },
+    "assets/fonts/noto-sans-jp-107-400-normal.woff": {
+      "sha256": "b8936b1a243cfaf377bde9867981fd0c383f75a466b4da85ce85840b09f1e977",
+      "bytes": 11836
+    },
+    "assets/fonts/noto-sans-jp-107-400-normal.woff2": {
+      "sha256": "eb28bd4d1ecb408c4a05ac4724c082fc35609ce535b7f56043b82f30a8ae894c",
+      "bytes": 9180
+    },
+    "assets/fonts/noto-sans-jp-107-700-normal.woff": {
+      "sha256": "c34b63f421c44e4ff7fb77403a7a07f298a52b13f3bb22b8ffba2494fed94ebb",
+      "bytes": 11752
+    },
+    "assets/fonts/noto-sans-jp-107-700-normal.woff2": {
+      "sha256": "d151a44c9acdc4409a6f3399a86465692d1cc62884263a4f2bd286c0b2541efb",
+      "bytes": 9248
+    },
+    "assets/fonts/noto-sans-jp-108-400-normal.woff": {
+      "sha256": "1619d3fd23fb86f9c3c2e0bf0ae4f93f74a65aaf8723d42e27a1a3d098c7f2d4",
+      "bytes": 12936
+    },
+    "assets/fonts/noto-sans-jp-108-400-normal.woff2": {
+      "sha256": "15839c05192599cd30bac62d36717e5c244878db6465a3557c34571121508190",
+      "bytes": 10252
+    },
+    "assets/fonts/noto-sans-jp-108-700-normal.woff": {
+      "sha256": "55e0bc87884abd39748e7c94df74ccfa054393a30d20c07b0f4576c2b8f6a771",
+      "bytes": 12840
+    },
+    "assets/fonts/noto-sans-jp-108-700-normal.woff2": {
+      "sha256": "f20018cf7dfe00d9b6f8c52a566390fce77cc7ac3533f8ac2a41dfa39d449825",
+      "bytes": 10384
+    },
+    "assets/fonts/noto-sans-jp-109-400-normal.woff": {
+      "sha256": "b8b1fed7123d29dec6eda9ee6da0c211d171494db056e4d7d764eb40d102f245",
+      "bytes": 11016
+    },
+    "assets/fonts/noto-sans-jp-109-400-normal.woff2": {
+      "sha256": "c0d93d2e120e44bfb2ec865b6805e0fb1303950bf2544490948b64e65d6e93d7",
+      "bytes": 8504
+    },
+    "assets/fonts/noto-sans-jp-109-700-normal.woff": {
+      "sha256": "78ca7c01b0da29c3cd10dea5d521b2be728fc7cec8b62e60a56a2504e77a933e",
+      "bytes": 10952
+    },
+    "assets/fonts/noto-sans-jp-109-700-normal.woff2": {
+      "sha256": "7dd3f9275f8d77006ba3eefc18ff6624a3ec4053abdc3cb065daf83f79e5cc30",
+      "bytes": 8620
+    },
+    "assets/fonts/noto-sans-jp-11-400-normal.woff": {
+      "sha256": "6c03730f44b5bc2e3980e03be014f5076d5c1eb9caf1682f60f875aa25fe7ab4",
+      "bytes": 55964
+    },
+    "assets/fonts/noto-sans-jp-11-400-normal.woff2": {
+      "sha256": "f35d71df854e85ce2addd01c6f32fa5e08408a47ee5e15a53599e4a190ad5a52",
+      "bytes": 39804
+    },
+    "assets/fonts/noto-sans-jp-11-700-normal.woff": {
+      "sha256": "2ea6287fc520090996de35b91e9162f409724edabaef5763d27021b59922e1d8",
+      "bytes": 58536
+    },
+    "assets/fonts/noto-sans-jp-11-700-normal.woff2": {
+      "sha256": "baecae1565b16879b44e152d9ea843951ebc2b5b6977ebf92388030a81a6ae4d",
+      "bytes": 40248
+    },
+    "assets/fonts/noto-sans-jp-110-400-normal.woff": {
+      "sha256": "64aa0c0d5219f5796912e3c183168a215509b04afb090bebe54047605df481fd",
+      "bytes": 11528
+    },
+    "assets/fonts/noto-sans-jp-110-400-normal.woff2": {
+      "sha256": "f418cc09b2f7b07be75b9e2cdf1455a308eb9fae182f0161a9eae95662142f0f",
+      "bytes": 8868
+    },
+    "assets/fonts/noto-sans-jp-110-700-normal.woff": {
+      "sha256": "920e906ee75c25cbf557ef51b075c4a58f0a0ba3dea7e275c9055d1283422c57",
+      "bytes": 11472
+    },
+    "assets/fonts/noto-sans-jp-110-700-normal.woff2": {
+      "sha256": "f000746b82d70824861b71d3bd2dba1ee647f423abedd23a611029d30ecd1a6b",
+      "bytes": 8964
+    },
+    "assets/fonts/noto-sans-jp-111-400-normal.woff": {
+      "sha256": "ca26b19a014fae469b907eae7efab346c70d9bb94218bd3da957cbd0a9e82cda",
+      "bytes": 12192
+    },
+    "assets/fonts/noto-sans-jp-111-400-normal.woff2": {
+      "sha256": "d6ec3ce26bc44b00385508c86c830a63e91a63f14702401130f2994705a5e583",
+      "bytes": 9464
+    },
+    "assets/fonts/noto-sans-jp-111-700-normal.woff": {
+      "sha256": "b5c0798c8ada3803ead3d6af4b4c0b363b0edd692b741f149cfd640d05af9971",
+      "bytes": 12100
+    },
+    "assets/fonts/noto-sans-jp-111-700-normal.woff2": {
+      "sha256": "04a80e5968ad8e9d7424976acfe0d2dbfc803ea8cf332e431852eab5aa9d6e57",
+      "bytes": 9596
+    },
+    "assets/fonts/noto-sans-jp-112-400-normal.woff": {
+      "sha256": "de0ebab729d93ae5a6fb868dce52b0d537a31eb4283f13e62e865a4c87f60190",
+      "bytes": 11292
+    },
+    "assets/fonts/noto-sans-jp-112-400-normal.woff2": {
+      "sha256": "646b81c6c4af9eb06be16cf238dbfa5b117283824d65fead616bc9131ada4c07",
+      "bytes": 8808
+    },
+    "assets/fonts/noto-sans-jp-112-700-normal.woff": {
+      "sha256": "c661a7fb17015d30d2aa69f20ca86cd1c7045b66662886b36b376c48d926fe84",
+      "bytes": 11308
+    },
+    "assets/fonts/noto-sans-jp-112-700-normal.woff2": {
+      "sha256": "df0014661d4e9f23b88e9d63e82052862bf9d2803cbadd6b38b15890e0c23299",
+      "bytes": 8904
+    },
+    "assets/fonts/noto-sans-jp-113-400-normal.woff": {
+      "sha256": "11057b414b588a53c06cc3af8d4faf375645df77b71d7e305121a082b92dce77",
+      "bytes": 10496
+    },
+    "assets/fonts/noto-sans-jp-113-400-normal.woff2": {
+      "sha256": "329c7390208a6522086fad7f375dd7548f03ead69398bcb79dfbc5b673406899",
+      "bytes": 8256
+    },
+    "assets/fonts/noto-sans-jp-113-700-normal.woff": {
+      "sha256": "e69045e326ceebe58b2e3c53c50964e9a08d966a01da6677a939f8da72e35362",
+      "bytes": 10504
+    },
+    "assets/fonts/noto-sans-jp-113-700-normal.woff2": {
+      "sha256": "07d5d6f20ea4e316188f8f8dad2362af5e18467bb3cd100ff2aebd4085865471",
+      "bytes": 8364
+    },
+    "assets/fonts/noto-sans-jp-114-400-normal.woff": {
+      "sha256": "2da6836811fc244a432f031f8ba7c59470cb9a2503b21d56da7bcea040fee5c7",
+      "bytes": 10400
+    },
+    "assets/fonts/noto-sans-jp-114-400-normal.woff2": {
+      "sha256": "6c37c334ed20bac6065131b8b6543da69385265d1449483135e772c678e122c9",
+      "bytes": 8076
+    },
+    "assets/fonts/noto-sans-jp-114-700-normal.woff": {
+      "sha256": "e1dd314d37f8700b985f6f73cf4e5f38cb20e9211341d05d75061f3a900fb6c6",
+      "bytes": 10324
+    },
+    "assets/fonts/noto-sans-jp-114-700-normal.woff2": {
+      "sha256": "72df1d6c8cbbddd4c1c5597767d441fe25c7ba18e8306926cf110a57e1b687bc",
+      "bytes": 8208
+    },
+    "assets/fonts/noto-sans-jp-115-400-normal.woff": {
+      "sha256": "3a29498e204dcc3c66f4c44c3149064b06309433b8fe9124228ec179e07992bb",
+      "bytes": 11324
+    },
+    "assets/fonts/noto-sans-jp-115-400-normal.woff2": {
+      "sha256": "f53c67aa7fc37679cdc804892dced634ff8d06ef190575f9ff9ee85fad3c4ab7",
+      "bytes": 8932
+    },
+    "assets/fonts/noto-sans-jp-115-700-normal.woff": {
+      "sha256": "06c96e4a1669d09570d7895ad8247b1077a96a447da28f51e048bb6a17a38c4c",
+      "bytes": 11308
+    },
+    "assets/fonts/noto-sans-jp-115-700-normal.woff2": {
+      "sha256": "029a3f3d5a10827978f0b8da86aea0cc7ce8b78d7462c8cdaea813a334faa7e7",
+      "bytes": 9032
+    },
+    "assets/fonts/noto-sans-jp-116-400-normal.woff": {
+      "sha256": "7e9c91d2a8648232487b867ad680faf02db89fe73089b655d1319d950b02b47d",
+      "bytes": 11784
+    },
+    "assets/fonts/noto-sans-jp-116-400-normal.woff2": {
+      "sha256": "30e1bc8ac196f3b9d3dab7110e3c9826dac23ecf4be252460e1a676769d75d25",
+      "bytes": 9248
+    },
+    "assets/fonts/noto-sans-jp-116-700-normal.woff": {
+      "sha256": "76f4f4ad4dc241e7d77d161e7838bb12e7ad67b46eedb5315b706d89b9da7842",
+      "bytes": 11776
+    },
+    "assets/fonts/noto-sans-jp-116-700-normal.woff2": {
+      "sha256": "b5ff02afe088add7504faa0f6059456bc4638648b36ec82c76beda3488a271eb",
+      "bytes": 9408
+    },
+    "assets/fonts/noto-sans-jp-117-400-normal.woff": {
+      "sha256": "768f89fc4bd89f66c12f3bf06ba41edcead8fb246d1ad8057ade37a0747b6758",
+      "bytes": 8728
+    },
+    "assets/fonts/noto-sans-jp-117-400-normal.woff2": {
+      "sha256": "8c12b7a096e199e2a85975bc677c369d0baf4c15957b2cfa68431b9525993087",
+      "bytes": 6752
+    },
+    "assets/fonts/noto-sans-jp-117-700-normal.woff": {
+      "sha256": "cbb5e25e80adfe98a6358a1ae44d51ea12cad7eabded645249951f5b02ad16f4",
+      "bytes": 8812
+    },
+    "assets/fonts/noto-sans-jp-117-700-normal.woff2": {
+      "sha256": "7ec22803234d40e96e1b56d69cf9cd748de5a01e330ad43e469417111a3e36b3",
+      "bytes": 6800
+    },
+    "assets/fonts/noto-sans-jp-118-400-normal.woff": {
+      "sha256": "15aaa0fed230892c2bfda39d52885310e2f86b9e7b6d0027110182444b704e85",
+      "bytes": 12392
+    },
+    "assets/fonts/noto-sans-jp-118-400-normal.woff2": {
+      "sha256": "f0c01a3ca9370b120b6da9860e899a3f4221b81328e9381c349f192f2966c8aa",
+      "bytes": 9728
+    },
+    "assets/fonts/noto-sans-jp-118-700-normal.woff": {
+      "sha256": "aed300cf33ddcec9675d332c14c6b98b346d9a43af6fb1d1eba9e24e11828101",
+      "bytes": 12404
+    },
+    "assets/fonts/noto-sans-jp-118-700-normal.woff2": {
+      "sha256": "3a573084cf8aaeeea2e1210233b19982526ed0995504e3ce95573bfc2a866aa8",
+      "bytes": 9752
+    },
+    "assets/fonts/noto-sans-jp-119-400-normal.woff": {
+      "sha256": "2b4ede775d4740ffc8094891eca93e877857087c5d07be192e2a5b6f69db02dd",
+      "bytes": 58532
+    },
+    "assets/fonts/noto-sans-jp-119-400-normal.woff2": {
+      "sha256": "2258b057683e7040e5149a9469077fd8ed47e73ca656f84fc3c4f9bc86976a1e",
+      "bytes": 42684
+    },
+    "assets/fonts/noto-sans-jp-119-700-normal.woff": {
+      "sha256": "95e0eb8eff83fcd8b1eaf7a121fea808156c81055296d5df0a51179d231a700c",
+      "bytes": 59684
+    },
+    "assets/fonts/noto-sans-jp-119-700-normal.woff2": {
+      "sha256": "250d4554209267dafcdf9f045b70808de6157837663f7baa8090a2f425e0928a",
+      "bytes": 44424
+    },
+    "assets/fonts/noto-sans-jp-12-400-normal.woff": {
+      "sha256": "003df4251bd9c43f9ec6dda5f91b436b7d5f381e15ad96e43813b0c47a3c4f71",
+      "bytes": 49164
+    },
+    "assets/fonts/noto-sans-jp-12-400-normal.woff2": {
+      "sha256": "04f52da319d26ac0bea8a9bd2d1fbee322f31588be18db82b1f4341f59e3071f",
+      "bytes": 35364
+    },
+    "assets/fonts/noto-sans-jp-12-700-normal.woff": {
+      "sha256": "f56a12f93c32a08bb95961ad2a5561f6330db71ad2a3ff2232a9920029465ac2",
+      "bytes": 51016
+    },
+    "assets/fonts/noto-sans-jp-12-700-normal.woff2": {
+      "sha256": "590cb50d54d49326e42e86b78167a80386bb9ff5485166b5804d7a2d1d652d51",
+      "bytes": 35940
+    },
+    "assets/fonts/noto-sans-jp-13-400-normal.woff": {
+      "sha256": "43c40625292b7dc4dd024495f65024bd9482f686d6eab7363e0ed77ab88c5330",
+      "bytes": 49956
+    },
+    "assets/fonts/noto-sans-jp-13-400-normal.woff2": {
+      "sha256": "f1ff3a68f60a31ff9cc1e94d2db1b5b76c5481eb9411eab45846b4b7a87f3090",
+      "bytes": 38540
+    },
+    "assets/fonts/noto-sans-jp-13-700-normal.woff": {
+      "sha256": "1125df70d937300f52f02aba8747137a1b45059c98bd0ea8ce75e673de451d2e",
+      "bytes": 50380
+    },
+    "assets/fonts/noto-sans-jp-13-700-normal.woff2": {
+      "sha256": "94e43a4b0143b3b4742573fc12a265d5ece0962e5abf7368f64c27293f1849e3",
+      "bytes": 39672
+    },
+    "assets/fonts/noto-sans-jp-14-400-normal.woff": {
+      "sha256": "f7fc7b3ab90d27eb6756c3caae5c7deec00807d885205f87dd8dede1171a7346",
+      "bytes": 50848
+    },
+    "assets/fonts/noto-sans-jp-14-400-normal.woff2": {
+      "sha256": "482690057acaaa94dc10245fed2838cbf8efecc45a02ac2ea0856c39f6491f02",
+      "bytes": 38528
+    },
+    "assets/fonts/noto-sans-jp-14-700-normal.woff": {
+      "sha256": "bb9e81eb3669a39de30e9efbaeff8cb85dc75c5e3857fea089616f871c823625",
+      "bytes": 50932
+    },
+    "assets/fonts/noto-sans-jp-14-700-normal.woff2": {
+      "sha256": "90fb852cdb04125d7a41a0469b3b3db1182c68e17ed3440e46804d74d2a04d2b",
+      "bytes": 39264
+    },
+    "assets/fonts/noto-sans-jp-15-400-normal.woff": {
+      "sha256": "27f02fd2ca65ee325185dab6eadfc3e0849834bf2745f8e816163a936b7c9de9",
+      "bytes": 56972
+    },
+    "assets/fonts/noto-sans-jp-15-400-normal.woff2": {
+      "sha256": "4ff4ce17809454ea143b1abd75158055000ed481900f6b4a8c8a467a12a10b67",
+      "bytes": 42832
+    },
+    "assets/fonts/noto-sans-jp-15-700-normal.woff": {
+      "sha256": "c275f705428d4b016c4cc2db48c87cf0e73938467c878321f77694f5a59401a3",
+      "bytes": 57116
+    },
+    "assets/fonts/noto-sans-jp-15-700-normal.woff2": {
+      "sha256": "49adecad66c2a8b27e6b88797b1cf2d191aac905918172747b1a7b67a94729e6",
+      "bytes": 43640
+    },
+    "assets/fonts/noto-sans-jp-16-400-normal.woff": {
+      "sha256": "9401f8368b3857810aab2221b1e03857a7602991509b310d98ec433ab47a9aa0",
+      "bytes": 48612
+    },
+    "assets/fonts/noto-sans-jp-16-400-normal.woff2": {
+      "sha256": "26fd2b998635508a32581641c31954b9017ad756c7e20b1232b1b404e2506c96",
+      "bytes": 36992
+    },
+    "assets/fonts/noto-sans-jp-16-700-normal.woff": {
+      "sha256": "42f8648512974ffeec5ce3f9c7fd6aca15dae3f4b8e170ec422f9153c11abb34",
+      "bytes": 49056
+    },
+    "assets/fonts/noto-sans-jp-16-700-normal.woff2": {
+      "sha256": "4f5a4b4aea91ec5759d4c33462d8f37984c62159b0bb942371f4dbb2983aeffd",
+      "bytes": 37612
+    },
+    "assets/fonts/noto-sans-jp-17-400-normal.woff": {
+      "sha256": "1298ff36de3cd777812bf033ad30a589920301590dd1d3511d9ffc82d1e2c8ac",
+      "bytes": 56784
+    },
+    "assets/fonts/noto-sans-jp-17-400-normal.woff2": {
+      "sha256": "0a56d1a0d3f04cb5330fda62a1ccb119f3b22547837572f7ef14db8c7706c4f1",
+      "bytes": 42680
+    },
+    "assets/fonts/noto-sans-jp-17-700-normal.woff": {
+      "sha256": "42f3fd3afc7c889a3c1d0f8645f008db8c8f766ad5dcf5d943cd25abfdf13936",
+      "bytes": 56584
+    },
+    "assets/fonts/noto-sans-jp-17-700-normal.woff2": {
+      "sha256": "f27bb1ed18f56d21f2bfcc6d22f104d29f97a85bd3c81a09ced8afc0751270c4",
+      "bytes": 43492
+    },
+    "assets/fonts/noto-sans-jp-18-400-normal.woff": {
+      "sha256": "c7b16a92b413c9ee98ccae28846962e586470d9198e84205e6b4ca397c01ffc9",
+      "bytes": 53704
+    },
+    "assets/fonts/noto-sans-jp-18-400-normal.woff2": {
+      "sha256": "eeb0c9105a932462685a47ff62653633dbb393e2bcf58161f5a0bda2c3959207",
+      "bytes": 41068
+    },
+    "assets/fonts/noto-sans-jp-18-700-normal.woff": {
+      "sha256": "8dc2ad238f440bd63fac6cc10d222966c789134f93afc04b5d202a23846b4459",
+      "bytes": 53724
+    },
+    "assets/fonts/noto-sans-jp-18-700-normal.woff2": {
+      "sha256": "1f924e604b4b1393ee1a9ee16f9d0dca31243a493fc4c48197b0a6a8336a79f1",
+      "bytes": 42120
+    },
+    "assets/fonts/noto-sans-jp-19-400-normal.woff": {
+      "sha256": "77344aa0a054a988785e59ea594d13f1c1d35fef1af7b10429c8d85a79f07698",
+      "bytes": 60352
+    },
+    "assets/fonts/noto-sans-jp-19-400-normal.woff2": {
+      "sha256": "f651add2dbc76d8c360ce060287766084c8e6e30e4c17cea09190202f3d76d29",
+      "bytes": 46212
+    },
+    "assets/fonts/noto-sans-jp-19-700-normal.woff": {
+      "sha256": "7d6a5c6a1b80e12a6ddb6258ab52c808579f6d5d30f498c330c2e275f8255175",
+      "bytes": 60396
+    },
+    "assets/fonts/noto-sans-jp-19-700-normal.woff2": {
+      "sha256": "8fa19eae4f98e426c9a3bc3b8051358cb8cb2d70efd22f22cc063ad583551a43",
+      "bytes": 47256
+    },
+    "assets/fonts/noto-sans-jp-2-400-normal.woff": {
+      "sha256": "c4d487159a7d49e98c709d5a2f0523b73b61b232acf2b6780e7ce8acd3b406d9",
+      "bytes": 20476
+    },
+    "assets/fonts/noto-sans-jp-2-400-normal.woff2": {
+      "sha256": "0a75ea6cb9db08e95224576e062036c44064cb6291cfc9255d4ea39c9ff5d72b",
+      "bytes": 16992
+    },
+    "assets/fonts/noto-sans-jp-2-700-normal.woff": {
+      "sha256": "11b1c689d14b272699d20abb7018935bd6eb77c110bdfc1b4131ecfa65e64e1c",
+      "bytes": 20296
+    },
+    "assets/fonts/noto-sans-jp-2-700-normal.woff2": {
+      "sha256": "b83a13afa5d16c42bc5ad39869a5614ece4389ed054dbc124695f2f5586cdcd7",
+      "bytes": 17052
+    },
+    "assets/fonts/noto-sans-jp-20-400-normal.woff": {
+      "sha256": "149ed3de8314cb095c8ef7854d5db9f3d9865f0a5a8b32def591fb1e59f7e103",
+      "bytes": 43212
+    },
+    "assets/fonts/noto-sans-jp-20-400-normal.woff2": {
+      "sha256": "580e750a0fb8e8f2aa59f51e1bc30adc8c79ccf7adac03e27700e321b9d95d14",
+      "bytes": 32636
+    },
+    "assets/fonts/noto-sans-jp-20-700-normal.woff": {
+      "sha256": "3caf4151ef53c50af034538ac0065fdfb80ede09a1c44e9fc49ae1b902bafcb4",
+      "bytes": 43212
+    },
+    "assets/fonts/noto-sans-jp-20-700-normal.woff2": {
+      "sha256": "8c684f854b1ecc42741ae602fb00b3503768f414775c8ee940e67e6bb8337eba",
+      "bytes": 33316
+    },
+    "assets/fonts/noto-sans-jp-21-400-normal.woff": {
+      "sha256": "808b36ea4436a5462fbd1ccf8b5ea205064ff049bf6af58a6b8f9bfddae09236",
+      "bytes": 50604
+    },
+    "assets/fonts/noto-sans-jp-21-400-normal.woff2": {
+      "sha256": "965f9f53bad146d04b0c31ba8e9c05506551d7f3c401789dd8bb0e3d3a517ea2",
+      "bytes": 38132
+    },
+    "assets/fonts/noto-sans-jp-21-700-normal.woff": {
+      "sha256": "1ff6191204b73db09a4547d4b784d353d80118e032e4913ac72ee970523147ad",
+      "bytes": 50736
+    },
+    "assets/fonts/noto-sans-jp-21-700-normal.woff2": {
+      "sha256": "61d2c6942d47f6edf71fdb233ab55d0008b9ac0813830a8e0b70954215374f1c",
+      "bytes": 38668
+    },
+    "assets/fonts/noto-sans-jp-22-400-normal.woff": {
+      "sha256": "afaa3ce038aa7760b85fdb6f5b1c12df398f16fe25ac8a18393ee549f4a217ef",
+      "bytes": 52120
+    },
+    "assets/fonts/noto-sans-jp-22-400-normal.woff2": {
+      "sha256": "d0463d819c3f0caff76bbb0da53b9f0d945b33e677ee2df04bac42f2cc652eb2",
+      "bytes": 39096
+    },
+    "assets/fonts/noto-sans-jp-22-700-normal.woff": {
+      "sha256": "06d83fac1a3ca3537d6a014b05d5066b128d0e92b838088fc18cf7803df269e4",
+      "bytes": 52096
+    },
+    "assets/fonts/noto-sans-jp-22-700-normal.woff2": {
+      "sha256": "3c399c155c7e8115ab2ac5d2218b4e08e8b7dcbe2f4c91de2af7c17b4792b185",
+      "bytes": 39856
+    },
+    "assets/fonts/noto-sans-jp-23-400-normal.woff": {
+      "sha256": "4a81016bd9c866fd046ae918f7099c92d7d90985a24256a87e7e906d0171639b",
+      "bytes": 55540
+    },
+    "assets/fonts/noto-sans-jp-23-400-normal.woff2": {
+      "sha256": "d5d7a1c5f6e67853b26a343af0594cd1c889cda0097aa7afafe54176e7f8efb9",
+      "bytes": 39816
+    },
+    "assets/fonts/noto-sans-jp-23-700-normal.woff": {
+      "sha256": "ae6f60ecb9fd4ec68fe208fdb848b9b0a3b5f63399b1fdfd9f263f6d729c5a6c",
+      "bytes": 56372
+    },
+    "assets/fonts/noto-sans-jp-23-700-normal.woff2": {
+      "sha256": "9e8e8f7a697316d625f929fd1b88fa892d4f7a30b092539359a46d3d0e9f3813",
+      "bytes": 40684
+    },
+    "assets/fonts/noto-sans-jp-24-400-normal.woff": {
+      "sha256": "9be53e7ee7759b999a01d5528b6180317fe93ff932fb40d9793b8d87a5790ae8",
+      "bytes": 60200
+    },
+    "assets/fonts/noto-sans-jp-24-400-normal.woff2": {
+      "sha256": "3ca3547bdd351c773385b93ce7818cbc1f8c3195228d98b6232910c718a7d9af",
+      "bytes": 44492
+    },
+    "assets/fonts/noto-sans-jp-24-700-normal.woff": {
+      "sha256": "6d5a918a09bcd9e71756bd80d77458a7cd8b49b308578738c3264a88a33188ca",
+      "bytes": 60816
+    },
+    "assets/fonts/noto-sans-jp-24-700-normal.woff2": {
+      "sha256": "6b43c729d14c5b64a603121d0847e17c2e79adb015e043f7d7cd5290c1e17991",
+      "bytes": 45452
+    },
+    "assets/fonts/noto-sans-jp-25-400-normal.woff": {
+      "sha256": "76f00cb4fb8da63d653028b8e59360955e83efbd5c8bbaf2ee549bc8ab78b3dd",
+      "bytes": 55820
+    },
+    "assets/fonts/noto-sans-jp-25-400-normal.woff2": {
+      "sha256": "e4295c304215739eace2de4284c6c43338d1e8783e308b1e6f7a0408d0397183",
+      "bytes": 42376
+    },
+    "assets/fonts/noto-sans-jp-25-700-normal.woff": {
+      "sha256": "d95c27ad618d3498c2fb8d99843edce7f45ad2a3320cc11d57a949e65dfd6e9d",
+      "bytes": 56484
+    },
+    "assets/fonts/noto-sans-jp-25-700-normal.woff2": {
+      "sha256": "5f8fa887aa63e78623e07ea6cf8aa38af32d411642ce2ed26f65edeff9512b85",
+      "bytes": 43136
+    },
+    "assets/fonts/noto-sans-jp-26-400-normal.woff": {
+      "sha256": "a6ec47a5f96961ea5fa9e7892f220b2818d4c5a3e8501e9b2985f1cdedea9ed0",
+      "bytes": 47924
+    },
+    "assets/fonts/noto-sans-jp-26-400-normal.woff2": {
+      "sha256": "ac4b7deb61e2e1f52fd1145e8cf9186b8ff9d856177b4ec590774580acfc0d9e",
+      "bytes": 35740
+    },
+    "assets/fonts/noto-sans-jp-26-700-normal.woff": {
+      "sha256": "e8479506f4fe2b17eb43c18e676e679127f01aa33df40e1b07a54ad1ba46a1f0",
+      "bytes": 48388
+    },
+    "assets/fonts/noto-sans-jp-26-700-normal.woff2": {
+      "sha256": "0fdd3b73fa8308b63a9bf872f3d1d449c2612e96c8e595203d49d10281083b2b",
+      "bytes": 36376
+    },
+    "assets/fonts/noto-sans-jp-27-400-normal.woff": {
+      "sha256": "c59e705eaec1a4a7540456e2976fb2ac6539901c2159393d099b11ef3650d566",
+      "bytes": 45120
+    },
+    "assets/fonts/noto-sans-jp-27-400-normal.woff2": {
+      "sha256": "5a87b1ba815e915a042a2917f4f172d5e2eb8b4733c47c78f1c34e03142c65ca",
+      "bytes": 34296
+    },
+    "assets/fonts/noto-sans-jp-27-700-normal.woff": {
+      "sha256": "d40374c1b7642a14d13df80d0ff038bc25b31ae9927088ad853a1e5154197a4b",
+      "bytes": 45084
+    },
+    "assets/fonts/noto-sans-jp-27-700-normal.woff2": {
+      "sha256": "e8d9116e66ccd040d6596fbfa59c2b25258364ec5691180c6c1403d4e5b8193e",
+      "bytes": 34948
+    },
+    "assets/fonts/noto-sans-jp-28-400-normal.woff": {
+      "sha256": "2ecf49f7d46cb25a2bf9b498be7cdac42da4cd9e280ed003ab1f52a1f0b434b7",
+      "bytes": 49176
+    },
+    "assets/fonts/noto-sans-jp-28-400-normal.woff2": {
+      "sha256": "f97a6e53ef9b30b3e49781931cbeaede2bd1a3eefaf9422ee3292bb230aee43b",
+      "bytes": 37248
+    },
+    "assets/fonts/noto-sans-jp-28-700-normal.woff": {
+      "sha256": "3d64b9790ba2790d872bb74bfe79c7eff4e356832370d28e6a5260348a85937c",
+      "bytes": 48984
+    },
+    "assets/fonts/noto-sans-jp-28-700-normal.woff2": {
+      "sha256": "01ded5dd032467b4410d3d4520a5ed2cecd4ce90dc0a054256f308c291f9c61c",
+      "bytes": 38128
+    },
+    "assets/fonts/noto-sans-jp-29-400-normal.woff": {
+      "sha256": "45ca5483f8504f174b9ed1e03a87140ff080bb54767a32801de12165c5bb6573",
+      "bytes": 52176
+    },
+    "assets/fonts/noto-sans-jp-29-400-normal.woff2": {
+      "sha256": "c89d396c380dcf3698c243a57fe25171ee06edcc04c56c8defe5af9b02c57c40",
+      "bytes": 40508
+    },
+    "assets/fonts/noto-sans-jp-29-700-normal.woff": {
+      "sha256": "7a4cd9cac3c497eb2d3dec701319648531819cb6c3755a7b7122e042899f3deb",
+      "bytes": 52556
+    },
+    "assets/fonts/noto-sans-jp-29-700-normal.woff2": {
+      "sha256": "d7ea4552e2d32a160f97aa6ed706a998f31e7511fffb9857e511d9da30e80d86",
+      "bytes": 41284
+    },
+    "assets/fonts/noto-sans-jp-3-400-normal.woff": {
+      "sha256": "a5fedf1adc312453e328b2409a43db204e627d086991897a8fe6e0d99d71aaf8",
+      "bytes": 29996
+    },
+    "assets/fonts/noto-sans-jp-3-400-normal.woff2": {
+      "sha256": "2f0060b9adc6062fa64997e723920165c94981807f857625f8374dcaf8ede295",
+      "bytes": 23160
+    },
+    "assets/fonts/noto-sans-jp-3-700-normal.woff": {
+      "sha256": "01cf84b66a40d95e7b66717fb1bdcd16f48dfabaa1a487b6836806e3c14e1280",
+      "bytes": 30020
+    },
+    "assets/fonts/noto-sans-jp-3-700-normal.woff2": {
+      "sha256": "4f2d0f8359931fb195c5ea863840f07ba4ee025fffccfa0cb3ae08b14ccdde8c",
+      "bytes": 23612
+    },
+    "assets/fonts/noto-sans-jp-30-400-normal.woff": {
+      "sha256": "fad499edeb749490988309a6bb3b820249f9db9f09670352afde21bb40fdec6b",
+      "bytes": 56680
+    },
+    "assets/fonts/noto-sans-jp-30-400-normal.woff2": {
+      "sha256": "1aba68a4e36c482a85183cc25e81abb1e3ea723917419681cc204dc969834958",
+      "bytes": 42220
+    },
+    "assets/fonts/noto-sans-jp-30-700-normal.woff": {
+      "sha256": "c29a6d711b0f63cb15904864b3e2faa8401f25797e0f7d309f8c08138dce7b7e",
+      "bytes": 57048
+    },
+    "assets/fonts/noto-sans-jp-30-700-normal.woff2": {
+      "sha256": "afe516094b15d13a17612b7d26387cd24fe1f523427a18057713193a02653bd2",
+      "bytes": 43068
+    },
+    "assets/fonts/noto-sans-jp-31-400-normal.woff": {
+      "sha256": "f79bb7cfa7d2cd3b071eb9f02a8ef9820f16d2ab86a3186b70f492f7ece5227c",
+      "bytes": 60616
+    },
+    "assets/fonts/noto-sans-jp-31-400-normal.woff2": {
+      "sha256": "3eb415a95d0719799f3e4d63693caf6c84045ef9479c4fb691d6648a2f22bef1",
+      "bytes": 45760
+    },
+    "assets/fonts/noto-sans-jp-31-700-normal.woff": {
+      "sha256": "ae86731cd920ecb624e43f47c65286bf6ee5ca1dbfc13b0c0acd15aac0a51c5c",
+      "bytes": 61160
+    },
+    "assets/fonts/noto-sans-jp-31-700-normal.woff2": {
+      "sha256": "3fe75d5df2cf34ef700da3ed5b32c3334905f6962ad4deb8c92fcc0625f61c52",
+      "bytes": 46740
+    },
+    "assets/fonts/noto-sans-jp-32-400-normal.woff": {
+      "sha256": "7844b761ba0bf31b9c920deba6c7a824b29cd142cacd19c7a600d014fa4b97c3",
+      "bytes": 51104
+    },
+    "assets/fonts/noto-sans-jp-32-400-normal.woff2": {
+      "sha256": "3f42688bb352e7840483da24688ae1ec08ab28c8e318c7a20e237eba859184ac",
+      "bytes": 38684
+    },
+    "assets/fonts/noto-sans-jp-32-700-normal.woff": {
+      "sha256": "06351610ca2f3fa856be9b6f86ad0d04038543b024c158f702e3815c6e818c96",
+      "bytes": 51416
+    },
+    "assets/fonts/noto-sans-jp-32-700-normal.woff2": {
+      "sha256": "8f49512f129019f7b84b53c65e4f59189d90bbe30eb38f5715c18f2e3b9cc636",
+      "bytes": 39668
+    },
+    "assets/fonts/noto-sans-jp-33-400-normal.woff": {
+      "sha256": "5c7aee2103b36089b934aa84dcd12f2bd1dda1677c8d3ca802bcdc81acf24ac4",
+      "bytes": 45316
+    },
+    "assets/fonts/noto-sans-jp-33-400-normal.woff2": {
+      "sha256": "61de20a04251d881ed347a1b4da1b4de097bb91844cd628f9760f9e77e286c1f",
+      "bytes": 34812
+    },
+    "assets/fonts/noto-sans-jp-33-700-normal.woff": {
+      "sha256": "6838fbdc24558b5c953199b5e6b2cddb0b1f8d17fdaa9f452d4cca1798fb93d0",
+      "bytes": 45608
+    },
+    "assets/fonts/noto-sans-jp-33-700-normal.woff2": {
+      "sha256": "a4c001d9135296dae7942f55cafcc8becdf345331034b24ede3c7682122d69ba",
+      "bytes": 35564
+    },
+    "assets/fonts/noto-sans-jp-34-400-normal.woff": {
+      "sha256": "5870bd5e89a6a9e81549552281019234b640ae6ad0dd48c95ccbc02180c50ecd",
+      "bytes": 57860
+    },
+    "assets/fonts/noto-sans-jp-34-400-normal.woff2": {
+      "sha256": "49f87be0444ac3d32c12832c89a358ba8a58d8e9d4c7634bfe24347cce57e81e",
+      "bytes": 44512
+    },
+    "assets/fonts/noto-sans-jp-34-700-normal.woff": {
+      "sha256": "1476c3ebb4b3eb2b07902aa4c4024c72a6d31c3815183361287e7d98646f3799",
+      "bytes": 58116
+    },
+    "assets/fonts/noto-sans-jp-34-700-normal.woff2": {
+      "sha256": "3f70c9007e829f450ee614eb55b591effd4437a3a978f87722c976084dc80b63",
+      "bytes": 45696
+    },
+    "assets/fonts/noto-sans-jp-35-400-normal.woff": {
+      "sha256": "485a10deab27801336bb1c82d676023374ae791404b4163932bf5e19e89fd59a",
+      "bytes": 47684
+    },
+    "assets/fonts/noto-sans-jp-35-400-normal.woff2": {
+      "sha256": "22620e99996d6414730a70b96efe4403bc49af6714934fb9471b1a8fb3dac211",
+      "bytes": 36444
+    },
+    "assets/fonts/noto-sans-jp-35-700-normal.woff": {
+      "sha256": "f43a36abb068a817516546a7396db16368b850915e61b03f889c743b571313b1",
+      "bytes": 47716
+    },
+    "assets/fonts/noto-sans-jp-35-700-normal.woff2": {
+      "sha256": "b31aaac131844b484f327b8d12c263cba1e620803613d383024602695c9f17be",
+      "bytes": 37104
+    },
+    "assets/fonts/noto-sans-jp-36-400-normal.woff": {
+      "sha256": "3341aea40497ea4ece255cc7137137e5f2509ba8a2c63b8d6fb2d46b21a6552d",
+      "bytes": 43292
+    },
+    "assets/fonts/noto-sans-jp-36-400-normal.woff2": {
+      "sha256": "b2f23004443222180dddb75521749da3c884ce9c2f95ad535b4eec4ae28980f9",
+      "bytes": 33068
+    },
+    "assets/fonts/noto-sans-jp-36-700-normal.woff": {
+      "sha256": "8eb56688fcaa834c6bbf569857b5f67a689c9b8d8a3c8372226deeccb73e020e",
+      "bytes": 43364
+    },
+    "assets/fonts/noto-sans-jp-36-700-normal.woff2": {
+      "sha256": "d9de6e27eb11a948f16a1f85a0f6f4857c19beb731378b425563287c982b41f6",
+      "bytes": 33512
+    },
+    "assets/fonts/noto-sans-jp-37-400-normal.woff": {
+      "sha256": "dd5a24a8c213b2c39f64c3a771255ef33fc330d247376dd90b4cafe5d3e86944",
+      "bytes": 50712
+    },
+    "assets/fonts/noto-sans-jp-37-400-normal.woff2": {
+      "sha256": "65c9410af5ac58f05928b6e2f171b11ba2ff2e773ec5e2b321d813552ccd220d",
+      "bytes": 38712
+    },
+    "assets/fonts/noto-sans-jp-37-700-normal.woff": {
+      "sha256": "f0545a636d16c4d0e5f3c9d49e82b840d8336b1ede09907ec2c64daedc4a48df",
+      "bytes": 50696
+    },
+    "assets/fonts/noto-sans-jp-37-700-normal.woff2": {
+      "sha256": "7e2596a3f2e696cfe52b0620efb23ac51498256b2efa52ece08a513f0aeb742e",
+      "bytes": 39380
+    },
+    "assets/fonts/noto-sans-jp-38-400-normal.woff": {
+      "sha256": "906e8fbb3faf7da0194adc73979125e38a7f8f705d073480fb41843e873a3dcb",
+      "bytes": 48724
+    },
+    "assets/fonts/noto-sans-jp-38-400-normal.woff2": {
+      "sha256": "d7bb820bfd858c7113ae96e923f761b5112a1c2c7f191e8918607c6530b3b295",
+      "bytes": 36436
+    },
+    "assets/fonts/noto-sans-jp-38-700-normal.woff": {
+      "sha256": "f36e25cd63d396ac3786e6ff0e2c02d8bc1b7c8dd327cc5e5d6be049240860da",
+      "bytes": 48896
+    },
+    "assets/fonts/noto-sans-jp-38-700-normal.woff2": {
+      "sha256": "b4b6e7dfc272d533eabd205e859fb2351650897dc19ac45f27587f1020b5736f",
+      "bytes": 37060
+    },
+    "assets/fonts/noto-sans-jp-39-400-normal.woff": {
+      "sha256": "7531d52026e03235aa249c09761b0fb4206cfa5b0ca0a257f8a94e650ad9ea6c",
+      "bytes": 53160
+    },
+    "assets/fonts/noto-sans-jp-39-400-normal.woff2": {
+      "sha256": "59ef7f70f75ddab02107d9b25708869841b11844f0ce79304f90369ef1928740",
+      "bytes": 39576
+    },
+    "assets/fonts/noto-sans-jp-39-700-normal.woff": {
+      "sha256": "788daf6d66dbcd1bdabab9aafc79638cbd5f1b319b02626d95159f941c2f7bcd",
+      "bytes": 53104
+    },
+    "assets/fonts/noto-sans-jp-39-700-normal.woff2": {
+      "sha256": "a86a00816f4529871cb0b21707f76eb5f1610d19fa07533c605e8cb3f4e6d15e",
+      "bytes": 40468
+    },
+    "assets/fonts/noto-sans-jp-4-400-normal.woff": {
+      "sha256": "ccadbc7222abbbf764ccbf63d1daa6ef870b0d11f931585bb277d81162207196",
+      "bytes": 52652
+    },
+    "assets/fonts/noto-sans-jp-4-400-normal.woff2": {
+      "sha256": "55e99fa53e19bcd902babd40936f7dbaedd0f0afdd9c5f4089367cd02f1411e6",
+      "bytes": 40432
+    },
+    "assets/fonts/noto-sans-jp-4-700-normal.woff": {
+      "sha256": "d8ff034a4e898683f86d755d3d5598fdd715bd0a7ea9522ddf83102583bbf173",
+      "bytes": 53104
+    },
+    "assets/fonts/noto-sans-jp-4-700-normal.woff2": {
+      "sha256": "6816a29ab4b76889548be8961fabeb74568422657d48040fffe4d47ccc5a63ae",
+      "bytes": 41240
+    },
+    "assets/fonts/noto-sans-jp-40-400-normal.woff": {
+      "sha256": "b7fc7dd56981f782cc924604ab17e145d3736f1cab4148ec4119e9a15af97941",
+      "bytes": 44708
+    },
+    "assets/fonts/noto-sans-jp-40-400-normal.woff2": {
+      "sha256": "057f017f4c7835d3d6bd88f08916e9926234b38da107c21509d0e93d9b3834bb",
+      "bytes": 33584
+    },
+    "assets/fonts/noto-sans-jp-40-700-normal.woff": {
+      "sha256": "54898fc3f3e39d89b2eb227082b018c4818d344e0b0280e653e8e46cb257d04a",
+      "bytes": 45064
+    },
+    "assets/fonts/noto-sans-jp-40-700-normal.woff2": {
+      "sha256": "e32dbdb4449d13b5d1499320df17856ef924cd48cb3ce532338df665591139b6",
+      "bytes": 34084
+    },
+    "assets/fonts/noto-sans-jp-41-400-normal.woff": {
+      "sha256": "9d262bb1a90af21799b22a57d2a881a994de72a9757dd262f5dee1c16758fd38",
+      "bytes": 50912
+    },
+    "assets/fonts/noto-sans-jp-41-400-normal.woff2": {
+      "sha256": "133c6e2bb4b42618b3894ec861667bf9024b429dd2302ccb38da3a8276432806",
+      "bytes": 40000
+    },
+    "assets/fonts/noto-sans-jp-41-700-normal.woff": {
+      "sha256": "9786d4db62bb9a483e0cc5de0ebde4092f01b4b0cd63004cebe85fae6b35f822",
+      "bytes": 50980
+    },
+    "assets/fonts/noto-sans-jp-41-700-normal.woff2": {
+      "sha256": "8a9c7898972f54c2664139a8c2655a519674601399da0534839c0156f3ddb596",
+      "bytes": 40616
+    },
+    "assets/fonts/noto-sans-jp-42-400-normal.woff": {
+      "sha256": "a233b87a453930f23d1603e41a8bb8b658cda685fa14fdfa770302462fb73188",
+      "bytes": 44240
+    },
+    "assets/fonts/noto-sans-jp-42-400-normal.woff2": {
+      "sha256": "a4bf515f87c6fea0d95f959be338deca4868cc79be5c9acf1a24964a8d846b49",
+      "bytes": 34148
+    },
+    "assets/fonts/noto-sans-jp-42-700-normal.woff": {
+      "sha256": "3670e7c72442bdd1a2146917286edc2e2762aca99005cbee9393fdf1c5216d94",
+      "bytes": 44416
+    },
+    "assets/fonts/noto-sans-jp-42-700-normal.woff2": {
+      "sha256": "c516781ebbb23a30bde48dceea0efbcb3171d8b64ddc97f1335bfa470e4b90f4",
+      "bytes": 34824
+    },
+    "assets/fonts/noto-sans-jp-43-400-normal.woff": {
+      "sha256": "d6b2b2613660921b8af9eed3b71f18444b467964b20f6977f5b53504bc6c8af1",
+      "bytes": 52676
+    },
+    "assets/fonts/noto-sans-jp-43-400-normal.woff2": {
+      "sha256": "a4526cc1ff36498c8c1386f3f940d962fe9bd899a1c5b0dbb6d86042b245723c",
+      "bytes": 37080
+    },
+    "assets/fonts/noto-sans-jp-43-700-normal.woff": {
+      "sha256": "5905533a22b7694b34d6dc120a3d585bcf0f91c5b4924144580ce212d10896fe",
+      "bytes": 52188
+    },
+    "assets/fonts/noto-sans-jp-43-700-normal.woff2": {
+      "sha256": "d92a6f79a67ae7b2961704206ce3d987594349ed005e0227d3007231a3b001f6",
+      "bytes": 37836
+    },
+    "assets/fonts/noto-sans-jp-44-400-normal.woff": {
+      "sha256": "baa567f5069eb305a21721a5825e6c1fc223e928b09acb6fe3fd6eda7b15d5f3",
+      "bytes": 50572
+    },
+    "assets/fonts/noto-sans-jp-44-400-normal.woff2": {
+      "sha256": "c20d7fc728280537ed3d28a1d3aca49194df7731a9a04c964a92cb7c9d0d0bbe",
+      "bytes": 38316
+    },
+    "assets/fonts/noto-sans-jp-44-700-normal.woff": {
+      "sha256": "2fc26d9abfdbcb9ac301b45458e1866a539795713129610f2289fd4eaeec3dd9",
+      "bytes": 50204
+    },
+    "assets/fonts/noto-sans-jp-44-700-normal.woff2": {
+      "sha256": "d69c77d09c7d76bb3dc98f0aec72afe64cef327600d49c7210ca3a3cf32a4d3b",
+      "bytes": 38908
+    },
+    "assets/fonts/noto-sans-jp-45-400-normal.woff": {
+      "sha256": "fee144f68404a674be81bd950174893aef57e46adb45089b9699541ca2942cf9",
+      "bytes": 46492
+    },
+    "assets/fonts/noto-sans-jp-45-400-normal.woff2": {
+      "sha256": "7517edda10bf3be80f6fb07a49b1888cfeee73ee355914f2044d82814fb6de18",
+      "bytes": 35412
+    },
+    "assets/fonts/noto-sans-jp-45-700-normal.woff": {
+      "sha256": "62c5cf16fbc9b41a7cb1df86db2459cbc6e88c29e41ceafc399e86f3bb5de293",
+      "bytes": 46352
+    },
+    "assets/fonts/noto-sans-jp-45-700-normal.woff2": {
+      "sha256": "f34e9e77571532077e373c63f8e5cb2658319a9517f8432297b21d1c4d15e25a",
+      "bytes": 36052
+    },
+    "assets/fonts/noto-sans-jp-46-400-normal.woff": {
+      "sha256": "2d042c8802c806a0c53c57f4928d55767180a65db1f268e6af7c0d0a9a73735e",
+      "bytes": 40656
+    },
+    "assets/fonts/noto-sans-jp-46-400-normal.woff2": {
+      "sha256": "3b1105073506187e79b3c5080bea34691116a1ee138fe212f710e1fc3f899f96",
+      "bytes": 30580
+    },
+    "assets/fonts/noto-sans-jp-46-700-normal.woff": {
+      "sha256": "2d20e6ba5dc25c9bcd168c5d92227cec74341fd6044a606e403d6a35a289d2b3",
+      "bytes": 40732
+    },
+    "assets/fonts/noto-sans-jp-46-700-normal.woff2": {
+      "sha256": "00d612add6b3e6f048f93ebe622b713da0f9bd1c86634e441d9427bdbd78d1db",
+      "bytes": 31104
+    },
+    "assets/fonts/noto-sans-jp-47-400-normal.woff": {
+      "sha256": "98b4f320c06d6587e4462e145ec7ba6dcaa13509dcbb3e77571c054d77b516c6",
+      "bytes": 46024
+    },
+    "assets/fonts/noto-sans-jp-47-400-normal.woff2": {
+      "sha256": "2b3f11e2f1719c1aed8c6162bba6c2a540bb36151749378f681f139989af2491",
+      "bytes": 35740
+    },
+    "assets/fonts/noto-sans-jp-47-700-normal.woff": {
+      "sha256": "94c362c3ef88c41cc3be5601beeac559c6aaf61a12fe744de607424335e8280a",
+      "bytes": 46164
+    },
+    "assets/fonts/noto-sans-jp-47-700-normal.woff2": {
+      "sha256": "3ca61c28b20bd26c340f009920bca902571c3a854871a1087fa80622b045a811",
+      "bytes": 36440
+    },
+    "assets/fonts/noto-sans-jp-48-400-normal.woff": {
+      "sha256": "cb4bce19d9df3b3cd22b322535fe1222549555d02c1dad2a711173dbd92c79c6",
+      "bytes": 48376
+    },
+    "assets/fonts/noto-sans-jp-48-400-normal.woff2": {
+      "sha256": "04054978ceb671f01f8da282c23bfd5af9747a1340ff55a7997722780f76fd65",
+      "bytes": 37412
+    },
+    "assets/fonts/noto-sans-jp-48-700-normal.woff": {
+      "sha256": "59f47689ad31da22659ed14685fd44cd18ae6a5e55ac5f8ee64f9abcd61d420f",
+      "bytes": 48856
+    },
+    "assets/fonts/noto-sans-jp-48-700-normal.woff2": {
+      "sha256": "e0424cee0b3ec71c234a02856c24570d27d2de8a947778c5408679d810376aed",
+      "bytes": 38032
+    },
+    "assets/fonts/noto-sans-jp-49-400-normal.woff": {
+      "sha256": "7d1cc1964b78da4d5aaff5b674e3422eb7b567debca70d29a4cb9b6ffce98685",
+      "bytes": 42760
+    },
+    "assets/fonts/noto-sans-jp-49-400-normal.woff2": {
+      "sha256": "ad222ec80a237c86c0f4273eb07ae169584ba755d313657d897dd4d910eb3504",
+      "bytes": 32172
+    },
+    "assets/fonts/noto-sans-jp-49-700-normal.woff": {
+      "sha256": "752885c0056c456c02a4da5fe76cc540102c07bf4424378c5e8e9d7991f544ac",
+      "bytes": 42884
+    },
+    "assets/fonts/noto-sans-jp-49-700-normal.woff2": {
+      "sha256": "a1f2a81a87c93277affc8f461f8b38bf4135e4b1f89d994bfd534fc50c8359d4",
+      "bytes": 32560
+    },
+    "assets/fonts/noto-sans-jp-5-400-normal.woff": {
+      "sha256": "aee5fd2a5348e39ea1bdb6970b9cc3938bc2947fa249cf6006f5e8dc5512ab3c",
+      "bytes": 60716
+    },
+    "assets/fonts/noto-sans-jp-5-400-normal.woff2": {
+      "sha256": "23cabe14c7aa60a3527c669c3aad8cfe1fce38c716b995d022f494075afe89f1",
+      "bytes": 45864
+    },
+    "assets/fonts/noto-sans-jp-5-700-normal.woff": {
+      "sha256": "7e7a96b290efd8a281a6f03890b0bba6b7a07bdadf93555fe78a968742e379b3",
+      "bytes": 61556
+    },
+    "assets/fonts/noto-sans-jp-5-700-normal.woff2": {
+      "sha256": "62177f4aae9a255355e9e7d42f6e3be0eeacc3e4cf02547ca186bf2f051b4b84",
+      "bytes": 46740
+    },
+    "assets/fonts/noto-sans-jp-50-400-normal.woff": {
+      "sha256": "d20def6707e4bf0b0f47399870abe465bc0aa7adf88552aa1b04729c8b9eaeb3",
+      "bytes": 41848
+    },
+    "assets/fonts/noto-sans-jp-50-400-normal.woff2": {
+      "sha256": "5f66387e34af97759029ae42eb10441000ceb34a284b23232d1af901ee21031f",
+      "bytes": 32300
+    },
+    "assets/fonts/noto-sans-jp-50-700-normal.woff": {
+      "sha256": "564823c72abb6b309d6a2a6692114197adc3687ec4c9257046e02f9a38d57e81",
+      "bytes": 41740
+    },
+    "assets/fonts/noto-sans-jp-50-700-normal.woff2": {
+      "sha256": "407aa56fd38f9800af8a325199834b5513ded355a08dce16c154d39b400a1372",
+      "bytes": 32812
+    },
+    "assets/fonts/noto-sans-jp-51-400-normal.woff": {
+      "sha256": "1f2cb56e95ce1008831bd09a93cf88e4414ae4830494b0d730a42c779d273621",
+      "bytes": 37952
+    },
+    "assets/fonts/noto-sans-jp-51-400-normal.woff2": {
+      "sha256": "28850edecb2be15b6ed7ba98c584770cd66ab0743625c09761dc32e0b794631b",
+      "bytes": 30224
+    },
+    "assets/fonts/noto-sans-jp-51-700-normal.woff": {
+      "sha256": "e9f45f00626449026dca69ad0064cb64bd0eacb506ab60e7bda56e80cc0ef5a0",
+      "bytes": 37972
+    },
+    "assets/fonts/noto-sans-jp-51-700-normal.woff2": {
+      "sha256": "42b5e8dbff7134356fd9594045dc06d1543ab8b922bea41a8693de59837462ae",
+      "bytes": 30648
+    },
+    "assets/fonts/noto-sans-jp-52-400-normal.woff": {
+      "sha256": "28a55c07365637f191d866f70088af7c79bf3ce32a3f54394c343f63208eef74",
+      "bytes": 51560
+    },
+    "assets/fonts/noto-sans-jp-52-400-normal.woff2": {
+      "sha256": "c5a65808d6dd2d73786fb1dfb1ad0884b309312daa2090839c3ee3230556aad4",
+      "bytes": 38012
+    },
+    "assets/fonts/noto-sans-jp-52-700-normal.woff": {
+      "sha256": "aab36218a094f5719143f8dcfb1b46cb17b61aae06bd77b0264ade63ce91a07e",
+      "bytes": 51312
+    },
+    "assets/fonts/noto-sans-jp-52-700-normal.woff2": {
+      "sha256": "d53edf1266d09b1fb1e64a54b1089970c54393561cc86d4a08325e89bcc1fa74",
+      "bytes": 38644
+    },
+    "assets/fonts/noto-sans-jp-53-400-normal.woff": {
+      "sha256": "e911c62b2b2dcdbe62315ddf7bdd88a60ec97bea6128567d4f4d8835ed1f3a1c",
+      "bytes": 25272
+    },
+    "assets/fonts/noto-sans-jp-53-400-normal.woff2": {
+      "sha256": "7650e8f9fac4314e19859bc64f69d19d8379c6f0685dfcda9780528e55d1568f",
+      "bytes": 20056
+    },
+    "assets/fonts/noto-sans-jp-53-700-normal.woff": {
+      "sha256": "534ef9b2dc88ecdbe2b7390616aef74f7378fa65d1df0a0eaf3ef3efe4b76f18",
+      "bytes": 25484
+    },
+    "assets/fonts/noto-sans-jp-53-700-normal.woff2": {
+      "sha256": "63c5ad79d93bb4209844e9fac22d39ccfe310dfa20067d197764a42d56d1a1c7",
+      "bytes": 20496
+    },
+    "assets/fonts/noto-sans-jp-54-400-normal.woff": {
+      "sha256": "042e01a11a6cf2edd468fc5bd3dba0fba3e089375f7ec80983178b7ae1d8c1b5",
+      "bytes": 21348
+    },
+    "assets/fonts/noto-sans-jp-54-400-normal.woff2": {
+      "sha256": "896942657c79c88ae830a9d49813d88bcbe82e18c03584d9b851d3005a67ba6c",
+      "bytes": 16772
+    },
+    "assets/fonts/noto-sans-jp-54-700-normal.woff": {
+      "sha256": "3aa6cdf29627a6aee4af42da88679a5ebc99f105ba9a15ce67d10e9aa7e23caa",
+      "bytes": 21388
+    },
+    "assets/fonts/noto-sans-jp-54-700-normal.woff2": {
+      "sha256": "1fc739c0eae9d833e26d24e9eea7c00a451cb8a59e9294f9e6e276df4ef970e9",
+      "bytes": 16948
+    },
+    "assets/fonts/noto-sans-jp-55-400-normal.woff": {
+      "sha256": "ebf1f04591a3ddcc868d10a961592b267dfafc291bc5ab52a90b6ab0f91928b3",
+      "bytes": 30428
+    },
+    "assets/fonts/noto-sans-jp-55-400-normal.woff2": {
+      "sha256": "1ea797cf0aebdb4b3c412eeca4d7087fc3472112dc8d63340655b94ca6a36ab7",
+      "bytes": 22984
+    },
+    "assets/fonts/noto-sans-jp-55-700-normal.woff": {
+      "sha256": "1a48af46aa4d27201a2c8b9e47a2bb78101a4d6ed7b281a1a3813212a07f98db",
+      "bytes": 30424
+    },
+    "assets/fonts/noto-sans-jp-55-700-normal.woff2": {
+      "sha256": "4152f8ea4d04f3766ebd680771234c592cac6b4db4830e98f19ceb331563163a",
+      "bytes": 23264
+    },
+    "assets/fonts/noto-sans-jp-56-400-normal.woff": {
+      "sha256": "3b89e7fc641f339fc2d02a8ec085de024d819d28bd92dc62b3224383325494e3",
+      "bytes": 27592
+    },
+    "assets/fonts/noto-sans-jp-56-400-normal.woff2": {
+      "sha256": "d7b7dcb8b3f92d4d074b9bb02907c1a2552629678abebac0f485fbbb467529fc",
+      "bytes": 22656
+    },
+    "assets/fonts/noto-sans-jp-56-700-normal.woff": {
+      "sha256": "2661b827bcbf0443908c261a367ef9c2340c8278a5fc2071137a5ec98541c16a",
+      "bytes": 27536
+    },
+    "assets/fonts/noto-sans-jp-56-700-normal.woff2": {
+      "sha256": "6f18c8f07bbee6390878a9dbd69db676d51af0e3d188681e1d7a2c670efeea0b",
+      "bytes": 22992
+    },
+    "assets/fonts/noto-sans-jp-57-400-normal.woff": {
+      "sha256": "91df0929e952a19e0d24522309729614cc2fa4daa6a1321aa867c3240daf39a7",
+      "bytes": 8988
+    },
+    "assets/fonts/noto-sans-jp-57-400-normal.woff2": {
+      "sha256": "ff04eb189644d0a84b1b0683bb3777c7bd5974b0c02c1d512c567ce4d1decf2e",
+      "bytes": 6504
+    },
+    "assets/fonts/noto-sans-jp-57-700-normal.woff": {
+      "sha256": "97f2495c9b748da13e59a5656945ecd389ffc428b6697dbc0fd05ac42619939f",
+      "bytes": 9044
+    },
+    "assets/fonts/noto-sans-jp-57-700-normal.woff2": {
+      "sha256": "5d7d59d5054ec5746ec451d133e9f8c26eed8eabcc88e130eb23f774c4536c83",
+      "bytes": 6564
+    },
+    "assets/fonts/noto-sans-jp-58-400-normal.woff": {
+      "sha256": "6a516feea3544d6e8279567c8fc55799eb47cb7cf18e33919e8951786a483f40",
+      "bytes": 17180
+    },
+    "assets/fonts/noto-sans-jp-58-400-normal.woff2": {
+      "sha256": "48ef191a30bb378e04557813b4f7be683fb2f684d8de0097114e31f8d334eeda",
+      "bytes": 13588
+    },
+    "assets/fonts/noto-sans-jp-58-700-normal.woff": {
+      "sha256": "ff73575c856bed4efc4ac42362b2cbbb4a9d48a1580c1e6a08e9335a71595c4f",
+      "bytes": 17260
+    },
+    "assets/fonts/noto-sans-jp-58-700-normal.woff2": {
+      "sha256": "889bafe7ed762007360f8f42f6fe98e63e72d8f8ec0792d49397f411a74966d0",
+      "bytes": 13748
+    },
+    "assets/fonts/noto-sans-jp-59-400-normal.woff": {
+      "sha256": "81abb49548e4dfa7bc6cf3d8753f096ebed088db423c4f74250f8705ff1aa8a1",
+      "bytes": 13688
+    },
+    "assets/fonts/noto-sans-jp-59-400-normal.woff2": {
+      "sha256": "88fff7bfdba1e85a3a693bfb8e9c285efa0624b2ca4925d70b6436bcd4fb68bc",
+      "bytes": 10260
+    },
+    "assets/fonts/noto-sans-jp-59-700-normal.woff": {
+      "sha256": "f39aae7fc755f3d7ef8284686a01b60027e8b384277b7c90b570e1b1cce3e599",
+      "bytes": 13976
+    },
+    "assets/fonts/noto-sans-jp-59-700-normal.woff2": {
+      "sha256": "ffbd214d4006efbc940d4cd26fb8e025a902fcd4d6a87b81d19773b2750a5d27",
+      "bytes": 10356
+    },
+    "assets/fonts/noto-sans-jp-6-400-normal.woff": {
+      "sha256": "9df08716c091c0d358918b5f4da030336baed2ca4ced218bdd47931e443547b5",
+      "bytes": 63600
+    },
+    "assets/fonts/noto-sans-jp-6-400-normal.woff2": {
+      "sha256": "63e6b71edf0e9420e5fe517c7ab5807e9d5463b64a82ef5353caddd7e505b338",
+      "bytes": 47484
+    },
+    "assets/fonts/noto-sans-jp-6-700-normal.woff": {
+      "sha256": "a37c4a6516a966ab29b39f73983fdd50de7fc662d03bef64290d58f49ba012bd",
+      "bytes": 64000
+    },
+    "assets/fonts/noto-sans-jp-6-700-normal.woff2": {
+      "sha256": "3733f138fb74497731d0b6c7ca10d6e2653a646f5c0a9c802a3743e93a3c949f",
+      "bytes": 48220
+    },
+    "assets/fonts/noto-sans-jp-60-400-normal.woff": {
+      "sha256": "450ff4625ad6ac5db8a43ba1f6bbc35cea02dbddb60dbd6cd14d60f1ae330719",
+      "bytes": 16272
+    },
+    "assets/fonts/noto-sans-jp-60-400-normal.woff2": {
+      "sha256": "871c22f1da70f61293e49be48fce4363f68da99a210ba59ff8524fb04d9874c6",
+      "bytes": 12832
+    },
+    "assets/fonts/noto-sans-jp-60-700-normal.woff": {
+      "sha256": "8fc48dfdfcf8eb240d9d54504d116b4f6367b367f74a230f0f334bc015c25c53",
+      "bytes": 16208
+    },
+    "assets/fonts/noto-sans-jp-60-700-normal.woff2": {
+      "sha256": "1314409320802338e206d950769066f53368bc7b24261512dbbb1319d51ffb03",
+      "bytes": 13000
+    },
+    "assets/fonts/noto-sans-jp-61-400-normal.woff": {
+      "sha256": "cd9bb7fa19f1216fbcd9e698dce800797d59c4252c9be6b63a1336c5568280ab",
+      "bytes": 14616
+    },
+    "assets/fonts/noto-sans-jp-61-400-normal.woff2": {
+      "sha256": "d157f242809b9f638294fdf4c29ac6b1b9a6fef55d575e61d585356696742e96",
+      "bytes": 11640
+    },
+    "assets/fonts/noto-sans-jp-61-700-normal.woff": {
+      "sha256": "0ce8c7cdb89d9368336a8b2816d79ef243a73f2b5e8ab6976d796e339a51bc72",
+      "bytes": 14696
+    },
+    "assets/fonts/noto-sans-jp-61-700-normal.woff2": {
+      "sha256": "d590747123ef4f69a576b7ae3f9ca9078652f0ea3318c3535fe59875a120d8de",
+      "bytes": 11840
+    },
+    "assets/fonts/noto-sans-jp-62-400-normal.woff": {
+      "sha256": "8a61256c7095f8c53a47d2f688a627f3f76e6861ffb8a0dbae82d0ba36f3e74d",
+      "bytes": 14088
+    },
+    "assets/fonts/noto-sans-jp-62-400-normal.woff2": {
+      "sha256": "637194827f41e065cd5402bcb26e353c3d514a2594349533fdb36faaef060423",
+      "bytes": 10988
+    },
+    "assets/fonts/noto-sans-jp-62-700-normal.woff": {
+      "sha256": "40e572170606027d498983ebebb4f949fc25328ea61d42f1397b5bac514c5910",
+      "bytes": 14076
+    },
+    "assets/fonts/noto-sans-jp-62-700-normal.woff2": {
+      "sha256": "a17bb8e73567506f167619b6dd653180997ba724254f4a11de6edc4dca1d50df",
+      "bytes": 11196
+    },
+    "assets/fonts/noto-sans-jp-63-400-normal.woff": {
+      "sha256": "c7ee3897ea285097474cd20002215ccd6bcd2ac095a38f4d80f3d1210ea8c367",
+      "bytes": 13028
+    },
+    "assets/fonts/noto-sans-jp-63-400-normal.woff2": {
+      "sha256": "bafa891c1607b42c52ebc3ce145c0f323d23ce0746f05b3e0b1bdc16d8d7dbfc",
+      "bytes": 10320
+    },
+    "assets/fonts/noto-sans-jp-63-700-normal.woff": {
+      "sha256": "e5cee19399c7afd4439e401a5b3f230b71cbcd640f034cc8b5202831c42116b7",
+      "bytes": 12896
+    },
+    "assets/fonts/noto-sans-jp-63-700-normal.woff2": {
+      "sha256": "a27c1751beac523c4fce2f3e73a85259fa1cb79337c5f83f4f086b7409272006",
+      "bytes": 10388
+    },
+    "assets/fonts/noto-sans-jp-64-400-normal.woff": {
+      "sha256": "af7f943755c9a9a91ab9d19fb45563409f46a9e8940ccfd0ca8500b7a7c90f39",
+      "bytes": 15664
+    },
+    "assets/fonts/noto-sans-jp-64-400-normal.woff2": {
+      "sha256": "6b253497d7d8c53143d81045e61425da125c63138b9a0ba037344fd192fab593",
+      "bytes": 12364
+    },
+    "assets/fonts/noto-sans-jp-64-700-normal.woff": {
+      "sha256": "a90993d0da29d98e8608ca33a4674c86db0c45538cf7dc95bdb0b76d2b5ed824",
+      "bytes": 15552
+    },
+    "assets/fonts/noto-sans-jp-64-700-normal.woff2": {
+      "sha256": "e77573d0ee55d4582053d8908000c74abb88e30b1ca481893ceeb5fcccaf4be6",
+      "bytes": 12616
+    },
+    "assets/fonts/noto-sans-jp-65-400-normal.woff": {
+      "sha256": "154a641aff74f2d52dcdc6052787e60caaac32bb6e63a954acddf0b280792375",
+      "bytes": 14480
+    },
+    "assets/fonts/noto-sans-jp-65-400-normal.woff2": {
+      "sha256": "4dd7082575926732d787fdd823ceb1ab5ebab909a79fde503537798a6d8c11d1",
+      "bytes": 11340
+    },
+    "assets/fonts/noto-sans-jp-65-700-normal.woff": {
+      "sha256": "36e98f4418fa58785e3e21d5637c6d782ebdac5cb00d1e005269e0a243ddf264",
+      "bytes": 14380
+    },
+    "assets/fonts/noto-sans-jp-65-700-normal.woff2": {
+      "sha256": "66d42e8f2a051f800fc8bb9efcaedbb1d68441a836ffd650beef6c6a65b3d368",
+      "bytes": 11532
+    },
+    "assets/fonts/noto-sans-jp-66-400-normal.woff": {
+      "sha256": "9f3d03763a57e38deec249da50c524442861b84c0865aa4f908b699ffa9fe271",
+      "bytes": 12792
+    },
+    "assets/fonts/noto-sans-jp-66-400-normal.woff2": {
+      "sha256": "40c33d0adc5dc123edc305e530a0af317c18e5467f44b224a06db9dd523637fe",
+      "bytes": 10172
+    },
+    "assets/fonts/noto-sans-jp-66-700-normal.woff": {
+      "sha256": "2657443c24f979def661f03900d007a736d0f7767a7ccd857cbe7ed1c7c1462f",
+      "bytes": 12844
+    },
+    "assets/fonts/noto-sans-jp-66-700-normal.woff2": {
+      "sha256": "92e8a86899436ff2a4b71da447bcc5f76220c7f1d4571fb04aece8b59968bf40",
+      "bytes": 10256
+    },
+    "assets/fonts/noto-sans-jp-67-400-normal.woff": {
+      "sha256": "8510be2563bc8204438d12c4719417f03acc888f3cd936e59399bf5bcc6b38f6",
+      "bytes": 12960
+    },
+    "assets/fonts/noto-sans-jp-67-400-normal.woff2": {
+      "sha256": "26eb863685a0e160ae8b867fab1d1dff46c9d291482037b144aa5e4d5ee5a2ec",
+      "bytes": 10316
+    },
+    "assets/fonts/noto-sans-jp-67-700-normal.woff": {
+      "sha256": "9b01bfbfa4be7c999436497a8c617a259c30d37d37dfdce6ba18af9f0a331756",
+      "bytes": 12972
+    },
+    "assets/fonts/noto-sans-jp-67-700-normal.woff2": {
+      "sha256": "c62c13b6876c2ae009247dd2237861b92c1460f5f0795867119138d7faa833ea",
+      "bytes": 10392
+    },
+    "assets/fonts/noto-sans-jp-68-400-normal.woff": {
+      "sha256": "5f03bc04cd5ca41fe9d1f1db733b0dad0c2b6413343e98098c06c4c19a405e4b",
+      "bytes": 15108
+    },
+    "assets/fonts/noto-sans-jp-68-400-normal.woff2": {
+      "sha256": "acfc00a97e87db511883ab0bbb7b4c4c170521b5763bb4aa2c30d20ee9efd383",
+      "bytes": 12028
+    },
+    "assets/fonts/noto-sans-jp-68-700-normal.woff": {
+      "sha256": "f1920616e75f42d5f5fd75d3f02ac2aedee5322f4010fb4386d7302a04d25989",
+      "bytes": 15108
+    },
+    "assets/fonts/noto-sans-jp-68-700-normal.woff2": {
+      "sha256": "db5ca7a4b8ee86eb279f5ecb0498c21386e7bc02ef549cb211545aa54f71ce14",
+      "bytes": 12132
+    },
+    "assets/fonts/noto-sans-jp-69-400-normal.woff": {
+      "sha256": "d14fedc514617cc21e81b5db8816b6c477fe17b9c593bb8ad4036178c66316b5",
+      "bytes": 13712
+    },
+    "assets/fonts/noto-sans-jp-69-400-normal.woff2": {
+      "sha256": "fcc2800cb1a6c71838d5968dbf906b71db2aa2cce7493d6f215311b4c6e8e7aa",
+      "bytes": 10896
+    },
+    "assets/fonts/noto-sans-jp-69-700-normal.woff": {
+      "sha256": "7d540fb5953e38055496f7ec209149b1ca937887e8fd096dbcc0678a871c86b7",
+      "bytes": 13672
+    },
+    "assets/fonts/noto-sans-jp-69-700-normal.woff2": {
+      "sha256": "f9bffe113c3a30524685e973c7c93f6a915a2a58aabefea2c7b419085819c03f",
+      "bytes": 11088
+    },
+    "assets/fonts/noto-sans-jp-7-400-normal.woff": {
+      "sha256": "f38699f0f4710624792edbd04283f5e5f0cf961bccbe171df2295554e618c92b",
+      "bytes": 59848
+    },
+    "assets/fonts/noto-sans-jp-7-400-normal.woff2": {
+      "sha256": "5168f5242a1a7199a12cd54225e1183b510eddf8d0d073e13f3e11b16e18dcd4",
+      "bytes": 44504
+    },
+    "assets/fonts/noto-sans-jp-7-700-normal.woff": {
+      "sha256": "4cb64d0e1c73ab7328fadd926c08e444c6ccd85b4adec3b9c27cf1736aab0677",
+      "bytes": 60008
+    },
+    "assets/fonts/noto-sans-jp-7-700-normal.woff2": {
+      "sha256": "2a02e456377f11750c8c7adf3838411c34a886c8a97cd8db5520428270cd44e6",
+      "bytes": 45504
+    },
+    "assets/fonts/noto-sans-jp-70-400-normal.woff": {
+      "sha256": "4ae102dce1b16f0e0a1ef984bbf86a41d00b8e4047857d73b20a232d4a6ede47",
+      "bytes": 13800
+    },
+    "assets/fonts/noto-sans-jp-70-400-normal.woff2": {
+      "sha256": "1bcfeea2a0a2fb600cdaedf46dc352ce900ed7d67962482aed1b8cf129f8d105",
+      "bytes": 11048
+    },
+    "assets/fonts/noto-sans-jp-70-700-normal.woff": {
+      "sha256": "454c89d001472cad1d48def6c18d30cba83abf58564a36c365a53cad3a7ab60b",
+      "bytes": 13904
+    },
+    "assets/fonts/noto-sans-jp-70-700-normal.woff2": {
+      "sha256": "e8dd07c2bb1a20ca19e2be7d55552c8b76cf030781168d18366ecec1d635c925",
+      "bytes": 11164
+    },
+    "assets/fonts/noto-sans-jp-71-400-normal.woff": {
+      "sha256": "155a529c8cbf2b79ec6180ccdc98b9fef5bf2477917af7e771a4ea23db68d5bc",
+      "bytes": 14272
+    },
+    "assets/fonts/noto-sans-jp-71-400-normal.woff2": {
+      "sha256": "6e56daa47ff43575a5c8b4d01c660d59eb6e2ba9f571f7910c64bde0c9410b23",
+      "bytes": 11148
+    },
+    "assets/fonts/noto-sans-jp-71-700-normal.woff": {
+      "sha256": "a86c2abfa1107d0bc966d5bbd2dbf933a5dd171016d57ea89de5595d008583be",
+      "bytes": 14252
+    },
+    "assets/fonts/noto-sans-jp-71-700-normal.woff2": {
+      "sha256": "c329cd785978045bd6c4e3e578057bceb0b1d6a9103f635c3da1f8c426657d9b",
+      "bytes": 11324
+    },
+    "assets/fonts/noto-sans-jp-72-400-normal.woff": {
+      "sha256": "9a6c4a21d580e7d5737abce1d2c2ceb87e6434d55cd2e736c27587920b2c49ac",
+      "bytes": 14864
+    },
+    "assets/fonts/noto-sans-jp-72-400-normal.woff2": {
+      "sha256": "96d5fa1ad2d5faf85347128f2f495863ab52489fae3c8fd4382e98e2e8e15b42",
+      "bytes": 11720
+    },
+    "assets/fonts/noto-sans-jp-72-700-normal.woff": {
+      "sha256": "d2b48aa7ae8f0d05305649d66c72510d2102bdd011b571fe01f5d7057e04bf84",
+      "bytes": 14752
+    },
+    "assets/fonts/noto-sans-jp-72-700-normal.woff2": {
+      "sha256": "acdfdf278dc283b70556e94b366ddc9eaa95355db32b490e4d6afb04fa4680bf",
+      "bytes": 11872
+    },
+    "assets/fonts/noto-sans-jp-73-400-normal.woff": {
+      "sha256": "24050e37e2947f515cd1e971046f75abf76c3aa08c6b0b6c0df924a86ec61ee9",
+      "bytes": 13912
+    },
+    "assets/fonts/noto-sans-jp-73-400-normal.woff2": {
+      "sha256": "5f4853bbd65a08529d4de95e7e08ba6a25a319a99a21b3fa795add9b547293e3",
+      "bytes": 10816
+    },
+    "assets/fonts/noto-sans-jp-73-700-normal.woff": {
+      "sha256": "3ed45410bbfe839793207aefa9faa2c647ab66a7b5c9c5432f86bf1655e3d717",
+      "bytes": 13816
+    },
+    "assets/fonts/noto-sans-jp-73-700-normal.woff2": {
+      "sha256": "6e52898ed6dd00a5ea19cd542c9fd0c293aafb0c356c8a9cf274a6113d938356",
+      "bytes": 11000
+    },
+    "assets/fonts/noto-sans-jp-74-400-normal.woff": {
+      "sha256": "76483cb00b92129e7570e993f8840ebab23dae670d154ebe4a04db3d4519a150",
+      "bytes": 12544
+    },
+    "assets/fonts/noto-sans-jp-74-400-normal.woff2": {
+      "sha256": "5828c49be7f2e3054e27f52d28e3442fd4b32d1193632beb51e2121706dbc4ac",
+      "bytes": 9980
+    },
+    "assets/fonts/noto-sans-jp-74-700-normal.woff": {
+      "sha256": "b156019089dce8bf6d88b6031ab1c24af63cbec438870d9c2c4864b015374097",
+      "bytes": 12520
+    },
+    "assets/fonts/noto-sans-jp-74-700-normal.woff2": {
+      "sha256": "80748f25c75a12ebaa27e588aea028d1cc46a190c159f80310e5dd28ddd8bbd3",
+      "bytes": 10140
+    },
+    "assets/fonts/noto-sans-jp-75-400-normal.woff": {
+      "sha256": "dfe1763a470fd102eaee6c3b9e137ce122fc0b912a39663bc2d087be89a2cb41",
+      "bytes": 13100
+    },
+    "assets/fonts/noto-sans-jp-75-400-normal.woff2": {
+      "sha256": "4a79073330c506280ff3d667ccd62eaa936be86c2fc0c53396464e26231c0401",
+      "bytes": 10448
+    },
+    "assets/fonts/noto-sans-jp-75-700-normal.woff": {
+      "sha256": "7910d0d8140aaa7ef3a6ace7bae4bcc86fd599f0d8e98cec01440c2215b16f46",
+      "bytes": 13128
+    },
+    "assets/fonts/noto-sans-jp-75-700-normal.woff2": {
+      "sha256": "e7841c51aad6f2948be125621558c0825a14d8d64cad1bb4f6744b691a748d0b",
+      "bytes": 10616
+    },
+    "assets/fonts/noto-sans-jp-76-400-normal.woff": {
+      "sha256": "137817cbeb5ae0bcb4ad7698779064575ed5dbdf7bebab19bfd927f96be25681",
+      "bytes": 12532
+    },
+    "assets/fonts/noto-sans-jp-76-400-normal.woff2": {
+      "sha256": "98d3e93012a9aa40f662701323cd399bccc82e3c6b78b2efbe98099419b43693",
+      "bytes": 9912
+    },
+    "assets/fonts/noto-sans-jp-76-700-normal.woff": {
+      "sha256": "0eee582c243832eefd689211b700c4e8712a67fc8b7b789b561e8e1ca16f023a",
+      "bytes": 12512
+    },
+    "assets/fonts/noto-sans-jp-76-700-normal.woff2": {
+      "sha256": "6e1f87929d5ab8824d69681a600732de433d99fb624daefe222923668cd35f8b",
+      "bytes": 10032
+    },
+    "assets/fonts/noto-sans-jp-77-400-normal.woff": {
+      "sha256": "bfe6c277e30e4831d7d1e9358202eb710e83a4f3b8600d5dee3fe9237dca0fe1",
+      "bytes": 13316
+    },
+    "assets/fonts/noto-sans-jp-77-400-normal.woff2": {
+      "sha256": "30a22afd1744622e84b821098b86815129bb10aa33f239c724f0e437d79bda8f",
+      "bytes": 10480
+    },
+    "assets/fonts/noto-sans-jp-77-700-normal.woff": {
+      "sha256": "c445d12307c4358a7242037b6bdde4c5063002349f5c3992dce7df595bf3e250",
+      "bytes": 13268
+    },
+    "assets/fonts/noto-sans-jp-77-700-normal.woff2": {
+      "sha256": "3382999e77c990f689198968601c621d6d460239ee8aa1ff574f76e44e982205",
+      "bytes": 10628
+    },
+    "assets/fonts/noto-sans-jp-78-400-normal.woff": {
+      "sha256": "641564e90d9ec5e833213884214159ffbe6e1b30e28ca90a70ead105edad27a6",
+      "bytes": 13908
+    },
+    "assets/fonts/noto-sans-jp-78-400-normal.woff2": {
+      "sha256": "edbd7ef87e8268704244f4fc2bb775abf7e2a0e586e1de2121e0bf65981a366a",
+      "bytes": 11112
+    },
+    "assets/fonts/noto-sans-jp-78-700-normal.woff": {
+      "sha256": "e81af6a20b7b0cc9c9c7e1be7a3edb105492245100561abfdd34e5e4d038a00c",
+      "bytes": 13900
+    },
+    "assets/fonts/noto-sans-jp-78-700-normal.woff2": {
+      "sha256": "8207719a5ec5279bce27e6992af9a776c8c0fb703c669ace634534557614b8ad",
+      "bytes": 11344
+    },
+    "assets/fonts/noto-sans-jp-79-400-normal.woff": {
+      "sha256": "8101d0402d12cb642531e884430589db794a06d3920c312e6c2b1f40ca5878d0",
+      "bytes": 13908
+    },
+    "assets/fonts/noto-sans-jp-79-400-normal.woff2": {
+      "sha256": "48f1e7de68a920688f99f41ae261fe598550110429f8c7596cf1b87bfa57ecc7",
+      "bytes": 10872
+    },
+    "assets/fonts/noto-sans-jp-79-700-normal.woff": {
+      "sha256": "38233fa35e2ab24c7ce2821f9b8198a841a6b3f3b3bebcad6338e86fcc0c9d17",
+      "bytes": 13908
+    },
+    "assets/fonts/noto-sans-jp-79-700-normal.woff2": {
+      "sha256": "3e9c0b6bf25bd67166290a46b4cd6e12d6229962378c3b036393e317e29caf74",
+      "bytes": 11140
+    },
+    "assets/fonts/noto-sans-jp-8-400-normal.woff": {
+      "sha256": "2c4dba949310ea1d2e9a0c68f180e8fabc0d000b405e6726f1b50974dc0dbba8",
+      "bytes": 57096
+    },
+    "assets/fonts/noto-sans-jp-8-400-normal.woff2": {
+      "sha256": "8d8c0682862f5a9bcc73151884b5e231cbb6a960779a8e995da704eb56265b16",
+      "bytes": 41852
+    },
+    "assets/fonts/noto-sans-jp-8-700-normal.woff": {
+      "sha256": "9485f9bf68cd595d41fc453b489d0b84bd9727e6dd7acdec05b5a7b050a4a5de",
+      "bytes": 57500
+    },
+    "assets/fonts/noto-sans-jp-8-700-normal.woff2": {
+      "sha256": "c8d36c115038fc74e09aa0ff144e52192fb24f043a791d6da289950cd0b1948f",
+      "bytes": 42612
+    },
+    "assets/fonts/noto-sans-jp-80-400-normal.woff": {
+      "sha256": "a217b7d6da80a183791a8cc0c3659b5b39506b9395c0566bfe078b25e0b3fca2",
+      "bytes": 13020
+    },
+    "assets/fonts/noto-sans-jp-80-400-normal.woff2": {
+      "sha256": "db11fc6eb2fc3b1358c0fce0d01587367c4f2042657adc2ebfc8d81f98e9c59e",
+      "bytes": 10212
+    },
+    "assets/fonts/noto-sans-jp-80-700-normal.woff": {
+      "sha256": "523baae548ee01fd677d919201e56596e6c8bceba0c4959b5348139a0d17b1c1",
+      "bytes": 13088
+    },
+    "assets/fonts/noto-sans-jp-80-700-normal.woff2": {
+      "sha256": "4f28bac2cbad6bd1fa27271dc5cf4309c469781923132ab5ddf6875a326f17d7",
+      "bytes": 10340
+    },
+    "assets/fonts/noto-sans-jp-81-400-normal.woff": {
+      "sha256": "dd748f434daea59b20d38f04a239f9c5372641d171ccad8b6f9ff795d69a9738",
+      "bytes": 12224
+    },
+    "assets/fonts/noto-sans-jp-81-400-normal.woff2": {
+      "sha256": "d288c9ad551cf55c5e7ca6975cd09fa8c18446a8fe8c77adecf519d6c65648c2",
+      "bytes": 9744
+    },
+    "assets/fonts/noto-sans-jp-81-700-normal.woff": {
+      "sha256": "61f29b046ad731feb4ee003c14cb742e4c83a6b41a6fb8c055a8d1b9243ab9f7",
+      "bytes": 12192
+    },
+    "assets/fonts/noto-sans-jp-81-700-normal.woff2": {
+      "sha256": "f221e9121a77156266392ccb2daa532b6a451531e4527771eab407c424222a52",
+      "bytes": 9816
+    },
+    "assets/fonts/noto-sans-jp-82-400-normal.woff": {
+      "sha256": "eeb894f7e5d6987c309f07c8add861807d38bc6502291b91a17be508bdf906cf",
+      "bytes": 13168
+    },
+    "assets/fonts/noto-sans-jp-82-400-normal.woff2": {
+      "sha256": "4ede445f6e8b5dc5c22d661e92489fd885b1c0cdfcdd8b889ca716c3760b6743",
+      "bytes": 10460
+    },
+    "assets/fonts/noto-sans-jp-82-700-normal.woff": {
+      "sha256": "34520b50b414c5ac537fce4f63c03b366487017ec885eb331547cfff26e2230e",
+      "bytes": 13208
+    },
+    "assets/fonts/noto-sans-jp-82-700-normal.woff2": {
+      "sha256": "c0a39c2049900f5b123d5680794a98f4b65cd721cd6f20c5d53391a2a2de50f4",
+      "bytes": 10528
+    },
+    "assets/fonts/noto-sans-jp-83-400-normal.woff": {
+      "sha256": "89fc188c94231b9f986cdfca1045497210e7e2fddf8183073a8734ddbca5644b",
+      "bytes": 12752
+    },
+    "assets/fonts/noto-sans-jp-83-400-normal.woff2": {
+      "sha256": "ae3fb07499d0ffbabe23e701c41ae9a1fe88b2971e0b1a27d9d8ef0f35cea201",
+      "bytes": 10132
+    },
+    "assets/fonts/noto-sans-jp-83-700-normal.woff": {
+      "sha256": "5028180d5ddb9efa8f635910698b9fa5c86df91bae0b115a02f028c4edffe29d",
+      "bytes": 12760
+    },
+    "assets/fonts/noto-sans-jp-83-700-normal.woff2": {
+      "sha256": "5823fcab65d5dd300ed89e4c443797ab08f4f1cf2e6c97e46af9f3286bdeed4f",
+      "bytes": 10348
+    },
+    "assets/fonts/noto-sans-jp-84-400-normal.woff": {
+      "sha256": "e790c30c84b1d5bf896d1b80eabd711590858d186081ba82c580857999920da5",
+      "bytes": 13328
+    },
+    "assets/fonts/noto-sans-jp-84-400-normal.woff2": {
+      "sha256": "be59d340b45320ec708eb8fff1ba39f7980e5c9171db9143b18e58029fbd8531",
+      "bytes": 10468
+    },
+    "assets/fonts/noto-sans-jp-84-700-normal.woff": {
+      "sha256": "628dd89d32b4056a512b918f29f224643143a328504d30da5ecf4b5a3afd19e3",
+      "bytes": 13252
+    },
+    "assets/fonts/noto-sans-jp-84-700-normal.woff2": {
+      "sha256": "0c1fa02d4607e1b9c49b1beba27da31ddddf7f4faecab54ddcc18814be010c02",
+      "bytes": 10668
+    },
+    "assets/fonts/noto-sans-jp-85-400-normal.woff": {
+      "sha256": "7cf2ba42ae94cc007b6e6abb8978e5bdedbe409c1b8e32752b3301c988f512e2",
+      "bytes": 12468
+    },
+    "assets/fonts/noto-sans-jp-85-400-normal.woff2": {
+      "sha256": "2ddc2694bdc28d3514d42bdd6a431e22624c8edfc2234e26e9579d70e5fd3e9e",
+      "bytes": 9708
+    },
+    "assets/fonts/noto-sans-jp-85-700-normal.woff": {
+      "sha256": "6ddb1e46eff48fc76a9c5ec1e98296fcad69ac984e3d67aa73ed89bac3ea12f5",
+      "bytes": 12504
+    },
+    "assets/fonts/noto-sans-jp-85-700-normal.woff2": {
+      "sha256": "19caab0e8fd976038c61be1770ea4c675b83b7eeb5f92bc63c47ca254df09c58",
+      "bytes": 9864
+    },
+    "assets/fonts/noto-sans-jp-86-400-normal.woff": {
+      "sha256": "6423f806d9315a90db73b2340966fa35b28bbf6319a153abb78d49293b9192cb",
+      "bytes": 12032
+    },
+    "assets/fonts/noto-sans-jp-86-400-normal.woff2": {
+      "sha256": "8b8e2f9cc286b2a34e0fe89eeb05081390aecdef42f2674a69eaabb195aef431",
+      "bytes": 9488
+    },
+    "assets/fonts/noto-sans-jp-86-700-normal.woff": {
+      "sha256": "7f92f299409e950175515b3cef107d2ff52e5228e6240c61f5bdb6e65b9d6282",
+      "bytes": 12064
+    },
+    "assets/fonts/noto-sans-jp-86-700-normal.woff2": {
+      "sha256": "81ccc77e047f0f45858c37a6321044d1f66cf9e4510e0d5d085125099f2981b8",
+      "bytes": 9584
+    },
+    "assets/fonts/noto-sans-jp-87-400-normal.woff": {
+      "sha256": "90a72d674cceca573fc360c72476f184413b194f5c52eb6b1a5efafd13701c19",
+      "bytes": 13416
+    },
+    "assets/fonts/noto-sans-jp-87-400-normal.woff2": {
+      "sha256": "4373e4a3cf4b70efde26d82d2f9872c531724b996d4aa4e39708272f9f32e09c",
+      "bytes": 10636
+    },
+    "assets/fonts/noto-sans-jp-87-700-normal.woff": {
+      "sha256": "5a453ef246895e7335976697a7782acbfb95b9386be1f277cf53057773f6e0ab",
+      "bytes": 13424
+    },
+    "assets/fonts/noto-sans-jp-87-700-normal.woff2": {
+      "sha256": "7f021eff6b0c956788e5efac937601289f07ff4462991bf1f321946a55f60afb",
+      "bytes": 10820
+    },
+    "assets/fonts/noto-sans-jp-88-400-normal.woff": {
+      "sha256": "67b3f44ee1b0bed026eb209c0663aeb929732a81b20220b00db6572df13cbd53",
+      "bytes": 12600
+    },
+    "assets/fonts/noto-sans-jp-88-400-normal.woff2": {
+      "sha256": "fa5e42f668a622145a66de95779bd3769ea8296ac4e5a301817be8631fbd20d6",
+      "bytes": 9728
+    },
+    "assets/fonts/noto-sans-jp-88-700-normal.woff": {
+      "sha256": "537e87b699111695cfebe991743c8c203383a37f1857b3e6a6e5b4d909d841ef",
+      "bytes": 12556
+    },
+    "assets/fonts/noto-sans-jp-88-700-normal.woff2": {
+      "sha256": "48ee55b693e7b1239942678ab0cdb7529f03eafb1ec66c0eb19883feb27b6151",
+      "bytes": 9852
+    },
+    "assets/fonts/noto-sans-jp-89-400-normal.woff": {
+      "sha256": "e5fda80d897c1ada7f4dabf5b6b29ec58427dacf34a94ab27a11cb876c1e9408",
+      "bytes": 12700
+    },
+    "assets/fonts/noto-sans-jp-89-400-normal.woff2": {
+      "sha256": "a60b8a0106cff7662ea92a680bc7d44669780866239a64bad38f1c6bb04a13d9",
+      "bytes": 9964
+    },
+    "assets/fonts/noto-sans-jp-89-700-normal.woff": {
+      "sha256": "4b352e19c7a074a1eccf504b63fcfcec94648a94bb84022e8b4c8885c4724b25",
+      "bytes": 12732
+    },
+    "assets/fonts/noto-sans-jp-89-700-normal.woff2": {
+      "sha256": "175f94b3da1206f983a3d9642ac8afdd1716fdf9a03ab419b4932263f2b66550",
+      "bytes": 10208
+    },
+    "assets/fonts/noto-sans-jp-9-400-normal.woff": {
+      "sha256": "e9b04212fad07836094e539e9c945c213cd599a879ee33b5c0c0cfea4b83aef8",
+      "bytes": 54148
+    },
+    "assets/fonts/noto-sans-jp-9-400-normal.woff2": {
+      "sha256": "32fc1eab75cdafe7b182a181d29280773108b7d08a735ced0772b315dd547ab9",
+      "bytes": 40472
+    },
+    "assets/fonts/noto-sans-jp-9-700-normal.woff": {
+      "sha256": "cebcbe4bccb146c56396dbbfc86549d8dfa495d1c468d40e2e9c676b5b1ab8b0",
+      "bytes": 54720
+    },
+    "assets/fonts/noto-sans-jp-9-700-normal.woff2": {
+      "sha256": "d0e8a6643cb73e2e873acb256b8614f4964bb27243ec9367ce08313c0e454479",
+      "bytes": 41104
+    },
+    "assets/fonts/noto-sans-jp-90-400-normal.woff": {
+      "sha256": "ffc64ec66c4599f8cf789f8aa9634c4cbacbc5874fa3e87d247e83acf97cb4cd",
+      "bytes": 13064
+    },
+    "assets/fonts/noto-sans-jp-90-400-normal.woff2": {
+      "sha256": "a37ce2a891f6cb52b668a1bb87cdce2dd510b28d37cf1547326012391f5d1db3",
+      "bytes": 10484
+    },
+    "assets/fonts/noto-sans-jp-90-700-normal.woff": {
+      "sha256": "ce6e169c99c552222e628c8389bb6d726c548259c8a0cad9d66120610e64e95e",
+      "bytes": 13040
+    },
+    "assets/fonts/noto-sans-jp-90-700-normal.woff2": {
+      "sha256": "f048e4350865323b24c2cf06293be8e360d819edc8b83e5ce3b3b44871066117",
+      "bytes": 10576
+    },
+    "assets/fonts/noto-sans-jp-91-400-normal.woff": {
+      "sha256": "9b0392c8595a2f20be8acd627e270d5aec82acb3ec89cde206eae3c8b25bd986",
+      "bytes": 13152
+    },
+    "assets/fonts/noto-sans-jp-91-400-normal.woff2": {
+      "sha256": "7bcc2c1caf2b6e02b39848505bf64f618e732eb372548ec7d937460fd8ce5565",
+      "bytes": 10396
+    },
+    "assets/fonts/noto-sans-jp-91-700-normal.woff": {
+      "sha256": "3aba8d9382598e78ee781bd02ae02118128d9774f706ad9b21c18008c181763a",
+      "bytes": 13084
+    },
+    "assets/fonts/noto-sans-jp-91-700-normal.woff2": {
+      "sha256": "77163ac5dbd5de6bb470e23b7dd3bdf392bbdcc7a5d3c8fefa8070b7a14ec4b9",
+      "bytes": 10504
+    },
+    "assets/fonts/noto-sans-jp-92-400-normal.woff": {
+      "sha256": "40202478d5130ab78402d1e30d3f72b6a19559670e3f85d0f5465492782598f8",
+      "bytes": 13324
+    },
+    "assets/fonts/noto-sans-jp-92-400-normal.woff2": {
+      "sha256": "122523171e8bd7af93960d1fba8831582f8c781618314f606a8669195d188812",
+      "bytes": 10392
+    },
+    "assets/fonts/noto-sans-jp-92-700-normal.woff": {
+      "sha256": "27b69fe9ed743586ba9e015395c7b84b98ae4f81b9309b0d82dbb369f7c68d3f",
+      "bytes": 13340
+    },
+    "assets/fonts/noto-sans-jp-92-700-normal.woff2": {
+      "sha256": "639e1662d00188042ec45ee41fc521bdee1febf467ebbf2c064248bdcc536614",
+      "bytes": 10508
+    },
+    "assets/fonts/noto-sans-jp-93-400-normal.woff": {
+      "sha256": "44fcaf90cb0ea5f4d84a1552a8bf9dd31cdea084b4291a1631d2e2e60e0d41d0",
+      "bytes": 12284
+    },
+    "assets/fonts/noto-sans-jp-93-400-normal.woff2": {
+      "sha256": "cb44ecb3ccdab8df99a4f7f635b0615402e4f4c573f839b8671b196f82ad4bc3",
+      "bytes": 9616
+    },
+    "assets/fonts/noto-sans-jp-93-700-normal.woff": {
+      "sha256": "f0172a882928edf7df48565744d4b77c8c645d634665d1a118dd69ec469d5a5c",
+      "bytes": 12296
+    },
+    "assets/fonts/noto-sans-jp-93-700-normal.woff2": {
+      "sha256": "522348ca39acc7a96d9b422266aa396836d2a69779d826135bfda435eff51bc5",
+      "bytes": 9764
+    },
+    "assets/fonts/noto-sans-jp-94-400-normal.woff": {
+      "sha256": "737729338776a064eea1de0e4155149485b74e66d1054937ad9ebb22603e2a9c",
+      "bytes": 12832
+    },
+    "assets/fonts/noto-sans-jp-94-400-normal.woff2": {
+      "sha256": "e008eb8d3f251179d32223962c00fe06355985dff7bb3c8727c66f912aab2ff8",
+      "bytes": 10096
+    },
+    "assets/fonts/noto-sans-jp-94-700-normal.woff": {
+      "sha256": "0d852672ef5d64a080663b027b63338af95ac23e2617424c57704a75e6c638e2",
+      "bytes": 12780
+    },
+    "assets/fonts/noto-sans-jp-94-700-normal.woff2": {
+      "sha256": "2d18dabb8e968d8e8788a2b1bf6f4919c24cb4a9f96a8ce235db6dc5134c76a6",
+      "bytes": 10248
+    },
+    "assets/fonts/noto-sans-jp-95-400-normal.woff": {
+      "sha256": "ffec91fb5f7d2821e4faf641a13546ef341e49b78a4b936002264bd0171f4e00",
+      "bytes": 12152
+    },
+    "assets/fonts/noto-sans-jp-95-400-normal.woff2": {
+      "sha256": "851de3e29db2a5c22ddb9525f34340a27abb330ba7b16063ab14680d62ebe368",
+      "bytes": 9616
+    },
+    "assets/fonts/noto-sans-jp-95-700-normal.woff": {
+      "sha256": "2b82535e3049fd00b87b48b03742524dd49897f9758b2d6d5f76722edea4721c",
+      "bytes": 12244
+    },
+    "assets/fonts/noto-sans-jp-95-700-normal.woff2": {
+      "sha256": "c13d1308596e2ecd5a01ab40d832da46c824d37be17641333cb45fc28a69ed6c",
+      "bytes": 9796
+    },
+    "assets/fonts/noto-sans-jp-96-400-normal.woff": {
+      "sha256": "3bdaaf27d790f585bff5c17b838b0f2fc1e946dc7f4148f3aea984809cdc8e58",
+      "bytes": 12132
+    },
+    "assets/fonts/noto-sans-jp-96-400-normal.woff2": {
+      "sha256": "6a346480d3aeab865cf4d5c2d512b1f97a018edd96e95eafc2b3aae2454ccfc0",
+      "bytes": 9416
+    },
+    "assets/fonts/noto-sans-jp-96-700-normal.woff": {
+      "sha256": "125b7bbe758776720fa584008da3f6749c9989c5eea1a9c64cf6952d496bd3b4",
+      "bytes": 12184
+    },
+    "assets/fonts/noto-sans-jp-96-700-normal.woff2": {
+      "sha256": "8b4d81fe866e279f2ea8c56ccdff29caa0cf868e4a3580e848f92cf0ebafaa7b",
+      "bytes": 9560
+    },
+    "assets/fonts/noto-sans-jp-97-400-normal.woff": {
+      "sha256": "1c9c7a70bffba46f83c305ac3c6f9cf8e113b6aef7f3a73ec1d56c6e6add3826",
+      "bytes": 12400
+    },
+    "assets/fonts/noto-sans-jp-97-400-normal.woff2": {
+      "sha256": "8bc1f29ea2e6a58e7ba5da8f2e83ee7cbc5d2a912da44884df2962c6538b1b49",
+      "bytes": 9684
+    },
+    "assets/fonts/noto-sans-jp-97-700-normal.woff": {
+      "sha256": "e7652e03ccee0ca959374a13961ed61e82c815c6212e36cffb30e3ca8cf77119",
+      "bytes": 12424
+    },
+    "assets/fonts/noto-sans-jp-97-700-normal.woff2": {
+      "sha256": "101da2cb7d489c928938ea9b5b63f3b0b7bf1cf900611f5110195808726a75eb",
+      "bytes": 9896
+    },
+    "assets/fonts/noto-sans-jp-98-400-normal.woff": {
+      "sha256": "c486e016bc26b8cd45d239d690113471854456b07ec078922b8928299098e466",
+      "bytes": 12996
+    },
+    "assets/fonts/noto-sans-jp-98-400-normal.woff2": {
+      "sha256": "af198d2cf5826e2ed61142953c0b49ff4de6b418a5ce8b6c4351514530173d3f",
+      "bytes": 10312
+    },
+    "assets/fonts/noto-sans-jp-98-700-normal.woff": {
+      "sha256": "cd679e7726b91c554bdec56c700f7b7b6a3aeaad4c72dca76288a1185bf70133",
+      "bytes": 13068
+    },
+    "assets/fonts/noto-sans-jp-98-700-normal.woff2": {
+      "sha256": "eaa364101c13c2d46a0b595f123d4031f57b6b6730d6b5bdc7433b904a87c416",
+      "bytes": 10512
+    },
+    "assets/fonts/noto-sans-jp-99-400-normal.woff": {
+      "sha256": "bdf1443a7e105816cd1dc1c669f064456e7ef2870ed00e49f0bd1a35b3585278",
+      "bytes": 13392
+    },
+    "assets/fonts/noto-sans-jp-99-400-normal.woff2": {
+      "sha256": "930991015254ff684c9120655d2bd04e12fedc782d68901affc2f5ce070e74c5",
+      "bytes": 10492
+    },
+    "assets/fonts/noto-sans-jp-99-700-normal.woff": {
+      "sha256": "5f808e628c870c183338099f09ba450878b4df7c87777303bbb5cc4658af1a3e",
+      "bytes": 13320
+    },
+    "assets/fonts/noto-sans-jp-99-700-normal.woff2": {
+      "sha256": "5fb3d4d1f70c43c06dcd71969fd3d72a195b3302e821994faae1bfb856491eb9",
+      "bytes": 10632
+    },
+    "assets/fonts/noto-sans-jp-cyrillic-400-normal.woff": {
+      "sha256": "ffdf27f01238e93bb82c06468b7213b25b7686a6f17b4a31cc492550361217be",
+      "bytes": 6700
+    },
+    "assets/fonts/noto-sans-jp-cyrillic-400-normal.woff2": {
+      "sha256": "77c9eeb9dd31f63901f8a014593649a976e6c4f8afdcd5b69567eb37a11ce5c0",
+      "bytes": 5304
+    },
+    "assets/fonts/noto-sans-jp-cyrillic-700-normal.woff": {
+      "sha256": "4d37943d7ac6a176a26d3269e7592fc3123a92b41c76243ba6a0054d992b5519",
+      "bytes": 6724
+    },
+    "assets/fonts/noto-sans-jp-cyrillic-700-normal.woff2": {
+      "sha256": "e403dcc3a08fc0c49548382e9d9620eb7a13ef4a9e246648416d13808c51d0d3",
+      "bytes": 5348
+    },
+    "assets/fonts/noto-sans-jp-latin-400-normal.woff": {
+      "sha256": "a6e4d64851840fc881fdd840992350a52319b81bfd057e50656177bc914faa85",
+      "bytes": 16912
+    },
+    "assets/fonts/noto-sans-jp-latin-400-normal.woff2": {
+      "sha256": "c3ca2d64070bf809fad5aec44a65f65ea88082e1a13faab4ef903f46a8c6f024",
+      "bytes": 13072
+    },
+    "assets/fonts/noto-sans-jp-latin-700-normal.woff": {
+      "sha256": "4d472bfffb21f080eb030c388eafed026c0284f9f38f7e6b6793ef414ea63248",
+      "bytes": 17036
+    },
+    "assets/fonts/noto-sans-jp-latin-700-normal.woff2": {
+      "sha256": "1baabeedde8b3dfce0aa05cb784362d9dc42e7cf05abf87d83c9ffc3e8c69fb5",
+      "bytes": 13080
+    },
+    "assets/fonts/noto-sans-jp-latin-ext-400-normal.woff": {
+      "sha256": "cff9f7bd86fa246104a22feaafd9048da1c5eb4870ad0d0278d348f4d1bdbeec",
+      "bytes": 6000
+    },
+    "assets/fonts/noto-sans-jp-latin-ext-400-normal.woff2": {
+      "sha256": "5aafbe3b69144fd30ce8debc3b82a82c67ff49de014e2949998ef9642798ddde",
+      "bytes": 4460
+    },
+    "assets/fonts/noto-sans-jp-latin-ext-700-normal.woff": {
+      "sha256": "73c0d847133eda6138286c580edecf482b0ebde027aa69ec19d592d86826bae5",
+      "bytes": 6072
+    },
+    "assets/fonts/noto-sans-jp-latin-ext-700-normal.woff2": {
+      "sha256": "578d733d6c30f0e5394ee9827bc72d513cfde374a95cd31e28b75860e9acd065",
+      "bytes": 4476
+    },
+    "assets/fonts/noto-sans-jp-vietnamese-400-normal.woff": {
+      "sha256": "f28df4ada6b3bb0709fe176fb8af7e13577b7f38d1568b61e4b26ac95e4dcadf",
+      "bytes": 6480
+    },
+    "assets/fonts/noto-sans-jp-vietnamese-400-normal.woff2": {
+      "sha256": "92661db21cf734f8f3b95671d974b827c64117a5709367f6968c377fce6bff37",
+      "bytes": 4688
+    },
+    "assets/fonts/noto-sans-jp-vietnamese-700-normal.woff": {
+      "sha256": "6e8cb3943a7ae354b38a884d53bf884f70daacdada90f6bdf2517ecb75602049",
+      "bytes": 6596
+    },
+    "assets/fonts/noto-sans-jp-vietnamese-700-normal.woff2": {
+      "sha256": "e51f4a1e8fcb6c22a534a84064f7d4f3a29da971b67f8353ea85bbb9a2a83e72",
+      "bytes": 4780
+    },
+    "assets/portrait-1.jpg": {
+      "sha256": "a2785d59ef788d6ca6e372f58bac7c5268f8e3999830a7c37529132bcce7dadc",
+      "bytes": 46466
+    },
+    "assets/portrait-2.jpg": {
+      "sha256": "9865c6595249ba72af540bbea3466030c49ad2de5504d951150db158d5e48559",
+      "bytes": 42711
+    },
+    "assets/portrait-3.jpg": {
+      "sha256": "974cf5ad0527e841e3aa2285aec0438ff6577c164b8dc115ebe228a4ac9f90df",
+      "bytes": 36880
+    },
+    "assets/retail-1.jpg": {
+      "sha256": "4ba5adf5006ffb0707cf18b1f3fac693d2fd26da13d61b3ea54abdb8bcd936e6",
+      "bytes": 92284
+    },
+    "assets/retail-2.jpg": {
+      "sha256": "70fe591bfeb98998afce3d29a658c10400a7139d21691a15c69bb7da2243e162",
+      "bytes": 94247
+    },
+    "assets/retail-3.jpg": {
+      "sha256": "bf137c72cc0a97784a6ceb33e11b57d38b9c0baa5a5a2f22452e0f3ceb147e56",
+      "bytes": 77486
+    },
+    "assets/synthetic-retail-asset-sheet.png": {
+      "sha256": "2b127a9dae3ad1025ed29a761ed8dca49525355487097df2072dabbc62d23886",
+      "bytes": 2666508
+    },
+    "contracts/event.schema.json": {
+      "sha256": "fb31ecf650dc2099c91246957f533f5e253aaebb0e997687ec7cfb1feda8f77a",
+      "bytes": 2245
+    },
+    "contracts/schema.sql": {
+      "sha256": "e50596ac97ebf182f78bc3f047f4fb1ae94b3a371c686be94b15eedeafd4b711",
+      "bytes": 8751
+    },
+    "deployment/Dockerfile": {
+      "sha256": "963fc97ad21c43098719a345b7676f112432978cd3b5daec8659eb4740d0f7c1",
+      "bytes": 231
+    },
+    "design/index.html": {
+      "sha256": "1004e81000f850d492094fbe637d7d015a4bf735963c4357697d23e91d6fbe8f",
+      "bytes": 282
+    },
+    "design/ja.json": {
+      "sha256": "2b691dee7de8c33b2a770ccfe26857bb9153b06716c6cb7414ce8bb51f28d3b2",
+      "bytes": 12628
+    },
+    "design/screens.json": {
+      "sha256": "d453cf392bc9c6c1e4550bd731a369917071338a4fe478f316666d8d59ef374b",
+      "bytes": 44444
+    },
+    "design/tokens.json": {
+      "sha256": "588200575164f8ae7fedeceed2d2f2830f3ceb9c129a26b964d356302d2e045a",
+      "bytes": 743
+    },
+    "design/ui.css": {
+      "sha256": "0aeec048641229ff108893656531a6aec58fec0dc9015ef0108d409c2bcd8c64",
+      "bytes": 10202
+    },
+    "design/ui.js": {
+      "sha256": "163bbb78f8c9935926190fd13a7f06126af17790906a09f7b261d65540292609",
+      "bytes": 23767
+    },
+    "docs/ACCEPTANCE.md": {
+      "sha256": "7d5fb18aeab40db0eb76a2231a74c111d9c2b2329c5c0b36518f1804dc5756d1",
+      "bytes": 4649
+    },
+    "docs/ALGORITHMS.md": {
+      "sha256": "1a2b0714f9681cc80edad0f80c9d44048f6f7706dd133da0aa027617b470962b",
+      "bytes": 7992
+    },
+    "docs/API.md": {
+      "sha256": "41937e4b99a43e307230e6957c046ded2de1875ac6aa24dd5a4c27126af774ff",
+      "bytes": 4535
+    },
+    "docs/ARCHITECTURE.md": {
+      "sha256": "cde345f65c002cfb317262a7ede8270c103773e3510110603f24b09049ba18a6",
+      "bytes": 3724
+    },
+    "docs/CONFIG_AND_INPUTS.md": {
+      "sha256": "a8e62a8c0ff3fe6dcda87a6ba51375a2d4f47a2960811106cb500ee7518caea3",
+      "bytes": 2052
+    },
+    "docs/DEPLOYMENT.md": {
+      "sha256": "c77f638812f59735b94f38fc5e357d5fff86c49ceac85376cc78b5c3f478237b",
+      "bytes": 4870
+    },
+    "docs/ENROLLMENT_SEARCH.md": {
+      "sha256": "9d6c92a1f9298b81137aa8e3fdc3cc4437e67e51d993bf47c5c22583475fb186",
+      "bytes": 4145
+    },
+    "docs/FEATURE_MATRIX.md": {
+      "sha256": "65277671d4eea28975419dc946ea59cb87f794e1450a77406b6a0e2eed2a3b4a",
+      "bytes": 1955
+    },
+    "docs/IMPLEMENTATION.md": {
+      "sha256": "f416d03b4780d0c9d4aafbb3406ec83dd58fe3ab4d1aa115856e10418940213e",
+      "bytes": 6000
+    },
+    "docs/IOS_RELEASE.md": {
+      "sha256": "0f3417d117aa0b87e613b5b4d5cac72c2be399b17f1332600355102671e1a22e",
+      "bytes": 3741
+    },
+    "docs/ONVIF.md": {
+      "sha256": "d920903e824fa2022ab055615ee9e241b8bd9d15c1fbf2040356ed904ef63157",
+      "bytes": 4127
+    },
+    "docs/OPERATIONS.md": {
+      "sha256": "8511d36a78902bdfaf0c328a5dc13e6188d7e9550ed1218dbd9e7c564cd5f809",
+      "bytes": 2443
+    },
+    "docs/PRODUCT.md": {
+      "sha256": "4747e75a94005e3f089a5120d1d7147a45354a2aa8c4b5e384cab8466b1cdb7b",
+      "bytes": 4115
+    },
+    "docs/RESEARCH_AND_COMPETITORS.md": {
+      "sha256": "f88615dd877cf8860ed81fee5bb0d6cf0ecefde7e84d83d0df4875e81900329f",
+      "bytes": 5827
+    },
+    "docs/SCREEN_SPEC.md": {
+      "sha256": "5cc5e81dfca4c5ef60d3fa238689173b4b97f8cdd787b114529e90c2e06f3c4f",
+      "bytes": 61581
+    },
+    "docs/SECURITY.md": {
+      "sha256": "1a26a036ff8cb2537c555ac6f896ec490eae0d3074d80587df8547b11e7a48a4",
+      "bytes": 4755
+    },
+    "docs/SHOPFORMER_AVAILABILITY.json": {
+      "sha256": "0e7b925dcccddc8e7702777e94deaa901cf5cea1e71e718957db5386231d0ecb",
+      "bytes": 365
+    },
+    "docs/VALIDATION.md": {
+      "sha256": "c0afd82c9d7ce549f289ceb3e488d2c899e73c513c223276170318aaac4722ac",
+      "bytes": 1926
+    },
+    "docs/WEB_REFERENCE_UI_TEST.json": {
+      "sha256": "c622ce3d9a160a9c45ba6fedbfe0dce54b6465239ae5ac08482d3bd96d7ae1c1",
+      "bytes": 343
+    },
+    "edge/discover.py": {
+      "sha256": "88ef7852ef3b7693a83030632d6412fdd8a8726145921b4cd7aceb5c5377d9ae",
+      "bytes": 2994
+    },
+    "ios/README.md": {
+      "sha256": "10e1330bd8bfc636feeaa99802fc884cf3454227c5b3def32186896e6b3845d2",
+      "bytes": 1130
+    },
+    "ios/RetailGuardApp.swift": {
+      "sha256": "6d161a43fda72102dc035ae390d8f480254bd5b22f194251feab1a31a9593414",
+      "bytes": 20758
+    },
+    "ios/project.yml": {
+      "sha256": "174ec6b65b63bfb4dc1e2fc82d740231be28a3a6df1d7ce95471cef6e9065eb2",
+      "bytes": 951
+    },
+    "mockups/PRODUCT_PREVIEW.png": {
+      "sha256": "d9050476274b997aaaacdfd624025bc2e53fcc4890e9e7e52136842c4dc4e6c2",
+      "bytes": 661599
+    },
+    "mockups/SCREEN_INDEX.csv": {
+      "sha256": "5953ce14093e1053f4e949c7e53e8170ca8aa553d130d1c76ab18933e83903fe",
+      "bytes": 31874
+    },
+    "mockups/ios/en/dark/ios-01-welcome.png": {
+      "sha256": "082ffa9370492160668374fed68fd5b366750f22e8857e45ca095d4a1c7ce7ac",
+      "bytes": 28069
+    },
+    "mockups/ios/en/dark/ios-02-login.png": {
+      "sha256": "34044a17d02ecfaa39b02b437533b5f9fd795b1471701e1e3d48bad7cd56b8ad",
+      "bytes": 31313
+    },
+    "mockups/ios/en/dark/ios-03-mfa.png": {
+      "sha256": "946c7abb6b5366ce0de706e87ccaa64f20808c791e952f9add04122d6f0c95cf",
+      "bytes": 26214
+    },
+    "mockups/ios/en/dark/ios-04-faceid.png": {
+      "sha256": "c7d0b4e43cc61f9b5b7dcb63b088d808e8209a6161ccc43e7b757354b57b6fb9",
+      "bytes": 25369
+    },
+    "mockups/ios/en/dark/ios-05-permission.png": {
+      "sha256": "97586faf04641e4574fc42f063f827c1df89a8f53ebbf9b1c988dfd2b913058c",
+      "bytes": 27005
+    },
+    "mockups/ios/en/dark/ios-06-stores.png": {
+      "sha256": "dfa7fc91e6b737d4fa474a61a466c49da0bfa4a1639201dca80f481cb43666fe",
+      "bytes": 45815
+    },
+    "mockups/ios/en/dark/ios-07-home.png": {
+      "sha256": "7336197a6ae2fc62623ed660b4540f382d78ca0be6caa2585a06eaee5d43e290",
+      "bytes": 80680
+    },
+    "mockups/ios/en/dark/ios-08-alerts.png": {
+      "sha256": "e098a70cdcde72049ecb4f83c6ded134a54c1dc960a31388428e3a8cea322b2c",
+      "bytes": 44865
+    },
+    "mockups/ios/en/dark/ios-09-alert-detail.png": {
+      "sha256": "507b7b6b44cad289bd5350d723ad09642da249457b03ab471bd2d433cb9f90f3",
+      "bytes": 174647
+    },
+    "mockups/ios/en/dark/ios-10-clip.png": {
+      "sha256": "6e81de3d999d4a27dad9c3a79e6c0cd894d59167c54a474deb3e565a7d05dbd7",
+      "bytes": 143641
+    },
+    "mockups/ios/en/dark/ios-11-acknowledge.png": {
+      "sha256": "518d2820570bf4cec961e05af88d1a357540658cb8fa565c25ee7f17463650bc",
+      "bytes": 70699
+    },
+    "mockups/ios/en/dark/ios-12-outcome.png": {
+      "sha256": "bccd3c87cb2f05d4b3071c04d8a0102e14c3077166c3dc22602c562ad3067fad",
+      "bytes": 75485
+    },
+    "mockups/ios/en/dark/ios-13-escalate.png": {
+      "sha256": "7496e8680a1c483492316bad94eb27598c066052b923067447ba6451630a274c",
+      "bytes": 71560
+    },
+    "mockups/ios/en/dark/ios-14-incident.png": {
+      "sha256": "25d391d23a20294375b6200fe69ed95120006fb30f336e5944efd71331a4f295",
+      "bytes": 173935
+    },
+    "mockups/ios/en/dark/ios-15-history.png": {
+      "sha256": "a65797d678c109dda8f6752a3718fd8b4cfd0491387fead3e35c50d000ca4f17",
+      "bytes": 45119
+    },
+    "mockups/ios/en/dark/ios-16-search.png": {
+      "sha256": "b80479964a38132d5eb3e5de5cf0094a2366b764b9afc60873005eb95605f7e6",
+      "bytes": 67899
+    },
+    "mockups/ios/en/dark/ios-17-results.png": {
+      "sha256": "2953d543b26461905583041f11f9b6e02746ae2c9f1fdeeaf12b90e329240265",
+      "bytes": 267431
+    },
+    "mockups/ios/en/dark/ios-18-watchlist.png": {
+      "sha256": "0d66474c22bf0c6111aa710c58f84c9acee292fcc1e517e80c6530abce88b937",
+      "bytes": 232477
+    },
+    "mockups/ios/en/dark/ios-19-profile.png": {
+      "sha256": "29a3a6a06ecd5b08ecd72c7552aa76b116d2034eed923ae64e599bd4990d8aca",
+      "bytes": 168912
+    },
+    "mockups/ios/en/dark/ios-20-subject-enroll.png": {
+      "sha256": "244bfad52459bdd57b64e161720d72ecf147f125a0fdcd1edbad91f91d6ef10a",
+      "bytes": 86117
+    },
+    "mockups/ios/en/dark/ios-21-staff.png": {
+      "sha256": "05c75fb9e7a6fef17a888a0f5c9b438271183e825cee5ba93ae7fa9a833c13e2",
+      "bytes": 230576
+    },
+    "mockups/ios/en/dark/ios-22-staff-enroll.png": {
+      "sha256": "36585261b4a1db012227477b6c9c88fd3981831326c70f5356cbdbd9d9d416d1",
+      "bytes": 80598
+    },
+    "mockups/ios/en/dark/ios-23-photo-capture.png": {
+      "sha256": "c564e3ea846f8777d53a9130481879edde14431f9ca38a19c9cfecd313b18597",
+      "bytes": 176231
+    },
+    "mockups/ios/en/dark/ios-24-photo-quality.png": {
+      "sha256": "defaaf9b8e264edb26448c6ea53984902f1f408bcf59d7ab1e9e5639e0b9683f",
+      "bytes": 235922
+    },
+    "mockups/ios/en/dark/ios-25-visits.png": {
+      "sha256": "6b9f7be5752c27e2e69ba53c14dae7200abbf4727698bc6941512a51b872b05e",
+      "bytes": 172577
+    },
+    "mockups/ios/en/dark/ios-26-cameras.png": {
+      "sha256": "2ca9c3014319ec3ecc5232b8826233356c598aa34564bc3554b3faed9b0f267e",
+      "bytes": 255034
+    },
+    "mockups/ios/en/dark/ios-27-camera.png": {
+      "sha256": "9cde092ff96b9e06ffb75a74521da8a99e7eda6482affc6bcb41b2ac62a8f544",
+      "bytes": 144403
+    },
+    "mockups/ios/en/dark/ios-28-notifications.png": {
+      "sha256": "390f1214ce5448f4a8190b61b7bc181c1642d8c09b58890a20606a305df7f09a",
+      "bytes": 64144
+    },
+    "mockups/ios/en/dark/ios-29-account.png": {
+      "sha256": "0cd2c440e64813c3c645ab529353819bf53cb905200d45f7fab0c73cbb00bf48",
+      "bytes": 64476
+    },
+    "mockups/ios/en/dark/ios-30-team.png": {
+      "sha256": "f6045842618cd4d880a69e0653c697ce548e82a3f1348ddaed2da4e040084d91",
+      "bytes": 232456
+    },
+    "mockups/ios/en/dark/ios-31-offline.png": {
+      "sha256": "3761405bcbda6d67df7739961bd46d244819b2ed93036dff719a6493af656b4e",
+      "bytes": 35906
+    },
+    "mockups/ios/en/dark/ios-32-empty.png": {
+      "sha256": "3fdf1b795ac174795245db5f4c71dd65662d50fadd944447799974bee38e0892",
+      "bytes": 38780
+    },
+    "mockups/ios/en/dark/ios-33-session-expired.png": {
+      "sha256": "c55f662413d7688f1b6f05c4091477acd56c2aa2bdc30e57eefc8aa6f27a7a1d",
+      "bytes": 24315
+    },
+    "mockups/ios/en/dark/ios-34-help.png": {
+      "sha256": "93d47707df4f2069897de46ebc4d1cc4fc228f06e2cd56a2d5945b84a1ac6f38",
+      "bytes": 72358
+    },
+    "mockups/ios/en/light/ios-01-welcome.png": {
+      "sha256": "f1e787656286f85bd188eeb1df4e6b7e18f6ccc500cb20e6ade82d03ff00387f",
+      "bytes": 28672
+    },
+    "mockups/ios/en/light/ios-02-login.png": {
+      "sha256": "06420c993329efd7ffa447296cf30364ab100389d7e070c117e32195db253238",
+      "bytes": 32086
+    },
+    "mockups/ios/en/light/ios-03-mfa.png": {
+      "sha256": "6099fa20fb5fd7f38c95ba45198b65f0dcb0450bb1d32ff0668ae47970633578",
+      "bytes": 26824
+    },
+    "mockups/ios/en/light/ios-04-faceid.png": {
+      "sha256": "217a24164fdf35d268be2394a581a942f08627659539d0b6e77798b95341a2e8",
+      "bytes": 25787
+    },
+    "mockups/ios/en/light/ios-05-permission.png": {
+      "sha256": "cea0e31139052c68599d14e8c292ef9ea1dfa5a09f8f14b84619e1dc19b64440",
+      "bytes": 27445
+    },
+    "mockups/ios/en/light/ios-06-stores.png": {
+      "sha256": "98446f84fdcf9416b9ba141bf3743abfb0ea140e7bf5545e300b005ba698c6d4",
+      "bytes": 46055
+    },
+    "mockups/ios/en/light/ios-07-home.png": {
+      "sha256": "1475dd467df982516c9cca610f78c9fb48301c5da25fbd0c81d636b8de596c48",
+      "bytes": 82632
+    },
+    "mockups/ios/en/light/ios-08-alerts.png": {
+      "sha256": "f9b06abbb03a315b2a9a416d3b0cb087f905b11975ff8f904383378b07a6b871",
+      "bytes": 45072
+    },
+    "mockups/ios/en/light/ios-09-alert-detail.png": {
+      "sha256": "802f26eb3818f0a8e116e44b02d774c22180ece362fcb4e1e91db1be8a90503e",
+      "bytes": 174548
+    },
+    "mockups/ios/en/light/ios-10-clip.png": {
+      "sha256": "1339823701dfb89382cc871f306d3d10600809211250c500b514854362215422",
+      "bytes": 144610
+    },
+    "mockups/ios/en/light/ios-11-acknowledge.png": {
+      "sha256": "485e5b6c54356ebe03be890eaa5bb12ee9a1315012e0470ff8516ca098004196",
+      "bytes": 71050
+    },
+    "mockups/ios/en/light/ios-12-outcome.png": {
+      "sha256": "acccb8f8dd0887a9b2f366c16e9d2b8e6a049a986a3b2ad4dda4bc59744725b5",
+      "bytes": 75890
+    },
+    "mockups/ios/en/light/ios-13-escalate.png": {
+      "sha256": "ce9da62f5ec7c903631a0392e42b897e63fbcd7310661731e90cdf4d79ae5fe2",
+      "bytes": 72068
+    },
+    "mockups/ios/en/light/ios-14-incident.png": {
+      "sha256": "5a176ba297c38a2f9eceb32396d55d66b00cb9229de6bb39c454f8381e2d42fd",
+      "bytes": 173868
+    },
+    "mockups/ios/en/light/ios-15-history.png": {
+      "sha256": "a861708fbad634e57ec6f93d8bd207b5717618577f97fe81150ff7953ed6fdc4",
+      "bytes": 45323
+    },
+    "mockups/ios/en/light/ios-16-search.png": {
+      "sha256": "a9ffa43035f8c7eba7ba0e30b108e1d3f2ce724dec40c6258927ae97c94ee511",
+      "bytes": 68182
+    },
+    "mockups/ios/en/light/ios-17-results.png": {
+      "sha256": "2df613a27141c1418114a703793c3eb3a28102497a763c4a5196321a8dcbaea1",
+      "bytes": 267628
+    },
+    "mockups/ios/en/light/ios-18-watchlist.png": {
+      "sha256": "6f80c04fb638c49984ab7757c0402e299ef20b2879f202b2ec4c57a32e313a34",
+      "bytes": 233390
+    },
+    "mockups/ios/en/light/ios-19-profile.png": {
+      "sha256": "d2621acc27d9c7c4e2b87958020c6242486a014384a8790d75c234796661ec91",
+      "bytes": 168750
+    },
+    "mockups/ios/en/light/ios-20-subject-enroll.png": {
+      "sha256": "551b7214ab613ea875c79823b09832f0d029b599bf2123f018f63bb92b686e7a",
+      "bytes": 86302
+    },
+    "mockups/ios/en/light/ios-21-staff.png": {
+      "sha256": "45e8d85c7b602cdf54437a773faaef83f019f192bc24546c95e71dbf81249d5f",
+      "bytes": 231503
+    },
+    "mockups/ios/en/light/ios-22-staff-enroll.png": {
+      "sha256": "66140e3a7df7a15ef27254b8a62a5edaaac2d12722af3311c7d97b2b3fe8ee8e",
+      "bytes": 80608
+    },
+    "mockups/ios/en/light/ios-23-photo-capture.png": {
+      "sha256": "3ed8ea1b03c313dd9ff4195cffeb188d68035624c1b999e5523d9622b5ea464d",
+      "bytes": 176526
+    },
+    "mockups/ios/en/light/ios-24-photo-quality.png": {
+      "sha256": "b9ad1b398055da4aa896ed7eb22bed73634dd6f753412b0da3b585591be31ba3",
+      "bytes": 236858
+    },
+    "mockups/ios/en/light/ios-25-visits.png": {
+      "sha256": "fe8d7d7a000485a6894c07ea7b1d6d091d0bd254346746e0561f7cdeb46304ab",
+      "bytes": 172659
+    },
+    "mockups/ios/en/light/ios-26-cameras.png": {
+      "sha256": "cfb28828976058ed465b780028bfd6e988f5bb63af9fdd3aab5d6b4d119b9d23",
+      "bytes": 255872
+    },
+    "mockups/ios/en/light/ios-27-camera.png": {
+      "sha256": "447f5f17e1e77ea6963be59e33d7971a2c2b0ec9d6edf7d75d73fb278b48e90e",
+      "bytes": 145274
+    },
+    "mockups/ios/en/light/ios-28-notifications.png": {
+      "sha256": "291880e9b2e155a2b331c0deff4e7a600c7c904d0b05c469e303561de9c004a9",
+      "bytes": 64370
+    },
+    "mockups/ios/en/light/ios-29-account.png": {
+      "sha256": "d2e9622bea97657b80c4132e2a44c8dac44c7dab05e5d0cf372291dc7e19f929",
+      "bytes": 64637
+    },
+    "mockups/ios/en/light/ios-30-team.png": {
+      "sha256": "749caf31c0d628d34634458c72b69aa0e141dbb0ecfd91c93ea51b86b4c4b47f",
+      "bytes": 233484
+    },
+    "mockups/ios/en/light/ios-31-offline.png": {
+      "sha256": "a96950994e8e09d6ab34c9778362cb52b33083cef99016ba24064f94cfe57f8b",
+      "bytes": 36117
+    },
+    "mockups/ios/en/light/ios-32-empty.png": {
+      "sha256": "669c4d57f536a0c7eb154ffde2254d1d65dbc8e348f13962756cb07b811c87fb",
+      "bytes": 39379
+    },
+    "mockups/ios/en/light/ios-33-session-expired.png": {
+      "sha256": "312c2cf944cd80929fd4de91581748e43caa46bb0f194f5f6872ec12edc4edbf",
+      "bytes": 24820
+    },
+    "mockups/ios/en/light/ios-34-help.png": {
+      "sha256": "e09dedb9b3e46c22c377c74579691c1e5511ccdd9a99f93d2e7417fe69dc3e3d",
+      "bytes": 72565
+    },
+    "mockups/ios/ja/dark/ios-01-welcome.png": {
+      "sha256": "90b04782ef8a74b59e111e3b5c5f29f3d766ed6fb5a1208053d1f6bb8db900aa",
+      "bytes": 31849
+    },
+    "mockups/ios/ja/dark/ios-02-login.png": {
+      "sha256": "cb6c8ff0dbb0e9cc01bb7a06cb9c291cfd94166f496448aa0bb703fb8d273175",
+      "bytes": 36857
+    },
+    "mockups/ios/ja/dark/ios-03-mfa.png": {
+      "sha256": "fec7a07bcb07d6a04debc0293c21b7208c493c3c024ddd07acf6076dd9ed1a77",
+      "bytes": 30612
+    },
+    "mockups/ios/ja/dark/ios-04-faceid.png": {
+      "sha256": "d7796459a7083abf7ce2b4739567becb15214a2868cf0c2db7d1ba9821056d92",
+      "bytes": 35299
+    },
+    "mockups/ios/ja/dark/ios-05-permission.png": {
+      "sha256": "d1e501b90664049ca223ace79158445f7ee107c109e7a7286114c0d4afbe40e4",
+      "bytes": 34710
+    },
+    "mockups/ios/ja/dark/ios-06-stores.png": {
+      "sha256": "1b2f7c34e49e08138684473f6b1eaec1ad334f7dbd71212d883104bb7dbcd7be",
+      "bytes": 50799
+    },
+    "mockups/ios/ja/dark/ios-07-home.png": {
+      "sha256": "106fccc9402e5f2087f80bfab88a74384c223b28aa94e1339d5669790febebcf",
+      "bytes": 90793
+    },
+    "mockups/ios/ja/dark/ios-08-alerts.png": {
+      "sha256": "dd515a07020a56781c35886a4a4c4aade135cb67f666ada4d5ddb56d1521cc0d",
+      "bytes": 51215
+    },
+    "mockups/ios/ja/dark/ios-09-alert-detail.png": {
+      "sha256": "36cf1abbc916555568e678d253fa698dd85a965fd43db7b5b6e890eaf7061440",
+      "bytes": 190231
+    },
+    "mockups/ios/ja/dark/ios-10-clip.png": {
+      "sha256": "0c3884419688dbdec178fbad0ec4bd296f2df8fc47f93b4f6b27d2a18803dd9c",
+      "bytes": 147662
+    },
+    "mockups/ios/ja/dark/ios-11-acknowledge.png": {
+      "sha256": "c2f54e0d60f093d185ad19582a030dab16ecff8718bb21b00ba742a6e09b57cd",
+      "bytes": 92301
+    },
+    "mockups/ios/ja/dark/ios-12-outcome.png": {
+      "sha256": "b41d54b888bb83d056f82821e831e66f70878e6449a1f54893eb6a530c3eb508",
+      "bytes": 98410
+    },
+    "mockups/ios/ja/dark/ios-13-escalate.png": {
+      "sha256": "51c794a37e6ad1a5b6c799ab6e2f16e360cfcc37e4f01c53be6c1eb62f2f2dc1",
+      "bytes": 89783
+    },
+    "mockups/ios/ja/dark/ios-14-incident.png": {
+      "sha256": "f75ef5372fe029dc022f28a711496324ff16996d15c91775710a73bd8dadcb78",
+      "bytes": 189004
+    },
+    "mockups/ios/ja/dark/ios-15-history.png": {
+      "sha256": "d9978785525220426728e2eaf272efa3ba35c5f2d812d084554a3d903a80af2e",
+      "bytes": 50189
+    },
+    "mockups/ios/ja/dark/ios-16-search.png": {
+      "sha256": "81f3775ebece105f8233f8ca80b2958edfb836134b2c602b3ca3a97678a22e09",
+      "bytes": 85301
+    },
+    "mockups/ios/ja/dark/ios-17-results.png": {
+      "sha256": "f09a56b07c75192c28df9a319b1b5b572b02f1288444f6b2efcae13163f6618b",
+      "bytes": 274329
+    },
+    "mockups/ios/ja/dark/ios-18-watchlist.png": {
+      "sha256": "e74ba5e96f2bc0f9b253a05aba00551f31aa83c4fa44fa645ddacbcbd0da55e2",
+      "bytes": 240044
+    },
+    "mockups/ios/ja/dark/ios-19-profile.png": {
+      "sha256": "2a1c4a09b8728fc7bf8c421c401f3804abe190708145584b8642cb5070027e38",
+      "bytes": 176800
+    },
+    "mockups/ios/ja/dark/ios-20-subject-enroll.png": {
+      "sha256": "3eb3352cc544005a92244806c31db81ade94470642fbd8714403092c4a68e6f9",
+      "bytes": 103928
+    },
+    "mockups/ios/ja/dark/ios-21-staff.png": {
+      "sha256": "d60e0e2884ba62692605d378dc1f14d6e40736b3c070cedfe90dfb8e2bb522dd",
+      "bytes": 235537
+    },
+    "mockups/ios/ja/dark/ios-22-staff-enroll.png": {
+      "sha256": "96f2b358113c3cd4ca809e1c6a6234760e4b94544dcecb56a5f6fe98a2fe7074",
+      "bytes": 96628
+    },
+    "mockups/ios/ja/dark/ios-23-photo-capture.png": {
+      "sha256": "393c3d71e46120a5c4144633497bf4ffd89b666f2a9659157fd23b1e18cf80dc",
+      "bytes": 183928
+    },
+    "mockups/ios/ja/dark/ios-24-photo-quality.png": {
+      "sha256": "69b53e0bc60073cc3fb46ebd1d1abca885ff2a5164cfcf94c497ecd6242c7c6e",
+      "bytes": 239783
+    },
+    "mockups/ios/ja/dark/ios-25-visits.png": {
+      "sha256": "69d62ecdf001dc55ec2829fd88368226028e77933adb5e2ed9066cb1949bef69",
+      "bytes": 187990
+    },
+    "mockups/ios/ja/dark/ios-26-cameras.png": {
+      "sha256": "3ecfab19304027881d535e6a2a9226f3c5553634f47b3ae0069fda2b2d4fd333",
+      "bytes": 260289
+    },
+    "mockups/ios/ja/dark/ios-27-camera.png": {
+      "sha256": "b3bc11a96f62c11ca5ed9ae78f4c4a6c30f3731311ce9931c11d8d82928134ba",
+      "bytes": 153269
+    },
+    "mockups/ios/ja/dark/ios-28-notifications.png": {
+      "sha256": "4db514d8d2d4a7205850787a305092718e8ae6709a0b8eef298ba29b2b03f4b3",
+      "bytes": 77346
+    },
+    "mockups/ios/ja/dark/ios-29-account.png": {
+      "sha256": "7e3cc1c2af30b42a71a53cd9401e285ba082711e460ec1f4edeed1a69d4f673c",
+      "bytes": 76368
+    },
+    "mockups/ios/ja/dark/ios-30-team.png": {
+      "sha256": "f9ee755c9a9be7a25ce997fc70e833386a2a3b872cf4c2d0be1fbac3ca8fa22e",
+      "bytes": 236497
+    },
+    "mockups/ios/ja/dark/ios-31-offline.png": {
+      "sha256": "fba1db0814738f8959e9a09f6376f36af21bb7360fa3a6d2612dba41facef251",
+      "bytes": 44686
+    },
+    "mockups/ios/ja/dark/ios-32-empty.png": {
+      "sha256": "8ad79bac9de8a2ebf071911446149dab393b81473100fb7ad95d9e729550bbc1",
+      "bytes": 54538
+    },
+    "mockups/ios/ja/dark/ios-33-session-expired.png": {
+      "sha256": "b7f4c2595c54b2de4f05e864d1ead28202bd1f65e1277ea13bcc5ee44ca49601",
+      "bytes": 31574
+    },
+    "mockups/ios/ja/dark/ios-34-help.png": {
+      "sha256": "4f4d1faa93301a0e88a0f907c6a0b30b333ddbfc632560a495bc22ebe356dde7",
+      "bytes": 90212
+    },
+    "mockups/ios/ja/light/ios-01-welcome.png": {
+      "sha256": "6af9473db023a340c32f9c69f186e1d36f38c0491cd241cca06330e281ed00ce",
+      "bytes": 32560
+    },
+    "mockups/ios/ja/light/ios-02-login.png": {
+      "sha256": "d01ece7777b80362d3b09ab8fdf1cf069d41a4e4561978c557694d1ce7f8b8ba",
+      "bytes": 37661
+    },
+    "mockups/ios/ja/light/ios-03-mfa.png": {
+      "sha256": "ce40061a7a45c2882425f47c9bf684fd443f35bf93bba198c15ab06abc82545f",
+      "bytes": 31367
+    },
+    "mockups/ios/ja/light/ios-04-faceid.png": {
+      "sha256": "04426c1aab9eb4aae19e451d573a4b7c739a617ee9efb678141020f0884cf780",
+      "bytes": 35929
+    },
+    "mockups/ios/ja/light/ios-05-permission.png": {
+      "sha256": "eb1f2aac78465d56b03d8c2667676604f3122e7a61af049688e46fa619ccd2fe",
+      "bytes": 35437
+    },
+    "mockups/ios/ja/light/ios-06-stores.png": {
+      "sha256": "768bf30c968029899879c398ef8ae3677ec421712661fa64e89307f2032fe2f4",
+      "bytes": 50686
+    },
+    "mockups/ios/ja/light/ios-07-home.png": {
+      "sha256": "9d5a7540a187e0a5cb746f6e09a09ee1af7f25bbe5a1420f83e134c5ab8d0b6f",
+      "bytes": 93315
+    },
+    "mockups/ios/ja/light/ios-08-alerts.png": {
+      "sha256": "9133d634d37d9ff7ac18ee683a6f3dbe7c6f6e272eb2f2a40858900f3f14530b",
+      "bytes": 51153
+    },
+    "mockups/ios/ja/light/ios-09-alert-detail.png": {
+      "sha256": "6bc641e004fc339e682030051745377bbd67047e3ef4063209d0a53fd59af7e3",
+      "bytes": 190108
+    },
+    "mockups/ios/ja/light/ios-10-clip.png": {
+      "sha256": "dd1f17d4f2bafbc5c5398905962f16445f17e2984ed9fc579776378a2b8aedcf",
+      "bytes": 148420
+    },
+    "mockups/ios/ja/light/ios-11-acknowledge.png": {
+      "sha256": "68d791e613238330d9896f71b671dafed7f45c5d38a73359683993f000f03dde",
+      "bytes": 92676
+    },
+    "mockups/ios/ja/light/ios-12-outcome.png": {
+      "sha256": "84cdd0d6c276a0256c09209433aff0674aff73adb593621200a9754bf2b2e22e",
+      "bytes": 98847
+    },
+    "mockups/ios/ja/light/ios-13-escalate.png": {
+      "sha256": "cf6f7fd66e2942d225138583addcb71718c3038a59019440afdff59e681eada5",
+      "bytes": 90191
+    },
+    "mockups/ios/ja/light/ios-14-incident.png": {
+      "sha256": "ba6b1f07b3f211928508675c92a240278de0198532e39f095901cb7e896d1b2e",
+      "bytes": 188933
+    },
+    "mockups/ios/ja/light/ios-15-history.png": {
+      "sha256": "e0db35371a41cd39a15ffba8cee75dfeb1d3343d3402ec8fe068886c39e855a2",
+      "bytes": 50077
+    },
+    "mockups/ios/ja/light/ios-16-search.png": {
+      "sha256": "15bf01084caa93f93155c3bcf5f4d6b1d9514e5c0b611766644e150293cecb78",
+      "bytes": 85576
+    },
+    "mockups/ios/ja/light/ios-17-results.png": {
+      "sha256": "7a83614b3805e19c90839cdd394268dd60c3ea73ae8bd510ca1734a3df836c81",
+      "bytes": 274747
+    },
+    "mockups/ios/ja/light/ios-18-watchlist.png": {
+      "sha256": "301dde0bbeae1441a489bf4bddaa2e74f91ed6ce3c041a3dd8c67497d11c804d",
+      "bytes": 241075
+    },
+    "mockups/ios/ja/light/ios-19-profile.png": {
+      "sha256": "2c4c076c868e333769b962692dfedeae0146f6d5a7c77c87360e6a17b3dad3c7",
+      "bytes": 177011
+    },
+    "mockups/ios/ja/light/ios-20-subject-enroll.png": {
+      "sha256": "8dbc9286dd5a4af6ca74b655ba0dbe689ac4732133bc032bcc56e7c174bf6b6a",
+      "bytes": 103922
+    },
+    "mockups/ios/ja/light/ios-21-staff.png": {
+      "sha256": "df565bebc8e98d6e0ca4cd6daa5c8f4e2a620f1a368b370b0f14fd7773fc3c0c",
+      "bytes": 236339
+    },
+    "mockups/ios/ja/light/ios-22-staff-enroll.png": {
+      "sha256": "4733a5d64c73350f01f24f3b0c72b0cbd2c6df52fbe0330cead102dad212555b",
+      "bytes": 96618
+    },
+    "mockups/ios/ja/light/ios-23-photo-capture.png": {
+      "sha256": "84adf4b602057dd786b90dd887902bf2ae5a24b43fc3967cd7c0cfa61682b087",
+      "bytes": 184006
+    },
+    "mockups/ios/ja/light/ios-24-photo-quality.png": {
+      "sha256": "fb6d9021d4ff5fe8df34232408796d4891648794fb5eb2f16ca204f5118b6655",
+      "bytes": 240677
+    },
+    "mockups/ios/ja/light/ios-25-visits.png": {
+      "sha256": "5d83f5fba94f0a23fb78f62e0cd7e0b955086f872584e01451b791b867a355c8",
+      "bytes": 187870
+    },
+    "mockups/ios/ja/light/ios-26-cameras.png": {
+      "sha256": "646414b17168e5c0f5572c9e47d06e8fce6c0e0bd58c2f1cc7a6406214c0f37c",
+      "bytes": 260797
+    },
+    "mockups/ios/ja/light/ios-27-camera.png": {
+      "sha256": "c4039cae46daba6ccb8e0144ed86734b02bdca1c993f0987cb552978137de059",
+      "bytes": 153958
+    },
+    "mockups/ios/ja/light/ios-28-notifications.png": {
+      "sha256": "b4569396e3f5580a9b33d11961e0ff6e0e1a4bb14d25964a0389bd265b374b0a",
+      "bytes": 78217
+    },
+    "mockups/ios/ja/light/ios-29-account.png": {
+      "sha256": "772eaec0dfefd9cb127f85806a3a94bb9c80c55ff2d7dd86d4a27f75e504ee76",
+      "bytes": 77036
+    },
+    "mockups/ios/ja/light/ios-30-team.png": {
+      "sha256": "1b10b9d7c99a83f0bfaabc933bbe3e2b479496d1c10115b6b3f82015ff1cb43a",
+      "bytes": 237353
+    },
+    "mockups/ios/ja/light/ios-31-offline.png": {
+      "sha256": "7dceb57df1361f4f604c400bbb392868d23775101f37d7eb4934af78ba54b81a",
+      "bytes": 45175
+    },
+    "mockups/ios/ja/light/ios-32-empty.png": {
+      "sha256": "b7d039ad0167d5f3fca23e526824c4e9470605b3d50046ee7092f1689d119c1c",
+      "bytes": 55250
+    },
+    "mockups/ios/ja/light/ios-33-session-expired.png": {
+      "sha256": "6f59f113498b5dfb205f1e187ed7e28ef873ba5307afeee6dc09912d5596ca29",
+      "bytes": 32300
+    },
+    "mockups/ios/ja/light/ios-34-help.png": {
+      "sha256": "9443fcb803ce050575f02a8a259a67e2cce989e748f301d699068972d85d48b8",
+      "bytes": 90782
+    },
+    "mockups/ios-gallery-preview.png": {
+      "sha256": "8ac1fd82bdba37d96a1904938f0a4d5e5158285810dec18a748db0c46540a4be",
+      "bytes": 202351
+    },
+    "mockups/render_report.json": {
+      "sha256": "be33dda67350ce93a8e47a54a2d2d9ba6ed1c18ca8bf0e7dc8caba587ac20eb9",
+      "bytes": 16068
+    },
+    "mockups/web/en/dark/web-01-login.png": {
+      "sha256": "39000a5648e5d377ca29b1b1fd723201777f4a0be576c65feffc795cc5d1cf57",
+      "bytes": 381279
+    },
+    "mockups/web/en/dark/web-02-mfa.png": {
+      "sha256": "fb9b06f260d0cd60ea4f32e2d323ac0a9701f4a0823e923a52a35ed70a091537",
+      "bytes": 379184
+    },
+    "mockups/web/en/dark/web-03-reset.png": {
+      "sha256": "a84e71854445ef06420c87c170e03e2b0d210326c07509124e96ad4ad0b257fc",
+      "bytes": 381289
+    },
+    "mockups/web/en/dark/web-04-organization.png": {
+      "sha256": "56523acb42c76915a181b8554039fd91741e150619d0109923818f875e8458ce",
+      "bytes": 99793
+    },
+    "mockups/web/en/dark/web-05-stores.png": {
+      "sha256": "8fcb1981ebc324575f6183ea767898b98fdc4d3b61e3fb51f07cc41548272614",
+      "bytes": 98592
+    },
+    "mockups/web/en/dark/web-06-store-detail.png": {
+      "sha256": "4968b7bb0cf32cf58d745325e88ef81fc2d88d4a15169ad30c5bed8e1030c7e8",
+      "bytes": 406207
+    },
+    "mockups/web/en/dark/web-07-store-add.png": {
+      "sha256": "f893d8b1fad5c48c489fc222bd809161a673738b5d9d12239fbe0ae0b3a888f7",
+      "bytes": 101106
+    },
+    "mockups/web/en/dark/web-08-edge-pair.png": {
+      "sha256": "edffd1199e0871687d305a2de7dfe62aae485f80191a90f2c7bb099ddb230a4b",
+      "bytes": 102806
+    },
+    "mockups/web/en/dark/web-09-dashboard.png": {
+      "sha256": "628e9ed8f970530a47e3d68f1be718dd67a1c27015d3f7d7267cf97bd003630e",
+      "bytes": 406633
+    },
+    "mockups/web/en/dark/web-10-live.png": {
+      "sha256": "a5bf50c3c588739c302bc2c1d9f00adf9e3da428c3eac7f8982f5f33577d9291",
+      "bytes": 1089429
+    },
+    "mockups/web/en/dark/web-11-camera-discovery.png": {
+      "sha256": "e5fd520c0d84d5c0826fd2f11903f1aafd1f69fd01c7bf8cf9ca899a6af35095",
+      "bytes": 97555
+    },
+    "mockups/web/en/dark/web-12-camera-add.png": {
+      "sha256": "6d68ab0588acf0c2b0b83cbeff7d855e71772876a3f4967a976d4d9b775fca6e",
+      "bytes": 104014
+    },
+    "mockups/web/en/dark/web-13-camera-import.png": {
+      "sha256": "584d5a300ea9f99cd997ebb69c45db4921b6f3801fb0fe506d487bd35eaa063e",
+      "bytes": 104915
+    },
+    "mockups/web/en/dark/web-14-cameras.png": {
+      "sha256": "31fe7c2ac4c41fa18a5710a50ce14007b139d7258df58014ddcab9cd7aac1968",
+      "bytes": 98935
+    },
+    "mockups/web/en/dark/web-15-camera-detail.png": {
+      "sha256": "f6911b623998abde00cdba3e5da1fb8ce521aa3e4190072259ddc05d8fced3a5",
+      "bytes": 932377
+    },
+    "mockups/web/en/dark/web-16-zones.png": {
+      "sha256": "aaf0904569364d1f5f2eab3faec6bcabd825ee19f72a52f3e433d3e7da5f11d4",
+      "bytes": 356147
+    },
+    "mockups/web/en/dark/web-17-detection-rules.png": {
+      "sha256": "52927a6442096c6b48386b3ca2832b3ed42d5d5435f857780261751b8b71c84d",
+      "bytes": 97878
+    },
+    "mockups/web/en/dark/web-18-calibration.png": {
+      "sha256": "8908670fd6db4486af33f1dd4e5eb43aa76e7116ffac8f95700d0b84f0d19c0b",
+      "bytes": 93369
+    },
+    "mockups/web/en/dark/web-19-alerts.png": {
+      "sha256": "088216debb6d86998c028e968cad0b1777ee4fb2831949fb0b705f5be96d086f",
+      "bytes": 97803
+    },
+    "mockups/web/en/dark/web-20-alert-detail.png": {
+      "sha256": "477a195966d778ec01903579be9d27950e6fa0f08ceec91e2c3fc85f29b0c684",
+      "bytes": 367100
+    },
+    "mockups/web/en/dark/web-21-alert-outcome.png": {
+      "sha256": "572f4f632bf132ecf5e52889317dca36d2f728e6bce14744253b7b0125c78fe9",
+      "bytes": 105408
+    },
+    "mockups/web/en/dark/web-22-alert-escalation.png": {
+      "sha256": "ce76a93c9eaeddc7eed0a6dd7649c07aad6d4522e7386b68e32b67d08199058f",
+      "bytes": 96611
+    },
+    "mockups/web/en/dark/web-23-incidents.png": {
+      "sha256": "f77909965338474b91dfebabc990fd366d254f38e791241b5252d78a6fcc9963",
+      "bytes": 101701
+    },
+    "mockups/web/en/dark/web-24-incident-detail.png": {
+      "sha256": "fd4ea88ce13edfc160c9ac63c9b390fd40fba684352ad81ed3645b2a6c6b57ce",
+      "bytes": 367439
+    },
+    "mockups/web/en/dark/web-25-cases.png": {
+      "sha256": "bbebc85ac3dbf08c0206cc38a8fd8e00112461b9a83126b8f9d261e0822dcf12",
+      "bytes": 99368
+    },
+    "mockups/web/en/dark/web-26-case-detail.png": {
+      "sha256": "ceb239452e55e2b971b1e60a39439ace7e86da8e166f5e7b0586b615e5c16dc4",
+      "bytes": 366504
+    },
+    "mockups/web/en/dark/web-27-watchlist.png": {
+      "sha256": "31bc0626d283706856c305114dae339abdcefcdedab38f8137cbc1cf8f4de68f",
+      "bytes": 652457
+    },
+    "mockups/web/en/dark/web-28-watchlist-enroll.png": {
+      "sha256": "0e2926ba662072d26daff0b1d3e7c4af62cb565490aa27fe9eb0501395fbacdc",
+      "bytes": 124536
+    },
+    "mockups/web/en/dark/web-29-watchlist-detail.png": {
+      "sha256": "6cfb699dfb15464a2204674ee60d0b048fff9103a5afe547ebd5c04e51fbde9f",
+      "bytes": 237216
+    },
+    "mockups/web/en/dark/web-30-watchlist-approval.png": {
+      "sha256": "5e509184cc91ed1c0d9cc5c42e7648eab706468f37571c1eac460e7e76ccfe58",
+      "bytes": 366534
+    },
+    "mockups/web/en/dark/web-31-staff.png": {
+      "sha256": "e879182824a8c0cdab699720fc7f51380144195ee5e6f883e3b8c85f24c5b329",
+      "bytes": 652731
+    },
+    "mockups/web/en/dark/web-32-staff-enroll.png": {
+      "sha256": "31e1c23644a4829f83fc03ddb24c478f3ccbb7cb3c14fd00b30efc0bb9ab1a25",
+      "bytes": 120558
+    },
+    "mockups/web/en/dark/web-33-staff-detail.png": {
+      "sha256": "67046c24f9008bd56ce63760041821ccdd5cfd8f28a84ebfae818b326450e06d",
+      "bytes": 236219
+    },
+    "mockups/web/en/dark/web-34-photos.png": {
+      "sha256": "91d48e70b33e3c037a51ae2e8e423f99e33b8f3599f1f5217aede5b9021b35e5",
+      "bytes": 356089
+    },
+    "mockups/web/en/dark/web-35-search.png": {
+      "sha256": "35247cf319c7cfd938bb60941f1b4c3234db3e8fba4d0f4247ef6f5f57452c10",
+      "bytes": 105771
+    },
+    "mockups/web/en/dark/web-36-search-results.png": {
+      "sha256": "8e6f7095f7218647c6bc599ac228e700ca5254a362e972eb5fba88fd3666ca4d",
+      "bytes": 744972
+    },
+    "mockups/web/en/dark/web-37-visit-detail.png": {
+      "sha256": "05c870aa308aed5eff5ac3eaa12526119bce5b18912ea4a438ac87807586af4a",
+      "bytes": 366588
+    },
+    "mockups/web/en/dark/web-38-checkout.png": {
+      "sha256": "2679a5c06b19fa7c10f9de76f91908c18c0b66f109652ef2af551c502fe18675",
+      "bytes": 98843
+    },
+    "mockups/web/en/dark/web-39-checkout-detail.png": {
+      "sha256": "2390c22b479eb9d6a7b1ea32fb72d9b5dc9ea8d80ffe491dc59b15569eeb55ca",
+      "bytes": 318500
+    },
+    "mockups/web/en/dark/web-40-integrations.png": {
+      "sha256": "2612e2742b661ea49ba91899f84d3e667898ccd2d562d26aca4fee56a5aa3660",
+      "bytes": 97832
+    },
+    "mockups/web/en/dark/web-41-reports.png": {
+      "sha256": "75b0aea7c8b635b2d2c50afab8f7345f6459fa06b17017af7fe53075a23c80ea",
+      "bytes": 95578
+    },
+    "mockups/web/en/dark/web-42-report-export.png": {
+      "sha256": "79208bb6dc405b58d4b75d49f3ed96672183d36171c054345cfe86cde491361d",
+      "bytes": 101802
+    },
+    "mockups/web/en/dark/web-43-users.png": {
+      "sha256": "be207244e1882ef1ece8beffa5844d4650c2c7e4b4a55ddf4114e80968cd463c",
+      "bytes": 97803
+    },
+    "mockups/web/en/dark/web-44-user-invite.png": {
+      "sha256": "c517a3ef84d13397621386d20dc8bc5ed5344444139f2f96ce371684e991ee64",
+      "bytes": 96611
+    },
+    "mockups/web/en/dark/web-45-roles.png": {
+      "sha256": "c93ab388fad74dbf7537084cf656158f9566d13b669d6c0c9b0da53dc407375c",
+      "bytes": 71218
+    },
+    "mockups/web/en/dark/web-46-logs.png": {
+      "sha256": "326e6fe2044b81697bf9342982f4ff2345bf715dbf745ce5c7f46e65ab87e8ac",
+      "bytes": 104040
+    },
+    "mockups/web/en/dark/web-47-health.png": {
+      "sha256": "0ad727f1afbcacb92fbd83fcb53925c4042da96333f605e3d920d90abf846750",
+      "bytes": 405409
+    },
+    "mockups/web/en/dark/web-48-models.png": {
+      "sha256": "4222a0bf69170dd527f50438aaa8a82b7ec8614acc9a6dd6b67b5ece39e338cf",
+      "bytes": 103052
+    },
+    "mockups/web/en/dark/web-49-settings.png": {
+      "sha256": "c2ca3dbae14fe5931cdf8b45778c3be9938b9412a7d1118e0509bacf6fb94a68",
+      "bytes": 95611
+    },
+    "mockups/web/en/dark/web-50-privacy.png": {
+      "sha256": "cd2973917efbad5c016bed7974630590118a7a54b47e17b233d6d697f9d2ef05",
+      "bytes": 98121
+    },
+    "mockups/web/en/dark/web-51-notifications.png": {
+      "sha256": "f9e628ad2fa2175dd3fed9e89d03cad32b1dff3259d3a9530a211eb890e1c4d0",
+      "bytes": 95175
+    },
+    "mockups/web/en/dark/web-52-support.png": {
+      "sha256": "c11c06b11d5cccaff8b9dc9fabca17c534dbdbc0f37d89d0c106b2a281daa5bd",
+      "bytes": 106616
+    },
+    "mockups/web/en/dark/web-53-empty.png": {
+      "sha256": "5f3e7fcea4bfce1053b0ca8cff3d444043ac4f4bdbe4fa9c0373f0db5ea86f2d",
+      "bytes": 74904
+    },
+    "mockups/web/en/dark/web-54-error.png": {
+      "sha256": "d9317997b109f201ea0f78faca48b135b9bd6349f53b85e676e84e63e60a1afc",
+      "bytes": 72654
+    },
+    "mockups/web/en/light/web-01-login.png": {
+      "sha256": "40213be9d0f0a56f32fc3270038635de19d284654652556ae7bb935ea38363a7",
+      "bytes": 380774
+    },
+    "mockups/web/en/light/web-02-mfa.png": {
+      "sha256": "07e979569560c6605358cbd24ac8409a577e9ceb6b6c4e2d1485c91461e9df20",
+      "bytes": 378753
+    },
+    "mockups/web/en/light/web-03-reset.png": {
+      "sha256": "fdc753d341e86fb5fec0e52d82d0dea9a9e331bcddef2ac818caf043463046fd",
+      "bytes": 380906
+    },
+    "mockups/web/en/light/web-04-organization.png": {
+      "sha256": "965644df20017213a19d3dd32ce521ad4d3faa162e856856d0b4644c77aa2423",
+      "bytes": 100966
+    },
+    "mockups/web/en/light/web-05-stores.png": {
+      "sha256": "ed7151b74a7a3c0bb4c9241cf3449822092963a4bd574f59b71ee36b9c9dfb5e",
+      "bytes": 98890
+    },
+    "mockups/web/en/light/web-06-store-detail.png": {
+      "sha256": "70415c0a93dfa334ea0c275820ce66f1d276c2bb573167de9061c1d06de4de3d",
+      "bytes": 410103
+    },
+    "mockups/web/en/light/web-07-store-add.png": {
+      "sha256": "5dbc4099f56f27710826b3150b7dd162d263a20214ea337f2e26c3dfc4f44bf7",
+      "bytes": 102623
+    },
+    "mockups/web/en/light/web-08-edge-pair.png": {
+      "sha256": "59c236ccddbea0eb9817ae8701d1c8e0bd8d6633a8725f5aff533001af1ee01c",
+      "bytes": 104206
+    },
+    "mockups/web/en/light/web-09-dashboard.png": {
+      "sha256": "9b8d0890ab0fdc08d6ccd7d4705e5bc116bfd6c745c09c7449c4614855fd654a",
+      "bytes": 410489
+    },
+    "mockups/web/en/light/web-10-live.png": {
+      "sha256": "c07cfa55e74f9dff217fa1a975e8ff938dc989dfd6da38f65dd98752728170bc",
+      "bytes": 1091866
+    },
+    "mockups/web/en/light/web-11-camera-discovery.png": {
+      "sha256": "ed651ba5a6400195ae9e6d337a3ebc05b429d68f8f11fb3b6ef8155e3fdf9d11",
+      "bytes": 99116
+    },
+    "mockups/web/en/light/web-12-camera-add.png": {
+      "sha256": "c55977121ab515d0b29640e4253ef86c21b15bb4bc3476eff77cec59a12afd49",
+      "bytes": 105641
+    },
+    "mockups/web/en/light/web-13-camera-import.png": {
+      "sha256": "77fba94618bbd6eea21a43a7d713609a416ba7688598165a849d57b1e6b28999",
+      "bytes": 106268
+    },
+    "mockups/web/en/light/web-14-cameras.png": {
+      "sha256": "74547cd9a3ba719f58dad6130eca449df2a36d297728cffd7caa3ab8bd5991ea",
+      "bytes": 98975
+    },
+    "mockups/web/en/light/web-15-camera-detail.png": {
+      "sha256": "87cadb1565198e18371d5e93b46e8d89405006fc6d7fa9057816374d09c858f8",
+      "bytes": 934115
+    },
+    "mockups/web/en/light/web-16-zones.png": {
+      "sha256": "dfc0d4217c48f714088fe171e78c5e1ebf6b693ec1048ab5db31931b9891dffe",
+      "bytes": 357206
+    },
+    "mockups/web/en/light/web-17-detection-rules.png": {
+      "sha256": "012c7b17a86c72cedb37dd96b9ef7fc18eb0a6359eea82a0f0f99caf1cacf97c",
+      "bytes": 99345
+    },
+    "mockups/web/en/light/web-18-calibration.png": {
+      "sha256": "1682b3dc5affae4b19a071d2bf436f48370b3b2990360cb241e910314d9c2a97",
+      "bytes": 96543
+    },
+    "mockups/web/en/light/web-19-alerts.png": {
+      "sha256": "ad4e9fee775c1b29f6dd499e4e8aecba521ccfb6940382279f84fc06a0ac4f0a",
+      "bytes": 98111
+    },
+    "mockups/web/en/light/web-20-alert-detail.png": {
+      "sha256": "11587fa7cd95fbf4ba69c4e1cc8c01bfb7d8e61f598214ada7ec8f9b5c631d9d",
+      "bytes": 367562
+    },
+    "mockups/web/en/light/web-21-alert-outcome.png": {
+      "sha256": "ede3212ea0b3333073060c9c286abae17f6fff8030aacb131fb3f8a136f6515d",
+      "bytes": 106773
+    },
+    "mockups/web/en/light/web-22-alert-escalation.png": {
+      "sha256": "b594883013982287891c062d77c56811f71f3dd214f50a41004357167fdadb55",
+      "bytes": 98131
+    },
+    "mockups/web/en/light/web-23-incidents.png": {
+      "sha256": "1ca9b7d5cf9c8a2a8f422b80a7c1c16e07167192c3ce6d1e2847942962687df7",
+      "bytes": 101742
+    },
+    "mockups/web/en/light/web-24-incident-detail.png": {
+      "sha256": "ae02433f5d077982872d4d0655ee8db0834d42f1f72709dd09157e9cc627c654",
+      "bytes": 367971
+    },
+    "mockups/web/en/light/web-25-cases.png": {
+      "sha256": "6ad352e609bf2fa479e6f65cf5b71b933cb27d4612b3b5024536a478e40028d5",
+      "bytes": 99555
+    },
+    "mockups/web/en/light/web-26-case-detail.png": {
+      "sha256": "afc75e623afbc6ce937726fa4198ee3a33d0783efd8ace68561ec789f53ba030",
+      "bytes": 367012
+    },
+    "mockups/web/en/light/web-27-watchlist.png": {
+      "sha256": "9b39a2152d3bf850b1c218863f875997999eabe098d6d4928eff8a4e3d445e79",
+      "bytes": 655226
+    },
+    "mockups/web/en/light/web-28-watchlist-enroll.png": {
+      "sha256": "d35eb75f58876e9436b02599c0c19a47997b005a44434f0162edda96efbfd89d",
+      "bytes": 125423
+    },
+    "mockups/web/en/light/web-29-watchlist-detail.png": {
+      "sha256": "5e7de0839618f87d007649eacb43e2415c2511a0947f8ecee851670df6d8b6a3",
+      "bytes": 238366
+    },
+    "mockups/web/en/light/web-30-watchlist-approval.png": {
+      "sha256": "244f61e0e29bbc59e285449d344545c0a54d63a5be68361367465365e3f6db92",
+      "bytes": 367043
+    },
+    "mockups/web/en/light/web-31-staff.png": {
+      "sha256": "1082da44543b3f707d89a48d4b6e1b3027314cef54045514044f79601157264e",
+      "bytes": 655490
+    },
+    "mockups/web/en/light/web-32-staff-enroll.png": {
+      "sha256": "a99c3513d0c4ed30925be86bc8f8c4b8c2076ff465a5724a190a4e91f2097da1",
+      "bytes": 121487
+    },
+    "mockups/web/en/light/web-33-staff-detail.png": {
+      "sha256": "992c40545619216d550f06ed936377ee214f86811056ecd91a995c46cf5b315b",
+      "bytes": 237267
+    },
+    "mockups/web/en/light/web-34-photos.png": {
+      "sha256": "b9f77771ef03e51da554951a204845104d7caad0d7e9866e92152a0846c7fd73",
+      "bytes": 356893
+    },
+    "mockups/web/en/light/web-35-search.png": {
+      "sha256": "d83446f74c25cda730da120b9b3c90513836368eeedefe048cba982b1cc9bd1b",
+      "bytes": 106458
+    },
+    "mockups/web/en/light/web-36-search-results.png": {
+      "sha256": "5a92ef3d1dade8925c91b613c9f5613b375715455890e3f75174dd98fef9dff6",
+      "bytes": 746792
+    },
+    "mockups/web/en/light/web-37-visit-detail.png": {
+      "sha256": "2f4ea4af39e14564411199f4a5e8af24af8dbb59bf72be0d821674a6a0eb2329",
+      "bytes": 366986
+    },
+    "mockups/web/en/light/web-38-checkout.png": {
+      "sha256": "81ce94293e69649e254fececec2a3ddae66fb5f536de4bbb07a1b0306386aa71",
+      "bytes": 99216
+    },
+    "mockups/web/en/light/web-39-checkout-detail.png": {
+      "sha256": "57afeb67e7e1d4b4a44b696ab290d453c1bc009b4ac85a11bfec15778b70ed88",
+      "bytes": 319849
+    },
+    "mockups/web/en/light/web-40-integrations.png": {
+      "sha256": "97398c07de114e1a10cc966a870d66796dd29d75f942cee50c6a8267b4726a96",
+      "bytes": 99559
+    },
+    "mockups/web/en/light/web-41-reports.png": {
+      "sha256": "3dbac8d54268ac22b60bb2592461feca93e827dc5083829c6b10a0639ed33122",
+      "bytes": 98861
+    },
+    "mockups/web/en/light/web-42-report-export.png": {
+      "sha256": "ee4698bbe2e11f3ebd86e8e65edc94589a618f17c60d98b1bf6d8552edc7f75b",
+      "bytes": 103382
+    },
+    "mockups/web/en/light/web-43-users.png": {
+      "sha256": "4543824fab2044933c13b8294a251881eef04e3d88c8fc24a2c800b16eb54aa3",
+      "bytes": 98140
+    },
+    "mockups/web/en/light/web-44-user-invite.png": {
+      "sha256": "74ba9faf0f2e1ebd558c760c1cf2cadf021a96218da976eb3d60f1e57b9c911d",
+      "bytes": 98190
+    },
+    "mockups/web/en/light/web-45-roles.png": {
+      "sha256": "04d8bef234b5bbecec34ccca441b8f412f68cfc88053971ca0390dea443cb37c",
+      "bytes": 72309
+    },
+    "mockups/web/en/light/web-46-logs.png": {
+      "sha256": "ccfa4d8dbbaf196c8eb2d04a303a00afc71c5a17c1356c3cf0669af5fb527763",
+      "bytes": 104218
+    },
+    "mockups/web/en/light/web-47-health.png": {
+      "sha256": "fd8125fda6dc7ca2717bc7e563199a59882b53d0fbcc32f389cf71e55b1e3bab",
+      "bytes": 409416
+    },
+    "mockups/web/en/light/web-48-models.png": {
+      "sha256": "59330720d02d835faa2d7e8a30468eb89b3f0066aa2ebdc36f7de0bf6b0e30a7",
+      "bytes": 103274
+    },
+    "mockups/web/en/light/web-49-settings.png": {
+      "sha256": "6fa3f2d14cbe9ad453bf6ee4ebb02a96da46e68dce6452ab78b417a74a6089fd",
+      "bytes": 96950
+    },
+    "mockups/web/en/light/web-50-privacy.png": {
+      "sha256": "94d5b74eb538af640b9f59b0035e078e2f8613cb68e64ed2326ddd51bc451bb6",
+      "bytes": 99755
+    },
+    "mockups/web/en/light/web-51-notifications.png": {
+      "sha256": "2d4fcb78c6f8a3968791d52a97894572f744687e3630a44289196b6aa7ac6ebc",
+      "bytes": 96509
+    },
+    "mockups/web/en/light/web-52-support.png": {
+      "sha256": "7d6c2c2dce35f2cf77794129b013a5a449722966b7acdfc4fd53da618c2f9142",
+      "bytes": 108168
+    },
+    "mockups/web/en/light/web-53-empty.png": {
+      "sha256": "37df8acd503138bbde7e1848c1433abfa733782be3bf41c5f9c57057cadacca6",
+      "bytes": 76297
+    },
+    "mockups/web/en/light/web-54-error.png": {
+      "sha256": "0bbccb6675472b34cbc5cbe4771a49ac5ecfa6e9ccb5cb25c206bf79298ab158",
+      "bytes": 73916
+    },
+    "mockups/web/ja/dark/web-01-login.png": {
+      "sha256": "44b663b6709b43d8c5a2b5bb7a8d2d6e850076016fb9115ebafceb4e21516d9b",
+      "bytes": 390478
+    },
+    "mockups/web/ja/dark/web-02-mfa.png": {
+      "sha256": "fd1365a7b17ebe54bfe9f1931621428add303b1199ae96598c53e0c898ca4a3a",
+      "bytes": 387094
+    },
+    "mockups/web/ja/dark/web-03-reset.png": {
+      "sha256": "a74b7800634cc848ad8d164330ef96cbfe01d7a5e17f80f7bd1bdbbd7a274e2e",
+      "bytes": 392479
+    },
+    "mockups/web/ja/dark/web-04-organization.png": {
+      "sha256": "ed93e6d8b91abccdbacfe03fb176ed4589f9f82be2c6f4c6f1da832cf600a2b5",
+      "bytes": 121642
+    },
+    "mockups/web/ja/dark/web-05-stores.png": {
+      "sha256": "b4cfc69952101b4907710c82676f42c7df52fdf68dab947a02cc69e9658c2f11",
+      "bytes": 107506
+    },
+    "mockups/web/ja/dark/web-06-store-detail.png": {
+      "sha256": "a9c62b46cf9cb7f831363a11bca9cf9d3fd6b84ac9fbeac6c4e10dea560ca24e",
+      "bytes": 424796
+    },
+    "mockups/web/ja/dark/web-07-store-add.png": {
+      "sha256": "3ba39e2d4e3d74542be9cee3540ac049527f7041d57b4aa0de1a7e0ec55810be",
+      "bytes": 121742
+    },
+    "mockups/web/ja/dark/web-08-edge-pair.png": {
+      "sha256": "dbe2907afc887dbc0a6f7c2de9d19df4c726d035b52f0a7db8cd763725442166",
+      "bytes": 128006
+    },
+    "mockups/web/ja/dark/web-09-dashboard.png": {
+      "sha256": "0271494209996abf82d35f8f2579570c1eb691cf48aabcc3f752af9a2496ac92",
+      "bytes": 428573
+    },
+    "mockups/web/ja/dark/web-10-live.png": {
+      "sha256": "9d300d35a1db1a735083133cde4d2fd1a9de9b748c36b2fb216f0431bd853497",
+      "bytes": 1099335
+    },
+    "mockups/web/ja/dark/web-11-camera-discovery.png": {
+      "sha256": "db851ba6e9c78196e46c6c38c85b9a59c359d044c13af2ac06cb7e14fcd9d8f5",
+      "bytes": 119749
+    },
+    "mockups/web/ja/dark/web-12-camera-add.png": {
+      "sha256": "1ec50aa75a9a4ee0809a09287342fe817ddf04cf631f262b89b76a108b677fc9",
+      "bytes": 126307
+    },
+    "mockups/web/ja/dark/web-13-camera-import.png": {
+      "sha256": "295447df85e9d93e293acd94c6997b015d554c3a34de8620f34b011693ddbad8",
+      "bytes": 132789
+    },
+    "mockups/web/ja/dark/web-14-cameras.png": {
+      "sha256": "06b1970e8a14aa9267cafe62d552b488add8e3319d8baf44a1adf2b962c78e6d",
+      "bytes": 107961
+    },
+    "mockups/web/ja/dark/web-15-camera-detail.png": {
+      "sha256": "67565e2a3c30e8ac92215421a14832e0dc98c5b2e2771cac1af0e817b7b4c297",
+      "bytes": 951447
+    },
+    "mockups/web/ja/dark/web-16-zones.png": {
+      "sha256": "289e8f97cdb94337b55cd8e9598b52dfc72be23ed007cad71c51a8c2329f9b52",
+      "bytes": 372600
+    },
+    "mockups/web/ja/dark/web-17-detection-rules.png": {
+      "sha256": "3bab18102a153575050c29f6ddae22edbdebcae8acf285993889e1f1d55ce73e",
+      "bytes": 120226
+    },
+    "mockups/web/ja/dark/web-18-calibration.png": {
+      "sha256": "e7aa39d3553c8c4ed29f3e5279be775decbb0c8ffa84f24034599d5013eb761c",
+      "bytes": 112923
+    },
+    "mockups/web/ja/dark/web-19-alerts.png": {
+      "sha256": "695b5c2293031978e69abb4047d4c62b0ec9d7f57f051d1a12f1a4b67fd0ed53",
+      "bytes": 107359
+    },
+    "mockups/web/ja/dark/web-20-alert-detail.png": {
+      "sha256": "5ddc2ecff3d0c2918cad85b7291017b42b15046827dbd8c5ac9e495c950fd7b8",
+      "bytes": 390501
+    },
+    "mockups/web/ja/dark/web-21-alert-outcome.png": {
+      "sha256": "8c193210b92c85e8c9cf35115ad8272fb49bcebd097a97963997f8bd83641c14",
+      "bytes": 134003
+    },
+    "mockups/web/ja/dark/web-22-alert-escalation.png": {
+      "sha256": "e4345966571c48ef9d38f35e36a99da00c4fe9fac6d9bd8f50026202b3277fac",
+      "bytes": 118715
+    },
+    "mockups/web/ja/dark/web-23-incidents.png": {
+      "sha256": "7c99a77e28c9130919854396722856f4a06cff3f9cd09c004f31471fa9c0f080",
+      "bytes": 111224
+    },
+    "mockups/web/ja/dark/web-24-incident-detail.png": {
+      "sha256": "69daa2f92b873515d1f40f1ae7914fe957fb7f12e7e8293763ec7a0b3f635b54",
+      "bytes": 387619
+    },
+    "mockups/web/ja/dark/web-25-cases.png": {
+      "sha256": "3e516b6a08fda255dea2551a95bbf8a7a3ff814d2eb7f8d89d29362f0dab4a65",
+      "bytes": 108877
+    },
+    "mockups/web/ja/dark/web-26-case-detail.png": {
+      "sha256": "208d7fde99fc62fecf89a899c1626867645c1819bf082c37d6969f5e1a3011b6",
+      "bytes": 386963
+    },
+    "mockups/web/ja/dark/web-27-watchlist.png": {
+      "sha256": "89b691bd32a558f0fb089cfeb3f82863dbd38dd0dea8bafab4d583b589c09c7d",
+      "bytes": 662672
+    },
+    "mockups/web/ja/dark/web-28-watchlist-enroll.png": {
+      "sha256": "e4021b4ef3fc16884a0975df9f90c58aa957700d46255fdb140b04c9c727fd43",
+      "bytes": 148857
+    },
+    "mockups/web/ja/dark/web-29-watchlist-detail.png": {
+      "sha256": "539357faf4ad0f11cab559afb92a058ce806089f46ca46c8d8256b02e35d1ed9",
+      "bytes": 253427
+    },
+    "mockups/web/ja/dark/web-30-watchlist-approval.png": {
+      "sha256": "c2a87289ae45f1fd213d849ffaed6b5cb1a2a6f89d6203ee09ff4a453222b183",
+      "bytes": 391904
+    },
+    "mockups/web/ja/dark/web-31-staff.png": {
+      "sha256": "c78bdf0a71d70509a3c0729314195136d77e43e9426fa286ae35c39a1811b5c3",
+      "bytes": 660839
+    },
+    "mockups/web/ja/dark/web-32-staff-enroll.png": {
+      "sha256": "d0fc2f862a2e480cd4d7e0723822817db2ea9f4933f64c47b906f24461b9dc52",
+      "bytes": 144353
+    },
+    "mockups/web/ja/dark/web-33-staff-detail.png": {
+      "sha256": "2990f5808d5e238aa6298b1ffd1529290c5e7403f89ec75d3eb4d17b9931c658",
+      "bytes": 247773
+    },
+    "mockups/web/ja/dark/web-34-photos.png": {
+      "sha256": "c2f311ea51e2b37aabc32e2b53e766d205da41c0fa877d3fd6fbaa1be2420393",
+      "bytes": 363591
+    },
+    "mockups/web/ja/dark/web-35-search.png": {
+      "sha256": "c69449e5a139ae456e82d8c4dad62438d3676a7eec0a401dc85255832c2148d0",
+      "bytes": 132125
+    },
+    "mockups/web/ja/dark/web-36-search-results.png": {
+      "sha256": "e4b2fa7b2a5a0df94d2294252afe47cf650e8ae603267ba5cbf2797cf45a0276",
+      "bytes": 767241
+    },
+    "mockups/web/ja/dark/web-37-visit-detail.png": {
+      "sha256": "c961fb7c4e8cb4c55b4c3e8d984ef309bae9a7685478dcec3cbbf31e882f43c0",
+      "bytes": 392050
+    },
+    "mockups/web/ja/dark/web-38-checkout.png": {
+      "sha256": "2cf969b87b529a5d0dc7c4c00289cef762ac265bd4644b64edb30f5b2eeb6714",
+      "bytes": 108941
+    },
+    "mockups/web/ja/dark/web-39-checkout-detail.png": {
+      "sha256": "d5a95e4256282154b056a899f3e12ba2fb3f0ba2108ee9cad3ef7e8c6f192659",
+      "bytes": 335455
+    },
+    "mockups/web/ja/dark/web-40-integrations.png": {
+      "sha256": "a3f87e5c27dcc32e9d8d18e0d8341545fdff2e197184d220ef96c5caebd5cd73",
+      "bytes": 118155
+    },
+    "mockups/web/ja/dark/web-41-reports.png": {
+      "sha256": "b90498ea361bde4c4b53a43a97d4ff54bb459f3b99a87e5782d43f52cfc8c327",
+      "bytes": 110646
+    },
+    "mockups/web/ja/dark/web-42-report-export.png": {
+      "sha256": "f7ed3d9d6c6ed7f976decf6ad051b44224895f5e03abbe2d031ada8e7a0ee513",
+      "bytes": 132778
+    },
+    "mockups/web/ja/dark/web-43-users.png": {
+      "sha256": "80ab0007a9ae21b31694d09f02e8c54c9481cfe31e85b789954e3f9ca59e5ba3",
+      "bytes": 106913
+    },
+    "mockups/web/ja/dark/web-44-user-invite.png": {
+      "sha256": "a6db16908fec50baaa47797352e7d39d9dc37ede3ed0d114819467c819b0f2d5",
+      "bytes": 120804
+    },
+    "mockups/web/ja/dark/web-45-roles.png": {
+      "sha256": "fed099fee73ff3a0e1efccdb52e0760951c015a3d8a28d6920879b93b191efb6",
+      "bytes": 81834
+    },
+    "mockups/web/ja/dark/web-46-logs.png": {
+      "sha256": "1917502024b4127e9d6cffc54aedef34b19737786ae1519a4489091ee15af48c",
+      "bytes": 112519
+    },
+    "mockups/web/ja/dark/web-47-health.png": {
+      "sha256": "7193d00bc12754f46a5f6f9e49ae1759952d9d582974b113545d7a6cc724935a",
+      "bytes": 428978
+    },
+    "mockups/web/ja/dark/web-48-models.png": {
+      "sha256": "64f61236c1701cdb7b887791d881f014e71cc7c57b265390763cf422630b3083",
+      "bytes": 111493
+    },
+    "mockups/web/ja/dark/web-49-settings.png": {
+      "sha256": "978fb74e704f27ec8d80c3a289687e804a396610d1ea57313b5483dbf5f86124",
+      "bytes": 112216
+    },
+    "mockups/web/ja/dark/web-50-privacy.png": {
+      "sha256": "b74f106a2de26c2afafb0778df65a5eaca9df6b2b49292168ac4c5384ceac26d",
+      "bytes": 122266
+    },
+    "mockups/web/ja/dark/web-51-notifications.png": {
+      "sha256": "6c468c51f8eae16687d2646929bf248ba4ce2b3d77e05a739ff248ebaf4ab167",
+      "bytes": 113953
+    },
+    "mockups/web/ja/dark/web-52-support.png": {
+      "sha256": "791577fcc83aba1aa7d350ec6b7284ec0cc6af9a5898c161f2026de4be0737be",
+      "bytes": 131940
+    },
+    "mockups/web/ja/dark/web-53-empty.png": {
+      "sha256": "647c87a776a0520fd6bca3d2f34b96cc592c1d9c720f799f0ca89c61321eacab",
+      "bytes": 100647
+    },
+    "mockups/web/ja/dark/web-54-error.png": {
+      "sha256": "39290e967633013d90fc4a477800f4f87657748ba86a85a74b3ecc229e58d145",
+      "bytes": 97489
+    },
+    "mockups/web/ja/light/web-01-login.png": {
+      "sha256": "90f876af2bb8967e9b1330bc64b6aa61179f433cf18be8401fc560c6f70714dd",
+      "bytes": 390207
+    },
+    "mockups/web/ja/light/web-02-mfa.png": {
+      "sha256": "1cebc59d07540836e519d41ce12d7b4e64214c2c5b32dacf8ef4b2ac7afbd125",
+      "bytes": 386810
+    },
+    "mockups/web/ja/light/web-03-reset.png": {
+      "sha256": "6e7730bd8df06266044ef7232cd40e51e42a84445ee62b991c563ee45e24418d",
+      "bytes": 392409
+    },
+    "mockups/web/ja/light/web-04-organization.png": {
+      "sha256": "ca7fcd751da9d37c84f4c9b4ebb0379204b7f0e1878627e912082ce6c31a0a48",
+      "bytes": 123026
+    },
+    "mockups/web/ja/light/web-05-stores.png": {
+      "sha256": "24d9df117f7d631eb3d9d279612d447c49615201e5a0bce7184ef4106c8bdf68",
+      "bytes": 108012
+    },
+    "mockups/web/ja/light/web-06-store-detail.png": {
+      "sha256": "945e70ceb1f9994711c55a9426596e4a522e76128660d15222b0c8b8759a2c70",
+      "bytes": 428736
+    },
+    "mockups/web/ja/light/web-07-store-add.png": {
+      "sha256": "4892bce1c1efc770567d4a9b251e8e058790330d4d8db9920b4aea5998f85a3f",
+      "bytes": 123350
+    },
+    "mockups/web/ja/light/web-08-edge-pair.png": {
+      "sha256": "0dc58c4fbf6814ead1cf7e42da1e1d075d516713c669038bacc9d8afef5e410a",
+      "bytes": 129647
+    },
+    "mockups/web/ja/light/web-09-dashboard.png": {
+      "sha256": "a78e5cd9ba85649669f09bd200202d8b382832224b3adc9913bd90aa585bcedb",
+      "bytes": 432386
+    },
+    "mockups/web/ja/light/web-10-live.png": {
+      "sha256": "87c87781fb39285312531964afb4b7ac6e3bace7d111a7ca35ba613d0aade6ac",
+      "bytes": 1101236
+    },
+    "mockups/web/ja/light/web-11-camera-discovery.png": {
+      "sha256": "f14b5c1f0f2f8c6dd60dc60bc72b89570d279a33807e67d0a7cee0beee8f395b",
+      "bytes": 121212
+    },
+    "mockups/web/ja/light/web-12-camera-add.png": {
+      "sha256": "b1c52fb1b37815395839ade6b85f2274fe1aebf4b3fd01b18c4732ae464e09c6",
+      "bytes": 127919
+    },
+    "mockups/web/ja/light/web-13-camera-import.png": {
+      "sha256": "fedf3975f13d07b57537cf2586976005eee1332d11e6fb0906fec4d41e556d04",
+      "bytes": 134336
+    },
+    "mockups/web/ja/light/web-14-cameras.png": {
+      "sha256": "4fecb1ed532466e161ba29f7c10b38480029f5c239a0ba8399e76e6e5a62c884",
+      "bytes": 108310
+    },
+    "mockups/web/ja/light/web-15-camera-detail.png": {
+      "sha256": "d068cf26ec0cc0592286732773175535bb48c04042f51dc4235e153bd1d59d12",
+      "bytes": 952868
+    },
+    "mockups/web/ja/light/web-16-zones.png": {
+      "sha256": "dbcc73c4ca3158e7605b79f5b07d228b608659221132f8915894abeb9d06826b",
+      "bytes": 373881
+    },
+    "mockups/web/ja/light/web-17-detection-rules.png": {
+      "sha256": "6b7242ce6fd750ce4e2e5a75c5b08411fdda954c2f4f1e5c25954f974ea7a0fb",
+      "bytes": 122157
+    },
+    "mockups/web/ja/light/web-18-calibration.png": {
+      "sha256": "da7d7c6f09454f978de448a3a9fa78fd58fc064857ca95b643ff194f42d44e5e",
+      "bytes": 116602
+    },
+    "mockups/web/ja/light/web-19-alerts.png": {
+      "sha256": "cb88e699e9e0f139bd980c0f41dd459fa86b926ebfd912be611806f829024319",
+      "bytes": 107710
+    },
+    "mockups/web/ja/light/web-20-alert-detail.png": {
+      "sha256": "e217eb70844f1f7b9a040bf5a7612baa917c265ddce4e0cca7cd42ee1826b51e",
+      "bytes": 390998
+    },
+    "mockups/web/ja/light/web-21-alert-outcome.png": {
+      "sha256": "6d47c470e18a79304b3fe79316b0281879d9ecddb220e83941a12e7085248657",
+      "bytes": 135622
+    },
+    "mockups/web/ja/light/web-22-alert-escalation.png": {
+      "sha256": "811544a9c5251c9317d870da13558b54ae23b82b45b7c29fd266d1c6687221b9",
+      "bytes": 120582
+    },
+    "mockups/web/ja/light/web-23-incidents.png": {
+      "sha256": "b534ae8e17d2c567f2201eec3c7232a9a9ad3369a38ac6c9f83a412548b4c74d",
+      "bytes": 111741
+    },
+    "mockups/web/ja/light/web-24-incident-detail.png": {
+      "sha256": "850ed138031775fd3e0cd43d050a4ee7a1d0bb74b30eecfde4eb7d1a069a5e50",
+      "bytes": 388137
+    },
+    "mockups/web/ja/light/web-25-cases.png": {
+      "sha256": "9d4a0d70643f53fa7098c007e4089b9ee802835f3cb25d10f16224d94b8538d7",
+      "bytes": 109288
+    },
+    "mockups/web/ja/light/web-26-case-detail.png": {
+      "sha256": "356c495f2c9a5aae8b73278c8670c2c1db70b069f5a4529eb2a30fdb0a51ce55",
+      "bytes": 387623
+    },
+    "mockups/web/ja/light/web-27-watchlist.png": {
+      "sha256": "3a13146f5342388e334d2f478811d46da40aaee3bb096cc74a6c8525d474de77",
+      "bytes": 664987
+    },
+    "mockups/web/ja/light/web-28-watchlist-enroll.png": {
+      "sha256": "f3c1a9f412f6911c7bc2a3f56caa5a5fc2cee42cab24a2cac97f37b79f8d7f36",
+      "bytes": 149922
+    },
+    "mockups/web/ja/light/web-29-watchlist-detail.png": {
+      "sha256": "ef37082cdf58c06268bedbdbbadf49f0a812ebf6b83d30ef709afd052d992a43",
+      "bytes": 254801
+    },
+    "mockups/web/ja/light/web-30-watchlist-approval.png": {
+      "sha256": "48ce7a07c4380f447e3f2fc271aaea9ddfedac982be81f94e665bd6590a611e3",
+      "bytes": 392632
+    },
+    "mockups/web/ja/light/web-31-staff.png": {
+      "sha256": "d73f1b1fd5ae9e8f0fb276465e8427c23d2acbc63ce34365be06332539db9e47",
+      "bytes": 663108
+    },
+    "mockups/web/ja/light/web-32-staff-enroll.png": {
+      "sha256": "a4ed1641d8cec4f6ffd694877f978db911cd22f4551b0f00185e102799531a2c",
+      "bytes": 145472
+    },
+    "mockups/web/ja/light/web-33-staff-detail.png": {
+      "sha256": "a67aa7f527659ef26575456bf4568dfbaa432de862558976bd08fbec4e9e88b7",
+      "bytes": 249075
+    },
+    "mockups/web/ja/light/web-34-photos.png": {
+      "sha256": "ef7b56a019fc01adf3ddc7f20a2ea906abe61600bd2e93d77a4fc9ff04a6c604",
+      "bytes": 364466
+    },
+    "mockups/web/ja/light/web-35-search.png": {
+      "sha256": "607a9017c2692b411aa62033abbee42f683d77c9806323bd106e7d282e7ecb09",
+      "bytes": 133508
+    },
+    "mockups/web/ja/light/web-36-search-results.png": {
+      "sha256": "359d6ed7fa03a5b5c84eecd445a1e0279c0bac0584c8885494dbc4ac28b8f73e",
+      "bytes": 769079
+    },
+    "mockups/web/ja/light/web-37-visit-detail.png": {
+      "sha256": "b880f64551918eddf8b6def99cbf74f4dfb53d130280a060f69729f882ade0f9",
+      "bytes": 392565
+    },
+    "mockups/web/ja/light/web-38-checkout.png": {
+      "sha256": "0a0dfc8a6d60eca24c02099641869bb30f808e64426f5461fac54b6425625715",
+      "bytes": 109498
+    },
+    "mockups/web/ja/light/web-39-checkout-detail.png": {
+      "sha256": "13c04197e506489199b023248da4008fd1148d146d4a59ee3783893f7940e541",
+      "bytes": 336709
+    },
+    "mockups/web/ja/light/web-40-integrations.png": {
+      "sha256": "57f9870e2486778d17f511106c47844e88affe13e19c40863b2c2ee2d58b8cfa",
+      "bytes": 120135
+    },
+    "mockups/web/ja/light/web-41-reports.png": {
+      "sha256": "b002443d9e3ba62cd039f5a53df0c073229cd828d9f5758f60fdf77ffa49dfd7",
+      "bytes": 114265
+    },
+    "mockups/web/ja/light/web-42-report-export.png": {
+      "sha256": "f2e4dca5c161704375f358ca37d9af0bbc57573b5f14e05db3c4c8df770bd76d",
+      "bytes": 134282
+    },
+    "mockups/web/ja/light/web-43-users.png": {
+      "sha256": "a3cb56e57a650942f19c197a644836e7e25f29823854b98141f836ffa5b92340",
+      "bytes": 107434
+    },
+    "mockups/web/ja/light/web-44-user-invite.png": {
+      "sha256": "5a9534995ceec2aeeac7137639efd0c8aad951c2db7ad13316071c2b62404766",
+      "bytes": 122382
+    },
+    "mockups/web/ja/light/web-45-roles.png": {
+      "sha256": "0006151017de1641b57e533ad7717be7ffcf85c5b75f5b3778e68acbee41b71f",
+      "bytes": 82691
+    },
+    "mockups/web/ja/light/web-46-logs.png": {
+      "sha256": "ff3d5e14dfb8e1036c873b51805bc43461ed78511227d682d93b903ac8962898",
+      "bytes": 113112
+    },
+    "mockups/web/ja/light/web-47-health.png": {
+      "sha256": "8c64ac5b1f18782a1ff9a47eba1f4ccc667a7a3150be741d6349b8bf2a3b1953",
+      "bytes": 432904
+    },
+    "mockups/web/ja/light/web-48-models.png": {
+      "sha256": "a23a0ea1ab486fab556ae3228c9b950dfecca6c3b8bd88e9cefe9d288d53c6f6",
+      "bytes": 112155
+    },
+    "mockups/web/ja/light/web-49-settings.png": {
+      "sha256": "26aad21b7f9f2dbdf97b013c641c64aa4f7d37a653e03802a685d8fc612754c6",
+      "bytes": 114300
+    },
+    "mockups/web/ja/light/web-50-privacy.png": {
+      "sha256": "f097e3af27abe39d5d164e2cf87befc7f656ff892bea1e65dd2f4b88d626aefd",
+      "bytes": 124148
+    },
+    "mockups/web/ja/light/web-51-notifications.png": {
+      "sha256": "d6321201944100ba7bf5b9d6bde0d711549017141d4232d69528abc76381a325",
+      "bytes": 115971
+    },
+    "mockups/web/ja/light/web-52-support.png": {
+      "sha256": "c1755a50429e9522e128cc63484a0b58cad384a53ade1d7fb811052f853c7f43",
+      "bytes": 133473
+    },
+    "mockups/web/ja/light/web-53-empty.png": {
+      "sha256": "7ee79368d0e6935f41301b0c9c443b0069f28760566c04569fe32e1cd66fa92a",
+      "bytes": 102241
+    },
+    "mockups/web/ja/light/web-54-error.png": {
+      "sha256": "bd83e322271b6437dbcd423a52d8d21773bf7db28254f4799eed97371886fb53",
+      "bytes": 99513
+    },
+    "reference/domain.py": {
+      "sha256": "e40be0fa548ad4d4e1eb37b4994b4625fe7e90a42525f052102b27d791a78d84",
+      "bytes": 3325
+    },
+    "reference/server.py": {
+      "sha256": "dfa02a65671c1c26bfcccdb4737810849614af057e91417ef517642edebb46d5",
+      "bytes": 16007
+    },
+    "reference/workbench.html": {
+      "sha256": "775c6986459ebd7c6709631c7454458b07430b18751217c0470ca5114ca7cd24",
+      "bytes": 2369
+    },
+    "reference/workbench.js": {
+      "sha256": "034e4f83b05792de7e354465dd59b89cf254f8b93de68ed7b2ae43dfba991f21",
+      "bytes": 9545
+    },
+    "requirements.txt": {
+      "sha256": "b2c20c428044dd472a0e5f82b7ec76c70492769e6699e6ba85d5ef06de382dfa",
+      "bytes": 165
+    },
+    "scripts/evaluate_events.py": {
+      "sha256": "9dd22156385d22cfc279a034ea0c6730bad9b899ddf0865cac793f0d80872098",
+      "bytes": 1913
+    },
+    "scripts/render_designs.cjs": {
+      "sha256": "c190cf19bb35c8463c655074454f7e3422d2740d9aced23b0c23aa69792c8ee5",
+      "bytes": 1497
+    },
+    "scripts/verify_package.py": {
+      "sha256": "c8954337c84b61a7545c99621b889f2a6021a5563f569be31ccfc16592a9f417",
+      "bytes": 997
+    },
+    "tests/test_api.py": {
+      "sha256": "59537463f0ceddd546f1c748a70ae9f9cbbf032cc47e7a12c9b04fe4d0d7ba0b",
+      "bytes": 6696
+    },
+    "tests/test_domain.py": {
+      "sha256": "a54d525c95b239a08c3398d5c9c7dd246bfb1d0aa19636dd35e85d3c1b5defa3",
+      "bytes": 2987
+    }
+  }
+}

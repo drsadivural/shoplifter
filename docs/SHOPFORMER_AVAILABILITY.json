@@ -1,0 +1,13 @@
+{
+  "checked": "2026-10-11",
+  "repository": "https://github.com/TeCSAR-UNCC/Shopformer",
+  "branch": "main",
+  "inspected_root": [
+    ".gitignore",
+    "Images",
+    "LICENSE",
+    "README.md",
+    "environment.yml"
+  ],
+  "result": "README describes models/scripts not present in inspected root. No runnable implementation/checkpoint availability established."
+}
