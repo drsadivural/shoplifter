@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RetailGuard edge candidate event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "org_id",
+    "store_id",
+    "camera_id",
+    "channel",
+    "captured_at",
+    "model_version",
+    "preprocessing_version",
+    "gate_reason",
+    "signals",
+    "evidence_state"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "org_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "store_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "camera_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "model_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "preprocessing_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "gate_reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "channel": {
+      "enum": [
+        "behavior_candidate",
+        "watchlist_candidate",
+        "checkout_exception",
+        "rfid_exception"
+      ]
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signals": {
+      "type": "object",
+      "properties": {
+        "anomaly": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "item_interaction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "concealment_motion": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "visibility": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence_state": {
+      "enum": [
+        "pending",
+        "available",
+        "unavailable",
+        "expired"
+      ]
+    },
+    "evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "uncertainty": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20
+    }
+  }
+}
