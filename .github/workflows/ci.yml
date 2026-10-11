@@ -98,9 +98,18 @@ jobs:
       - name: Generate and build for iOS Simulator
         working-directory: apps/ios
         run: |
+          set -o pipefail
           xcodegen generate
           xcodebuild -project RetailGuard.xcodeproj -scheme RetailGuard \
-            -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build | tail -50
+            -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build > build.log 2>&1 \
+            || { grep -E "error:|\*\* BUILD" build.log | sort -u | head -200; exit 1; }
+          grep -E "\*\* BUILD" build.log
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-log
+          path: apps/ios/build.log
 
   reference:
     runs-on: ubuntu-24.04
