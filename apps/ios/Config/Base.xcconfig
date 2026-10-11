@@ -1,0 +1,17 @@
+// Shared build settings for the RetailGuard app target.
+// No secrets, certificates or team identifiers are committed here.
+// Signing values come from the git-ignored Config/Signing.xcconfig
+// (copy Config/Signing.xcconfig.example).
+
+RG_BUNDLE_IDENTIFIER = com.ayonix.retailguard.responder
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1
+
+// Users may enter their company workspace origin on the welcome screen.
+// Release builds still accept HTTPS origins only (BaseURLPolicy).
+RG_ALLOW_WORKSPACE_OVERRIDE = YES
+
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM =
+
+#include? "Signing.xcconfig"

@@ -1,0 +1,15 @@
+#include "Base.xcconfig"
+
+// Default API origin for Debug. "//" starts a comment in xcconfig files,
+// hence the $() separator. Override in Config/Local.xcconfig (git-ignored).
+RG_API_BASE_URL = https:/$()/shoplifter.ayonix.com
+
+// APNs: Debug builds register device tokens as "sandbox".
+RG_APNS_ENVIRONMENT = sandbox
+APS_ENVIRONMENT = development
+
+// Debug only: plain HTTP to a loopback API (simulator + local server).
+RG_ALLOW_INSECURE_LOOPBACK = YES
+INFOPLIST_FILE = Support/Info-Debug.plist
+
+#include? "Local.xcconfig"

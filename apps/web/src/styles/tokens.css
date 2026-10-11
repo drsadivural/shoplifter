@@ -1,0 +1,129 @@
+/* Design tokens (design/tokens.json + design/ui.css). Light is the default; dark applies with
+   [data-theme=dark], or with [data-theme=system] when the OS prefers dark. */
+:root,
+[data-theme='light'] {
+  --font: 'Noto Sans JP', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-body: 14px;
+  --fs-title: 27px;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --radius-card: 16px;
+  --radius-btn: 10px;
+  --radius-pill: 7px;
+  --sidebar-w: 228px;
+  --header-h: 76px;
+  --tap: 44px;
+
+  --bg: #f3f6fa;
+  --card: #ffffff;
+  --ink: #10283d;
+  --muted: #5b6c7f;
+  --line: #dee6ed;
+  --brand: #007e87;
+  --brand-ink: #006870;
+  --on-brand: #ffffff;
+  --soft: #e2f4f1;
+  --accent: #38d9c4;
+  --critical: #c43943;
+  --critical-soft: #ffe5e8;
+  --critical-ink: #a32734;
+  --warning: #aa7000;
+  --warning-soft: #fff0cf;
+  --warning-ink: #835600;
+  --ok: #18ad82;
+  --ok-soft: #e2f4f1;
+  --ok-ink: #00676e;
+  --info-soft: #e5effa;
+  --info-ink: #1f4f7f;
+  --neutral-soft: #eef2f6;
+  --neutral-ink: #4d5e70;
+  --focus: #2a8fd6;
+  --shadow: 0 7px 24px #10283d0d;
+  --overlay: #0b1623a6;
+  --feed-bg: #182f39;
+  --skeleton: #e6ecf2;
+  --skeleton-shine: #f3f6fa;
+  --auth-art: #10283d;
+  --series-a: #9fe3d8;
+  --series-b: #007e87;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #0b1623;
+  --card: #132436;
+  --ink: #f0f6fc;
+  --muted: #a3b4c6;
+  --line: #294052;
+  --brand: #38d9c4;
+  --brand-ink: #5ee6d3;
+  --on-brand: #0b1623;
+  --soft: #143c3d;
+  --critical: #ff7b86;
+  --critical-soft: #ffd9dd;
+  --critical-ink: #8e1f2b;
+  --warning: #f2c14e;
+  --warning-soft: #ffeab0;
+  --warning-ink: #6b4700;
+  --ok: #38d9c4;
+  --ok-soft: #143c3d;
+  --ok-ink: #6ff0de;
+  --info-soft: #1b3550;
+  --info-ink: #b7d6f5;
+  --neutral-soft: #20364b;
+  --neutral-ink: #c4d2df;
+  --focus: #6cc4ff;
+  --shadow: none;
+  --overlay: #000000b3;
+  --feed-bg: #0e1d29;
+  --skeleton: #1c3147;
+  --skeleton-shine: #24405a;
+  --auth-art: #091521;
+  --series-a: #1f6f6a;
+  --series-b: #38d9c4;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme='system'] {
+    --bg: #0b1623;
+    --card: #132436;
+    --ink: #f0f6fc;
+    --muted: #a3b4c6;
+    --line: #294052;
+    --brand: #38d9c4;
+    --brand-ink: #5ee6d3;
+    --on-brand: #0b1623;
+    --soft: #143c3d;
+    --critical: #ff7b86;
+    --critical-soft: #ffd9dd;
+    --critical-ink: #8e1f2b;
+    --warning: #f2c14e;
+    --warning-soft: #ffeab0;
+    --warning-ink: #6b4700;
+    --ok: #38d9c4;
+    --ok-soft: #143c3d;
+    --ok-ink: #6ff0de;
+    --info-soft: #1b3550;
+    --info-ink: #b7d6f5;
+    --neutral-soft: #20364b;
+    --neutral-ink: #c4d2df;
+    --focus: #6cc4ff;
+    --shadow: none;
+    --overlay: #000000b3;
+    --feed-bg: #0e1d29;
+    --skeleton: #1c3147;
+    --skeleton-shine: #24405a;
+    --auth-art: #091521;
+    --series-a: #1f6f6a;
+    --series-b: #38d9c4;
+    color-scheme: dark;
+  }
+}

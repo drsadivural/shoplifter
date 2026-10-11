@@ -1,0 +1,20 @@
+# /etc/retailguard-edge/config.toml  (mode 0640, root:retailguard-edge)
+[edge]
+# Outbound-only HTTPS to the regional API. Plain http:// is accepted only for loopback testing.
+api_base_url = "https://retailguard.example.com"
+state_dir = "/var/lib/retailguard-edge"
+# Local IPv4 address of the camera-VLAN interface used for WS-Discovery.
+discovery_interface = "192.168.10.2"
+# Spool budget for evidence + raw ring buffers (bytes).
+disk_budget_bytes = 21474836480
+heartbeat_interval_s = 15
+command_poll_interval_s = 5
+sample_seconds = 10
+required_decoded_seconds = 10
+degraded_after_s = 10
+offline_after_s = 30
+monitor_streams = true
+# Only set these when a licensed, validated model/SDK/POS integration is actually installed.
+# model_manifest = "/opt/retailguard-models/behavior/manifest.json"
+# face_sdk_manifest = "/opt/ayonix/manifest.json"
+# pos_config = "/etc/retailguard-edge/pos.json"

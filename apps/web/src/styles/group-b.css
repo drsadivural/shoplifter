@@ -1,0 +1,329 @@
+/* Group B screens: stores, edge, cameras, detection, operations. Tokens only (tokens.css). */
+
+.gb-form-layout {
+  align-items: start;
+}
+.gb-label {
+  display: block;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.gb-review .kv {
+  margin-bottom: var(--s3);
+}
+.gb-section-title {
+  font-size: 15px;
+  margin: var(--s5) 0 var(--s2);
+}
+.gb-stack > * + * {
+  margin-top: 18px;
+}
+.gb-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+}
+.gb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin: var(--s3) 0;
+  padding: 0;
+  list-style: none;
+}
+.gb-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--card);
+}
+.gb-chip b {
+  font-weight: 700;
+}
+
+/* Wizard steps (ONVIF flow) */
+.gb-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s4);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--s4);
+  font-size: 13px;
+  color: var(--muted);
+}
+.gb-steps li.active {
+  color: var(--brand-ink);
+  font-weight: 700;
+}
+
+/* Pairing code */
+.gb-code {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--radius-btn);
+  background: var(--soft);
+  color: var(--ink);
+  display: inline-block;
+  word-break: break-all;
+}
+.gb-pre {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  padding: var(--s3);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: var(--s2) 0;
+}
+.gb-steps-list {
+  margin: var(--s2) 0;
+  padding-left: 1.2em;
+}
+.gb-steps-list li + li {
+  margin-top: var(--s2);
+}
+
+/* Camera wall */
+.gb-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 18px;
+}
+.gb-wall-tile .feed {
+  margin-bottom: var(--s3);
+}
+.gb-tile-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s2);
+  flex-wrap: wrap;
+}
+.gb-tile-foot a {
+  font-weight: 700;
+}
+.gb-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  align-items: center;
+  margin-bottom: var(--s4);
+}
+
+/* Zone editor */
+.gb-zone-canvas {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--feed-bg);
+  user-select: none;
+  touch-action: none;
+}
+.gb-zone-canvas.neutral {
+  background: repeating-linear-gradient(45deg, var(--bg), var(--bg) 12px, var(--neutral-soft) 12px, var(--neutral-soft) 24px);
+  border: 1.5px dashed var(--line);
+}
+.gb-zone-canvas > img,
+.gb-zone-canvas > .media-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gb-zone-canvas svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gb-zone-canvas svg.drawing {
+  cursor: crosshair;
+}
+.gb-zone-shape {
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.gb-zone-shelf {
+  fill: color-mix(in srgb, var(--accent) 28%, transparent);
+  stroke: var(--accent);
+}
+.gb-zone-checkout {
+  fill: color-mix(in srgb, var(--focus) 26%, transparent);
+  stroke: var(--focus);
+}
+.gb-zone-privacy_mask {
+  fill: color-mix(in srgb, #000 70%, transparent);
+  stroke: var(--muted);
+  stroke-dasharray: 6 4;
+}
+.gb-zone-exit_line {
+  fill: none;
+  stroke: var(--warning);
+  stroke-width: 3;
+}
+.gb-zone-shape.selected {
+  stroke-width: 3.5;
+}
+.gb-zone-draft {
+  fill: none;
+  stroke: var(--brand);
+  stroke-dasharray: 5 4;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.gb-handle {
+  fill: var(--card);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  cursor: grab;
+}
+.gb-handle:focus-visible {
+  outline: none;
+  stroke: var(--focus);
+  stroke-width: 3;
+}
+.gb-zone-tag {
+  fill: #fff;
+  font-size: 13px;
+  paint-order: stroke;
+  stroke: #091925;
+  stroke-width: 3px;
+  pointer-events: none;
+}
+.gb-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin: var(--s3) 0;
+}
+.gb-tool[aria-pressed='true'] {
+  background: var(--soft);
+  border-color: var(--brand);
+  color: var(--brand-ink);
+}
+.gb-zone-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.gb-zone-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  padding: var(--s3);
+  margin-bottom: var(--s2);
+}
+.gb-zone-item.selected {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+.gb-zone-item-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.gb-zone-item .field {
+  margin-bottom: var(--s2);
+}
+.gb-points {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+/* Tables inside cards */
+.gb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.gb-table th,
+.gb-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.gb-table th {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.gb-table-wrap {
+  overflow-x: auto;
+}
+.gb-row-invalid td {
+  background: var(--critical-soft);
+  color: var(--critical-ink);
+}
+
+/* Meters (health) */
+.gb-meter {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--neutral-soft);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.gb-meter > span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+}
+.gb-dep-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.gb-dep-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  align-items: flex-start;
+}
+.gb-dep-list li:last-child {
+  border-bottom: 0;
+}
+
+/* Detection rules */
+.gb-rule {
+  border-bottom: 1px solid var(--line);
+  padding: var(--s3) 0;
+}
+.gb-rule .toggle-row {
+  margin: 0;
+}
+.gb-number {
+  max-width: 160px;
+}
+.gb-manifest {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-height: 220px;
+}
+
+@media (max-width: 767px) {
+  .gb-wall {
+    grid-template-columns: 1fr;
+  }
+  .gb-code {
+    font-size: 22px;
+  }
+}

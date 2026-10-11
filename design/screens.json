@@ -1,0 +1,2531 @@
+[
+  {
+    "id": "web-01",
+    "platform": "web",
+    "key": "login",
+    "title": {
+      "en": "Sign in",
+      "ja": "ログイン"
+    },
+    "kind": "auth",
+    "fields": [
+      "Work email",
+      "Password",
+      "Continue with company SSO",
+      "Remember this device"
+    ],
+    "route": "/web/login",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-02",
+    "platform": "web",
+    "key": "mfa",
+    "title": {
+      "en": "Verify your identity",
+      "ja": "本人確認"
+    },
+    "kind": "auth",
+    "fields": [
+      "Authentication code",
+      "Recovery code",
+      "Trusted device",
+      "Verify"
+    ],
+    "route": "/web/mfa",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-03",
+    "platform": "web",
+    "key": "reset",
+    "title": {
+      "en": "Reset password",
+      "ja": "パスワード再設定"
+    },
+    "kind": "auth",
+    "fields": [
+      "Work email",
+      "Send reset link",
+      "New password",
+      "Confirm password"
+    ],
+    "route": "/web/reset",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-04",
+    "platform": "web",
+    "key": "organization",
+    "title": {
+      "en": "Organization setup",
+      "ja": "組織の初期設定"
+    },
+    "kind": "form",
+    "fields": [
+      "Organization name",
+      "Default timezone",
+      "Data region",
+      "Primary administrator"
+    ],
+    "route": "/web/organization",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-05",
+    "platform": "web",
+    "key": "stores",
+    "title": {
+      "en": "Stores & regions",
+      "ja": "店舗・エリア管理"
+    },
+    "kind": "table",
+    "fields": [
+      "Store",
+      "Region",
+      "Cameras",
+      "Health",
+      "Open alerts"
+    ],
+    "route": "/web/stores",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-06",
+    "platform": "web",
+    "key": "store-detail",
+    "title": {
+      "en": "Tokyo flagship",
+      "ja": "東京旗艦店"
+    },
+    "kind": "dashboard",
+    "fields": [
+      "Coverage",
+      "Camera health",
+      "Open incidents",
+      "Review queue"
+    ],
+    "route": "/web/store-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-07",
+    "platform": "web",
+    "key": "store-add",
+    "title": {
+      "en": "Add a store",
+      "ja": "店舗を追加"
+    },
+    "kind": "form",
+    "fields": [
+      "Store name",
+      "Address",
+      "Timezone",
+      "Store manager",
+      "Opening hours"
+    ],
+    "route": "/web/store-add",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-08",
+    "platform": "web",
+    "key": "edge-pair",
+    "title": {
+      "en": "Connect edge appliance",
+      "ja": "エッジ端末を接続"
+    },
+    "kind": "form",
+    "fields": [
+      "Pairing code",
+      "Store",
+      "Device name",
+      "Certificate fingerprint",
+      "Pair device"
+    ],
+    "route": "/web/edge-pair",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-09",
+    "platform": "web",
+    "key": "dashboard",
+    "title": {
+      "en": "Loss prevention overview",
+      "ja": "ロス防止ダッシュボード"
+    },
+    "kind": "dashboard",
+    "fields": [
+      "Open alerts",
+      "Reviewed incidents",
+      "Online cameras",
+      "Median acknowledgement"
+    ],
+    "route": "/web/dashboard",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-10",
+    "platform": "web",
+    "key": "live",
+    "title": {
+      "en": "Live camera wall",
+      "ja": "ライブカメラ"
+    },
+    "kind": "wall",
+    "fields": [
+      "Entrance",
+      "Cosmetics aisle",
+      "Grocery aisle",
+      "Checkout lane"
+    ],
+    "route": "/web/live",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-11",
+    "platform": "web",
+    "key": "camera-discovery",
+    "title": {
+      "en": "Discover ONVIF cameras",
+      "ja": "ONVIFカメラを検索"
+    },
+    "kind": "discovery",
+    "fields": [
+      "Network interface",
+      "Scan timeout",
+      "Device",
+      "IP address",
+      "ONVIF profile"
+    ],
+    "route": "/web/camera-discovery",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-12",
+    "platform": "web",
+    "key": "camera-add",
+    "title": {
+      "en": "Add camera manually",
+      "ja": "カメラを手動追加"
+    },
+    "kind": "form",
+    "fields": [
+      "Camera name",
+      "Device address",
+      "Username",
+      "Password",
+      "Store",
+      "Stream profile"
+    ],
+    "route": "/web/camera-add",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-13",
+    "platform": "web",
+    "key": "camera-import",
+    "title": {
+      "en": "Bulk camera import",
+      "ja": "カメラを一括登録"
+    },
+    "kind": "form",
+    "fields": [
+      "CSV file",
+      "Credential group",
+      "Store",
+      "Validate rows",
+      "Import valid devices"
+    ],
+    "route": "/web/camera-import",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-14",
+    "platform": "web",
+    "key": "cameras",
+    "title": {
+      "en": "Camera inventory",
+      "ja": "カメラ一覧"
+    },
+    "kind": "table",
+    "fields": [
+      "Camera",
+      "Store",
+      "Stream status",
+      "Analysis status",
+      "Last frame"
+    ],
+    "route": "/web/cameras",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-15",
+    "platform": "web",
+    "key": "camera-detail",
+    "title": {
+      "en": "Camera readiness",
+      "ja": "カメラ接続・画角確認"
+    },
+    "kind": "video",
+    "fields": [
+      "Live preview",
+      "Resolution",
+      "Frame rate",
+      "Pose visibility",
+      "Start analysis"
+    ],
+    "route": "/web/camera-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-16",
+    "platform": "web",
+    "key": "zones",
+    "title": {
+      "en": "Detection zone editor",
+      "ja": "検知エリアの設定"
+    },
+    "kind": "zones",
+    "fields": [
+      "Shelf zone",
+      "Checkout zone",
+      "Exit line",
+      "Privacy mask",
+      "Save zones"
+    ],
+    "route": "/web/zones",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-17",
+    "platform": "web",
+    "key": "detection-rules",
+    "title": {
+      "en": "Behavior detection rules",
+      "ja": "行動検知ルール"
+    },
+    "kind": "settings",
+    "fields": [
+      "Clothing concealment",
+      "Backpack gesture",
+      "Personal bag gesture",
+      "Shelf interaction",
+      "Minimum evidence"
+    ],
+    "route": "/web/detection-rules",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-18",
+    "platform": "web",
+    "key": "calibration",
+    "title": {
+      "en": "Store calibration",
+      "ja": "店舗ごとの調整"
+    },
+    "kind": "chart",
+    "fields": [
+      "False alerts per camera-hour",
+      "Reviewed precision",
+      "Recall sample",
+      "Threshold",
+      "Publish calibration"
+    ],
+    "route": "/web/calibration",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-19",
+    "platform": "web",
+    "key": "alerts",
+    "title": {
+      "en": "Alert inbox",
+      "ja": "アラート一覧"
+    },
+    "kind": "alerts",
+    "fields": [
+      "Behavior",
+      "Watchlist",
+      "Checkout",
+      "Priority",
+      "Assignee"
+    ],
+    "route": "/web/alerts",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-20",
+    "platform": "web",
+    "key": "alert-detail",
+    "title": {
+      "en": "Review an alert",
+      "ja": "アラートを確認"
+    },
+    "kind": "review",
+    "fields": [
+      "Evidence clip",
+      "Trigger signals",
+      "Camera timeline",
+      "Acknowledge",
+      "Request review"
+    ],
+    "route": "/web/alert-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-21",
+    "platform": "web",
+    "key": "alert-outcome",
+    "title": {
+      "en": "Record incident outcome",
+      "ja": "確認結果を記録"
+    },
+    "kind": "form",
+    "fields": [
+      "Outcome",
+      "Reason",
+      "Observed behavior",
+      "Loss value",
+      "Supporting evidence"
+    ],
+    "route": "/web/alert-outcome",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-22",
+    "platform": "web",
+    "key": "alert-escalation",
+    "title": {
+      "en": "Escalation policy",
+      "ja": "通知・エスカレーション"
+    },
+    "kind": "settings",
+    "fields": [
+      "Primary responders",
+      "Acknowledgement deadline",
+      "Backup responders",
+      "Quiet hours",
+      "Push privacy"
+    ],
+    "route": "/web/alert-escalation",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-23",
+    "platform": "web",
+    "key": "incidents",
+    "title": {
+      "en": "Incident register",
+      "ja": "事案記録"
+    },
+    "kind": "table",
+    "fields": [
+      "Incident",
+      "Store",
+      "Status",
+      "Outcome",
+      "Evidence",
+      "Reviewer"
+    ],
+    "route": "/web/incidents",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-24",
+    "platform": "web",
+    "key": "incident-detail",
+    "title": {
+      "en": "Incident workspace",
+      "ja": "事案の詳細"
+    },
+    "kind": "review",
+    "fields": [
+      "Evidence",
+      "Notes",
+      "Related visits",
+      "Review history",
+      "Create case"
+    ],
+    "route": "/web/incident-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-25",
+    "platform": "web",
+    "key": "cases",
+    "title": {
+      "en": "Case management",
+      "ja": "案件管理"
+    },
+    "kind": "table",
+    "fields": [
+      "Case",
+      "Owner",
+      "Incidents",
+      "Status",
+      "Last updated"
+    ],
+    "route": "/web/cases",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-26",
+    "platform": "web",
+    "key": "case-detail",
+    "title": {
+      "en": "Case investigation",
+      "ja": "案件調査"
+    },
+    "kind": "review",
+    "fields": [
+      "Linked incidents",
+      "Timeline",
+      "Evidence manifest",
+      "Access log",
+      "Close case"
+    ],
+    "route": "/web/case-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-27",
+    "platform": "web",
+    "key": "watchlist",
+    "title": {
+      "en": "Enrolled watchlist",
+      "ja": "登録対象者"
+    },
+    "kind": "people",
+    "fields": [
+      "Profile",
+      "Reference photos",
+      "Review status",
+      "Store scope",
+      "Expiry"
+    ],
+    "route": "/web/watchlist",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-28",
+    "platform": "web",
+    "key": "watchlist-enroll",
+    "title": {
+      "en": "Enroll a subject",
+      "ja": "対象者を登録"
+    },
+    "kind": "enroll",
+    "fields": [
+      "Reference ID",
+      "Supporting incident",
+      "Enrollment reason",
+      "Store scope",
+      "Review date",
+      "Reference photos"
+    ],
+    "route": "/web/watchlist-enroll",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-29",
+    "platform": "web",
+    "key": "watchlist-detail",
+    "title": {
+      "en": "Watchlist profile",
+      "ja": "登録対象者の詳細"
+    },
+    "kind": "profile",
+    "fields": [
+      "Approved photos",
+      "Visit history",
+      "Linked incidents",
+      "Match candidates",
+      "Suspend profile"
+    ],
+    "route": "/web/watchlist-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-30",
+    "platform": "web",
+    "key": "watchlist-approval",
+    "title": {
+      "en": "Enrollment approval",
+      "ja": "登録内容の承認"
+    },
+    "kind": "review",
+    "fields": [
+      "Evidence basis",
+      "Photo quality",
+      "Scope",
+      "Expiry",
+      "Approve enrollment"
+    ],
+    "route": "/web/watchlist-approval",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-31",
+    "platform": "web",
+    "key": "staff",
+    "title": {
+      "en": "Staff directory",
+      "ja": "スタッフ一覧"
+    },
+    "kind": "people",
+    "fields": [
+      "Employee",
+      "Store",
+      "Photos",
+      "Status",
+      "Enrollment date"
+    ],
+    "route": "/web/staff",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-32",
+    "platform": "web",
+    "key": "staff-enroll",
+    "title": {
+      "en": "Enroll staff",
+      "ja": "スタッフを登録"
+    },
+    "kind": "enroll",
+    "fields": [
+      "Employee ID",
+      "Display name",
+      "Store assignment",
+      "Role",
+      "Photo notice",
+      "Reference photos"
+    ],
+    "route": "/web/staff-enroll",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-33",
+    "platform": "web",
+    "key": "staff-detail",
+    "title": {
+      "en": "Staff profile",
+      "ja": "スタッフ情報"
+    },
+    "kind": "profile",
+    "fields": [
+      "Reference photos",
+      "Assigned stores",
+      "Match history",
+      "Detection policy",
+      "Deactivate"
+    ],
+    "route": "/web/staff-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-34",
+    "platform": "web",
+    "key": "photos",
+    "title": {
+      "en": "Photo library",
+      "ja": "写真ライブラリ"
+    },
+    "kind": "photos",
+    "fields": [
+      "Profile type",
+      "Upload date",
+      "Quality",
+      "Approved",
+      "Rejected"
+    ],
+    "route": "/web/photos",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-35",
+    "platform": "web",
+    "key": "search",
+    "title": {
+      "en": "Historical search",
+      "ja": "過去記録の検索"
+    },
+    "kind": "search",
+    "fields": [
+      "Date range",
+      "Store",
+      "Camera",
+      "Event type",
+      "Outcome",
+      "Reference photo"
+    ],
+    "route": "/web/search",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-36",
+    "platform": "web",
+    "key": "search-results",
+    "title": {
+      "en": "Search results",
+      "ja": "検索結果"
+    },
+    "kind": "results",
+    "fields": [
+      "Timeline",
+      "Candidate similarity",
+      "Store",
+      "Camera",
+      "Evidence availability"
+    ],
+    "route": "/web/search-results",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-37",
+    "platform": "web",
+    "key": "visit-detail",
+    "title": {
+      "en": "Visit reconstruction",
+      "ja": "来店履歴の確認"
+    },
+    "kind": "review",
+    "fields": [
+      "Entry",
+      "Camera transitions",
+      "Candidate associations",
+      "Exit",
+      "Review uncertainty"
+    ],
+    "route": "/web/visit-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-38",
+    "platform": "web",
+    "key": "checkout",
+    "title": {
+      "en": "Checkout exceptions",
+      "ja": "レジ例外検知"
+    },
+    "kind": "table",
+    "fields": [
+      "Lane",
+      "Transaction",
+      "Visual interaction",
+      "Scan timestamp",
+      "Exception"
+    ],
+    "route": "/web/checkout",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-39",
+    "platform": "web",
+    "key": "checkout-detail",
+    "title": {
+      "en": "Transaction reconciliation",
+      "ja": "取引・映像の照合"
+    },
+    "kind": "checkout",
+    "fields": [
+      "Video timeline",
+      "POS event",
+      "Barcode",
+      "Item count",
+      "Clock offset"
+    ],
+    "route": "/web/checkout-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-40",
+    "platform": "web",
+    "key": "integrations",
+    "title": {
+      "en": "POS, RFID & VMS",
+      "ja": "POS・RFID・VMS連携"
+    },
+    "kind": "settings",
+    "fields": [
+      "POS connector",
+      "RFID reader",
+      "VMS connector",
+      "Signed webhook",
+      "Last heartbeat"
+    ],
+    "route": "/web/integrations",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-41",
+    "platform": "web",
+    "key": "reports",
+    "title": {
+      "en": "Reports & measured impact",
+      "ja": "レポート・効果測定"
+    },
+    "kind": "chart",
+    "fields": [
+      "Reviewed precision",
+      "False alerts",
+      "Acknowledgement time",
+      "Confirmed loss",
+      "Recovered value"
+    ],
+    "route": "/web/reports",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-42",
+    "platform": "web",
+    "key": "report-export",
+    "title": {
+      "en": "Export evidence",
+      "ja": "証拠をエクスポート"
+    },
+    "kind": "form",
+    "fields": [
+      "Case scope",
+      "Redaction",
+      "Export reason",
+      "Recipient",
+      "Expiry",
+      "Generate evidence bundle"
+    ],
+    "route": "/web/report-export",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-43",
+    "platform": "web",
+    "key": "users",
+    "title": {
+      "en": "User management",
+      "ja": "ユーザー管理"
+    },
+    "kind": "table",
+    "fields": [
+      "User",
+      "Role",
+      "Store scope",
+      "MFA",
+      "Last sign-in"
+    ],
+    "route": "/web/users",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-44",
+    "platform": "web",
+    "key": "user-invite",
+    "title": {
+      "en": "Invite a teammate",
+      "ja": "ユーザーを招待"
+    },
+    "kind": "form",
+    "fields": [
+      "Email",
+      "Role",
+      "Stores",
+      "Invitation expiry",
+      "Send invite"
+    ],
+    "route": "/web/user-invite",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-45",
+    "platform": "web",
+    "key": "roles",
+    "title": {
+      "en": "Roles & permissions",
+      "ja": "権限管理"
+    },
+    "kind": "permissions",
+    "fields": [
+      "Viewer",
+      "Responder",
+      "Investigator",
+      "Store admin",
+      "Organization admin"
+    ],
+    "route": "/web/roles",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-46",
+    "platform": "web",
+    "key": "logs",
+    "title": {
+      "en": "Events & audit log",
+      "ja": "イベント・監査ログ"
+    },
+    "kind": "table",
+    "fields": [
+      "Time",
+      "Actor",
+      "Action",
+      "Resource",
+      "Store",
+      "Result"
+    ],
+    "route": "/web/logs",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-47",
+    "platform": "web",
+    "key": "health",
+    "title": {
+      "en": "System health",
+      "ja": "システム稼働状況"
+    },
+    "kind": "dashboard",
+    "fields": [
+      "Edge connectivity",
+      "Decode latency",
+      "GPU utilization",
+      "Queue age",
+      "Storage"
+    ],
+    "route": "/web/health",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-48",
+    "platform": "web",
+    "key": "models",
+    "title": {
+      "en": "Model registry",
+      "ja": "モデル管理"
+    },
+    "kind": "table",
+    "fields": [
+      "Model",
+      "Version",
+      "License status",
+      "Validation",
+      "Rollout",
+      "Rollback"
+    ],
+    "route": "/web/models",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-49",
+    "platform": "web",
+    "key": "settings",
+    "title": {
+      "en": "Organization settings",
+      "ja": "組織設定"
+    },
+    "kind": "settings",
+    "fields": [
+      "Display language",
+      "Appearance",
+      "Timezone",
+      "Session timeout",
+      "Retention"
+    ],
+    "route": "/web/settings",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-50",
+    "platform": "web",
+    "key": "privacy",
+    "title": {
+      "en": "Retention & privacy",
+      "ja": "保存・個人情報設定"
+    },
+    "kind": "settings",
+    "fields": [
+      "Raw video retention",
+      "Evidence retention",
+      "Profile expiry",
+      "Legal hold",
+      "Deletion requests"
+    ],
+    "route": "/web/privacy",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-51",
+    "platform": "web",
+    "key": "notifications",
+    "title": {
+      "en": "Notification settings",
+      "ja": "通知設定"
+    },
+    "kind": "settings",
+    "fields": [
+      "Behavior alerts",
+      "Watchlist alerts",
+      "Checkout alerts",
+      "Sound",
+      "Store routing"
+    ],
+    "route": "/web/notifications",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-52",
+    "platform": "web",
+    "key": "support",
+    "title": {
+      "en": "Support & diagnostics",
+      "ja": "サポート・診断"
+    },
+    "kind": "form",
+    "fields": [
+      "Issue category",
+      "Affected store",
+      "Diagnostics consent",
+      "Description",
+      "Generate diagnostic bundle"
+    ],
+    "route": "/web/support",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-53",
+    "platform": "web",
+    "key": "empty",
+    "title": {
+      "en": "No alerts to review",
+      "ja": "未確認アラートはありません"
+    },
+    "kind": "empty",
+    "fields": [
+      "Monitoring active",
+      "Last synchronized",
+      "Camera health",
+      "View history"
+    ],
+    "route": "/web/empty",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "web-54",
+    "platform": "web",
+    "key": "error",
+    "title": {
+      "en": "Connection interrupted",
+      "ja": "接続が中断されました"
+    },
+    "kind": "error",
+    "fields": [
+      "Last successful sync",
+      "Local monitoring",
+      "Retry",
+      "Diagnostics"
+    ],
+    "route": "/web/error",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-01",
+    "platform": "ios",
+    "key": "welcome",
+    "title": {
+      "en": "Welcome to RetailGuard",
+      "ja": "RetailGuardへようこそ"
+    },
+    "kind": "auth",
+    "fields": [
+      "Company workspace",
+      "Secure store response",
+      "English / 日本語",
+      "Continue"
+    ],
+    "route": "/ios/welcome",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-02",
+    "platform": "ios",
+    "key": "login",
+    "title": {
+      "en": "Sign in",
+      "ja": "ログイン"
+    },
+    "kind": "auth",
+    "fields": [
+      "Work email",
+      "Password",
+      "Company SSO",
+      "Sign in"
+    ],
+    "route": "/ios/login",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-03",
+    "platform": "ios",
+    "key": "mfa",
+    "title": {
+      "en": "Verify sign-in",
+      "ja": "ログインを確認"
+    },
+    "kind": "auth",
+    "fields": [
+      "Authentication code",
+      "Recovery code",
+      "Verify"
+    ],
+    "route": "/ios/mfa",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-04",
+    "platform": "ios",
+    "key": "faceid",
+    "title": {
+      "en": "Enable Face ID",
+      "ja": "Face IDを有効にする"
+    },
+    "kind": "auth",
+    "fields": [
+      "Unlock securely",
+      "Device-only biometrics",
+      "Enable Face ID",
+      "Later"
+    ],
+    "route": "/ios/faceid",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-05",
+    "platform": "ios",
+    "key": "permission",
+    "title": {
+      "en": "Enable notifications",
+      "ja": "通知を有効にする"
+    },
+    "kind": "auth",
+    "fields": [
+      "Incident alerts",
+      "Private lock-screen text",
+      "Enable notifications",
+      "Later"
+    ],
+    "route": "/ios/permission",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-06",
+    "platform": "ios",
+    "key": "stores",
+    "title": {
+      "en": "Select stores",
+      "ja": "店舗を選択"
+    },
+    "kind": "table",
+    "fields": [
+      "Tokyo flagship",
+      "Yokohama branch",
+      "Osaka branch",
+      "Assigned access only"
+    ],
+    "route": "/ios/stores",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-07",
+    "platform": "ios",
+    "key": "home",
+    "title": {
+      "en": "Store overview",
+      "ja": "店舗ダッシュボード"
+    },
+    "kind": "dashboard",
+    "fields": [
+      "Open alerts",
+      "Online cameras",
+      "My assignments",
+      "Today’s reviewed incidents"
+    ],
+    "route": "/ios/home",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-08",
+    "platform": "ios",
+    "key": "alerts",
+    "title": {
+      "en": "Live alerts",
+      "ja": "最新アラート"
+    },
+    "kind": "alerts",
+    "fields": [
+      "Behavior",
+      "Watchlist",
+      "Checkout",
+      "Assigned to me"
+    ],
+    "route": "/ios/alerts",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-09",
+    "platform": "ios",
+    "key": "alert-detail",
+    "title": {
+      "en": "Review alert",
+      "ja": "アラート確認"
+    },
+    "kind": "review",
+    "fields": [
+      "Evidence clip",
+      "Camera",
+      "Signal",
+      "Acknowledge",
+      "Review outcome"
+    ],
+    "route": "/ios/alert-detail",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-10",
+    "platform": "ios",
+    "key": "clip",
+    "title": {
+      "en": "Evidence player",
+      "ja": "証拠動画"
+    },
+    "kind": "video",
+    "fields": [
+      "Before trigger",
+      "Trigger marker",
+      "After trigger",
+      "Playback speed",
+      "Full screen"
+    ],
+    "route": "/ios/clip",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-11",
+    "platform": "ios",
+    "key": "acknowledge",
+    "title": {
+      "en": "Take ownership",
+      "ja": "対応を開始"
+    },
+    "kind": "form",
+    "fields": [
+      "Assigned responder",
+      "Current version",
+      "Acknowledge",
+      "Escalate"
+    ],
+    "route": "/ios/acknowledge",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-12",
+    "platform": "ios",
+    "key": "outcome",
+    "title": {
+      "en": "Record outcome",
+      "ja": "結果を記録"
+    },
+    "kind": "form",
+    "fields": [
+      "Confirmed incident",
+      "False alert",
+      "Inconclusive",
+      "Reason",
+      "Loss value"
+    ],
+    "route": "/ios/outcome",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-13",
+    "platform": "ios",
+    "key": "escalate",
+    "title": {
+      "en": "Request assistance",
+      "ja": "応援を依頼"
+    },
+    "kind": "form",
+    "fields": [
+      "Assigned team",
+      "Priority",
+      "Reason",
+      "Notify backup"
+    ],
+    "route": "/ios/escalate",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-14",
+    "platform": "ios",
+    "key": "incident",
+    "title": {
+      "en": "Incident details",
+      "ja": "事案詳細"
+    },
+    "kind": "review",
+    "fields": [
+      "Evidence",
+      "Outcome",
+      "Notes",
+      "History",
+      "Related visits"
+    ],
+    "route": "/ios/incident",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-15",
+    "platform": "ios",
+    "key": "history",
+    "title": {
+      "en": "Past records",
+      "ja": "過去の記録"
+    },
+    "kind": "table",
+    "fields": [
+      "Date",
+      "Store",
+      "Event type",
+      "Outcome",
+      "Reviewer"
+    ],
+    "route": "/ios/history",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-16",
+    "platform": "ios",
+    "key": "search",
+    "title": {
+      "en": "Search records",
+      "ja": "記録を検索"
+    },
+    "kind": "search",
+    "fields": [
+      "Date range",
+      "Store",
+      "Type",
+      "Reference photo",
+      "Search"
+    ],
+    "route": "/ios/search",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-17",
+    "platform": "ios",
+    "key": "results",
+    "title": {
+      "en": "Search results",
+      "ja": "検索結果"
+    },
+    "kind": "results",
+    "fields": [
+      "Candidate thumbnail",
+      "Time",
+      "Camera",
+      "Similarity rank",
+      "Open evidence"
+    ],
+    "route": "/ios/results",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-18",
+    "platform": "ios",
+    "key": "watchlist",
+    "title": {
+      "en": "Watchlist",
+      "ja": "登録対象者"
+    },
+    "kind": "people",
+    "fields": [
+      "Approved profiles",
+      "Photo",
+      "Expiry",
+      "Assigned stores"
+    ],
+    "route": "/ios/watchlist",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-19",
+    "platform": "ios",
+    "key": "profile",
+    "title": {
+      "en": "Subject profile",
+      "ja": "対象者プロフィール"
+    },
+    "kind": "profile",
+    "fields": [
+      "Reference photos",
+      "Evidence basis",
+      "Scope",
+      "Visit candidates"
+    ],
+    "route": "/ios/profile",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-20",
+    "platform": "ios",
+    "key": "subject-enroll",
+    "title": {
+      "en": "Enroll subject",
+      "ja": "対象者を登録"
+    },
+    "kind": "enroll",
+    "fields": [
+      "Reference ID",
+      "Incident",
+      "Reason",
+      "Scope",
+      "Expiry",
+      "Photos"
+    ],
+    "route": "/ios/subject-enroll",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-21",
+    "platform": "ios",
+    "key": "staff",
+    "title": {
+      "en": "Staff",
+      "ja": "スタッフ"
+    },
+    "kind": "people",
+    "fields": [
+      "Employee",
+      "Photo",
+      "Store",
+      "Enrollment status"
+    ],
+    "route": "/ios/staff",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-22",
+    "platform": "ios",
+    "key": "staff-enroll",
+    "title": {
+      "en": "Enroll staff",
+      "ja": "スタッフを登録"
+    },
+    "kind": "enroll",
+    "fields": [
+      "Employee ID",
+      "Name",
+      "Store",
+      "Notice recorded",
+      "Photos"
+    ],
+    "route": "/ios/staff-enroll",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-23",
+    "platform": "ios",
+    "key": "photo-capture",
+    "title": {
+      "en": "Capture reference photo",
+      "ja": "登録写真を撮影"
+    },
+    "kind": "capture",
+    "fields": [
+      "Face fully visible",
+      "Neutral pose",
+      "Good lighting",
+      "Retake",
+      "Use photo"
+    ],
+    "route": "/ios/photo-capture",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-24",
+    "platform": "ios",
+    "key": "photo-quality",
+    "title": {
+      "en": "Review photo quality",
+      "ja": "写真品質を確認"
+    },
+    "kind": "photos",
+    "fields": [
+      "Face count",
+      "Sharpness",
+      "Exposure",
+      "Pose",
+      "Approve photo"
+    ],
+    "route": "/ios/photo-quality",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-25",
+    "platform": "ios",
+    "key": "visits",
+    "title": {
+      "en": "Visit timeline",
+      "ja": "来店タイムライン"
+    },
+    "kind": "review",
+    "fields": [
+      "Entrance",
+      "Aisle",
+      "Checkout",
+      "Exit",
+      "Association uncertainty"
+    ],
+    "route": "/ios/visits",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-26",
+    "platform": "ios",
+    "key": "cameras",
+    "title": {
+      "en": "Cameras",
+      "ja": "カメラ"
+    },
+    "kind": "wall",
+    "fields": [
+      "Entrance",
+      "Aisle",
+      "Checkout",
+      "Online status"
+    ],
+    "route": "/ios/cameras",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-27",
+    "platform": "ios",
+    "key": "camera",
+    "title": {
+      "en": "Camera preview",
+      "ja": "カメラ映像"
+    },
+    "kind": "video",
+    "fields": [
+      "Authorized live view",
+      "Connection status",
+      "Last frame",
+      "Privacy mask"
+    ],
+    "route": "/ios/camera",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-28",
+    "platform": "ios",
+    "key": "notifications",
+    "title": {
+      "en": "Notification preferences",
+      "ja": "通知の設定"
+    },
+    "kind": "settings",
+    "fields": [
+      "Stores",
+      "Types",
+      "Sound",
+      "Quiet hours",
+      "Private preview"
+    ],
+    "route": "/ios/notifications",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-29",
+    "platform": "ios",
+    "key": "account",
+    "title": {
+      "en": "Account & security",
+      "ja": "アカウント・セキュリティ"
+    },
+    "kind": "settings",
+    "fields": [
+      "Face ID",
+      "Active sessions",
+      "Language",
+      "Appearance",
+      "Sign out"
+    ],
+    "route": "/ios/account",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-30",
+    "platform": "ios",
+    "key": "team",
+    "title": {
+      "en": "Response team",
+      "ja": "対応チーム"
+    },
+    "kind": "people",
+    "fields": [
+      "On duty",
+      "Store manager",
+      "Responder",
+      "Contact via approved channel"
+    ],
+    "route": "/ios/team",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-31",
+    "platform": "ios",
+    "key": "offline",
+    "title": {
+      "en": "Offline mode",
+      "ja": "オフライン"
+    },
+    "kind": "error",
+    "fields": [
+      "Last synced",
+      "Pending draft",
+      "Reconnect",
+      "Refresh before submission"
+    ],
+    "route": "/ios/offline",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-32",
+    "platform": "ios",
+    "key": "empty",
+    "title": {
+      "en": "All caught up",
+      "ja": "確認が完了しました"
+    },
+    "kind": "empty",
+    "fields": [
+      "No pending alerts",
+      "Monitoring status",
+      "View past records"
+    ],
+    "route": "/ios/empty",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-33",
+    "platform": "ios",
+    "key": "session-expired",
+    "title": {
+      "en": "Session expired",
+      "ja": "セッションが切れました"
+    },
+    "kind": "auth",
+    "fields": [
+      "Sign in again",
+      "Unsaved draft",
+      "Company SSO"
+    ],
+    "route": "/ios/session-expired",
+    "actions": [
+      "Open",
+      "Filter"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  },
+  {
+    "id": "ios-34",
+    "platform": "ios",
+    "key": "help",
+    "title": {
+      "en": "Help & diagnostics",
+      "ja": "ヘルプ・診断"
+    },
+    "kind": "form",
+    "fields": [
+      "Camera issue",
+      "Notification issue",
+      "Contact support",
+      "Diagnostics"
+    ],
+    "route": "/ios/help",
+    "actions": [
+      "Save",
+      "Cancel"
+    ],
+    "states": [
+      "loading",
+      "ready",
+      "empty",
+      "error",
+      "permission-denied"
+    ]
+  }
+]

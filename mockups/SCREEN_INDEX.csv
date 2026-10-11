@@ -1,0 +1,353 @@
+screen_id,platform,screen,language,theme,png_path,width,height
+web-01,web,Sign in,en,light,mockups/web/en/light/web-01-login.png,1440,1000
+web-01,web,Sign in,en,dark,mockups/web/en/dark/web-01-login.png,1440,1000
+web-01,web,ログイン,ja,light,mockups/web/ja/light/web-01-login.png,1440,1000
+web-01,web,ログイン,ja,dark,mockups/web/ja/dark/web-01-login.png,1440,1000
+web-02,web,Verify your identity,en,light,mockups/web/en/light/web-02-mfa.png,1440,1000
+web-02,web,Verify your identity,en,dark,mockups/web/en/dark/web-02-mfa.png,1440,1000
+web-02,web,本人確認,ja,light,mockups/web/ja/light/web-02-mfa.png,1440,1000
+web-02,web,本人確認,ja,dark,mockups/web/ja/dark/web-02-mfa.png,1440,1000
+web-03,web,Reset password,en,light,mockups/web/en/light/web-03-reset.png,1440,1000
+web-03,web,Reset password,en,dark,mockups/web/en/dark/web-03-reset.png,1440,1000
+web-03,web,パスワード再設定,ja,light,mockups/web/ja/light/web-03-reset.png,1440,1000
+web-03,web,パスワード再設定,ja,dark,mockups/web/ja/dark/web-03-reset.png,1440,1000
+web-04,web,Organization setup,en,light,mockups/web/en/light/web-04-organization.png,1440,1000
+web-04,web,Organization setup,en,dark,mockups/web/en/dark/web-04-organization.png,1440,1000
+web-04,web,組織の初期設定,ja,light,mockups/web/ja/light/web-04-organization.png,1440,1000
+web-04,web,組織の初期設定,ja,dark,mockups/web/ja/dark/web-04-organization.png,1440,1000
+web-05,web,Stores & regions,en,light,mockups/web/en/light/web-05-stores.png,1440,1000
+web-05,web,Stores & regions,en,dark,mockups/web/en/dark/web-05-stores.png,1440,1000
+web-05,web,店舗・エリア管理,ja,light,mockups/web/ja/light/web-05-stores.png,1440,1000
+web-05,web,店舗・エリア管理,ja,dark,mockups/web/ja/dark/web-05-stores.png,1440,1000
+web-06,web,Tokyo flagship,en,light,mockups/web/en/light/web-06-store-detail.png,1440,1204
+web-06,web,Tokyo flagship,en,dark,mockups/web/en/dark/web-06-store-detail.png,1440,1204
+web-06,web,東京旗艦店,ja,light,mockups/web/ja/light/web-06-store-detail.png,1440,1204
+web-06,web,東京旗艦店,ja,dark,mockups/web/ja/dark/web-06-store-detail.png,1440,1204
+web-07,web,Add a store,en,light,mockups/web/en/light/web-07-store-add.png,1440,1000
+web-07,web,Add a store,en,dark,mockups/web/en/dark/web-07-store-add.png,1440,1000
+web-07,web,店舗を追加,ja,light,mockups/web/ja/light/web-07-store-add.png,1440,1000
+web-07,web,店舗を追加,ja,dark,mockups/web/ja/dark/web-07-store-add.png,1440,1000
+web-08,web,Connect edge appliance,en,light,mockups/web/en/light/web-08-edge-pair.png,1440,1000
+web-08,web,Connect edge appliance,en,dark,mockups/web/en/dark/web-08-edge-pair.png,1440,1000
+web-08,web,エッジ端末を接続,ja,light,mockups/web/ja/light/web-08-edge-pair.png,1440,1000
+web-08,web,エッジ端末を接続,ja,dark,mockups/web/ja/dark/web-08-edge-pair.png,1440,1000
+web-09,web,Loss prevention overview,en,light,mockups/web/en/light/web-09-dashboard.png,1440,1204
+web-09,web,Loss prevention overview,en,dark,mockups/web/en/dark/web-09-dashboard.png,1440,1204
+web-09,web,ロス防止ダッシュボード,ja,light,mockups/web/ja/light/web-09-dashboard.png,1440,1204
+web-09,web,ロス防止ダッシュボード,ja,dark,mockups/web/ja/dark/web-09-dashboard.png,1440,1204
+web-10,web,Live camera wall,en,light,mockups/web/en/light/web-10-live.png,1440,1142
+web-10,web,Live camera wall,en,dark,mockups/web/en/dark/web-10-live.png,1440,1142
+web-10,web,ライブカメラ,ja,light,mockups/web/ja/light/web-10-live.png,1440,1142
+web-10,web,ライブカメラ,ja,dark,mockups/web/ja/dark/web-10-live.png,1440,1142
+web-11,web,Discover ONVIF cameras,en,light,mockups/web/en/light/web-11-camera-discovery.png,1440,1000
+web-11,web,Discover ONVIF cameras,en,dark,mockups/web/en/dark/web-11-camera-discovery.png,1440,1000
+web-11,web,ONVIFカメラを検索,ja,light,mockups/web/ja/light/web-11-camera-discovery.png,1440,1000
+web-11,web,ONVIFカメラを検索,ja,dark,mockups/web/ja/dark/web-11-camera-discovery.png,1440,1000
+web-12,web,Add camera manually,en,light,mockups/web/en/light/web-12-camera-add.png,1440,1000
+web-12,web,Add camera manually,en,dark,mockups/web/en/dark/web-12-camera-add.png,1440,1000
+web-12,web,カメラを手動追加,ja,light,mockups/web/ja/light/web-12-camera-add.png,1440,1000
+web-12,web,カメラを手動追加,ja,dark,mockups/web/ja/dark/web-12-camera-add.png,1440,1000
+web-13,web,Bulk camera import,en,light,mockups/web/en/light/web-13-camera-import.png,1440,1000
+web-13,web,Bulk camera import,en,dark,mockups/web/en/dark/web-13-camera-import.png,1440,1000
+web-13,web,カメラを一括登録,ja,light,mockups/web/ja/light/web-13-camera-import.png,1440,1000
+web-13,web,カメラを一括登録,ja,dark,mockups/web/ja/dark/web-13-camera-import.png,1440,1000
+web-14,web,Camera inventory,en,light,mockups/web/en/light/web-14-cameras.png,1440,1000
+web-14,web,Camera inventory,en,dark,mockups/web/en/dark/web-14-cameras.png,1440,1000
+web-14,web,カメラ一覧,ja,light,mockups/web/ja/light/web-14-cameras.png,1440,1000
+web-14,web,カメラ一覧,ja,dark,mockups/web/ja/dark/web-14-cameras.png,1440,1000
+web-15,web,Camera readiness,en,light,mockups/web/en/light/web-15-camera-detail.png,1440,1167
+web-15,web,Camera readiness,en,dark,mockups/web/en/dark/web-15-camera-detail.png,1440,1167
+web-15,web,カメラ接続・画角確認,ja,light,mockups/web/ja/light/web-15-camera-detail.png,1440,1167
+web-15,web,カメラ接続・画角確認,ja,dark,mockups/web/ja/dark/web-15-camera-detail.png,1440,1167
+web-16,web,Detection zone editor,en,light,mockups/web/en/light/web-16-zones.png,1440,1000
+web-16,web,Detection zone editor,en,dark,mockups/web/en/dark/web-16-zones.png,1440,1000
+web-16,web,検知エリアの設定,ja,light,mockups/web/ja/light/web-16-zones.png,1440,1000
+web-16,web,検知エリアの設定,ja,dark,mockups/web/ja/dark/web-16-zones.png,1440,1000
+web-17,web,Behavior detection rules,en,light,mockups/web/en/light/web-17-detection-rules.png,1440,1000
+web-17,web,Behavior detection rules,en,dark,mockups/web/en/dark/web-17-detection-rules.png,1440,1000
+web-17,web,行動検知ルール,ja,light,mockups/web/ja/light/web-17-detection-rules.png,1440,1000
+web-17,web,行動検知ルール,ja,dark,mockups/web/ja/dark/web-17-detection-rules.png,1440,1000
+web-18,web,Store calibration,en,light,mockups/web/en/light/web-18-calibration.png,1440,1000
+web-18,web,Store calibration,en,dark,mockups/web/en/dark/web-18-calibration.png,1440,1000
+web-18,web,店舗ごとの調整,ja,light,mockups/web/ja/light/web-18-calibration.png,1440,1000
+web-18,web,店舗ごとの調整,ja,dark,mockups/web/ja/dark/web-18-calibration.png,1440,1000
+web-19,web,Alert inbox,en,light,mockups/web/en/light/web-19-alerts.png,1440,1000
+web-19,web,Alert inbox,en,dark,mockups/web/en/dark/web-19-alerts.png,1440,1000
+web-19,web,アラート一覧,ja,light,mockups/web/ja/light/web-19-alerts.png,1440,1000
+web-19,web,アラート一覧,ja,dark,mockups/web/ja/dark/web-19-alerts.png,1440,1000
+web-20,web,Review an alert,en,light,mockups/web/en/light/web-20-alert-detail.png,1440,1000
+web-20,web,Review an alert,en,dark,mockups/web/en/dark/web-20-alert-detail.png,1440,1000
+web-20,web,アラートを確認,ja,light,mockups/web/ja/light/web-20-alert-detail.png,1440,1000
+web-20,web,アラートを確認,ja,dark,mockups/web/ja/dark/web-20-alert-detail.png,1440,1000
+web-21,web,Record incident outcome,en,light,mockups/web/en/light/web-21-alert-outcome.png,1440,1000
+web-21,web,Record incident outcome,en,dark,mockups/web/en/dark/web-21-alert-outcome.png,1440,1000
+web-21,web,確認結果を記録,ja,light,mockups/web/ja/light/web-21-alert-outcome.png,1440,1000
+web-21,web,確認結果を記録,ja,dark,mockups/web/ja/dark/web-21-alert-outcome.png,1440,1000
+web-22,web,Escalation policy,en,light,mockups/web/en/light/web-22-alert-escalation.png,1440,1000
+web-22,web,Escalation policy,en,dark,mockups/web/en/dark/web-22-alert-escalation.png,1440,1000
+web-22,web,通知・エスカレーション,ja,light,mockups/web/ja/light/web-22-alert-escalation.png,1440,1000
+web-22,web,通知・エスカレーション,ja,dark,mockups/web/ja/dark/web-22-alert-escalation.png,1440,1000
+web-23,web,Incident register,en,light,mockups/web/en/light/web-23-incidents.png,1440,1000
+web-23,web,Incident register,en,dark,mockups/web/en/dark/web-23-incidents.png,1440,1000
+web-23,web,事案記録,ja,light,mockups/web/ja/light/web-23-incidents.png,1440,1000
+web-23,web,事案記録,ja,dark,mockups/web/ja/dark/web-23-incidents.png,1440,1000
+web-24,web,Incident workspace,en,light,mockups/web/en/light/web-24-incident-detail.png,1440,1000
+web-24,web,Incident workspace,en,dark,mockups/web/en/dark/web-24-incident-detail.png,1440,1000
+web-24,web,事案の詳細,ja,light,mockups/web/ja/light/web-24-incident-detail.png,1440,1000
+web-24,web,事案の詳細,ja,dark,mockups/web/ja/dark/web-24-incident-detail.png,1440,1000
+web-25,web,Case management,en,light,mockups/web/en/light/web-25-cases.png,1440,1000
+web-25,web,Case management,en,dark,mockups/web/en/dark/web-25-cases.png,1440,1000
+web-25,web,案件管理,ja,light,mockups/web/ja/light/web-25-cases.png,1440,1000
+web-25,web,案件管理,ja,dark,mockups/web/ja/dark/web-25-cases.png,1440,1000
+web-26,web,Case investigation,en,light,mockups/web/en/light/web-26-case-detail.png,1440,1000
+web-26,web,Case investigation,en,dark,mockups/web/en/dark/web-26-case-detail.png,1440,1000
+web-26,web,案件調査,ja,light,mockups/web/ja/light/web-26-case-detail.png,1440,1000
+web-26,web,案件調査,ja,dark,mockups/web/ja/dark/web-26-case-detail.png,1440,1000
+web-27,web,Enrolled watchlist,en,light,mockups/web/en/light/web-27-watchlist.png,1440,1321
+web-27,web,Enrolled watchlist,en,dark,mockups/web/en/dark/web-27-watchlist.png,1440,1321
+web-27,web,登録対象者,ja,light,mockups/web/ja/light/web-27-watchlist.png,1440,1321
+web-27,web,登録対象者,ja,dark,mockups/web/ja/dark/web-27-watchlist.png,1440,1321
+web-28,web,Enroll a subject,en,light,mockups/web/en/light/web-28-watchlist-enroll.png,1440,1000
+web-28,web,Enroll a subject,en,dark,mockups/web/en/dark/web-28-watchlist-enroll.png,1440,1000
+web-28,web,対象者を登録,ja,light,mockups/web/ja/light/web-28-watchlist-enroll.png,1440,1000
+web-28,web,対象者を登録,ja,dark,mockups/web/ja/dark/web-28-watchlist-enroll.png,1440,1000
+web-29,web,Watchlist profile,en,light,mockups/web/en/light/web-29-watchlist-detail.png,1440,1000
+web-29,web,Watchlist profile,en,dark,mockups/web/en/dark/web-29-watchlist-detail.png,1440,1000
+web-29,web,登録対象者の詳細,ja,light,mockups/web/ja/light/web-29-watchlist-detail.png,1440,1000
+web-29,web,登録対象者の詳細,ja,dark,mockups/web/ja/dark/web-29-watchlist-detail.png,1440,1000
+web-30,web,Enrollment approval,en,light,mockups/web/en/light/web-30-watchlist-approval.png,1440,1000
+web-30,web,Enrollment approval,en,dark,mockups/web/en/dark/web-30-watchlist-approval.png,1440,1000
+web-30,web,登録内容の承認,ja,light,mockups/web/ja/light/web-30-watchlist-approval.png,1440,1000
+web-30,web,登録内容の承認,ja,dark,mockups/web/ja/dark/web-30-watchlist-approval.png,1440,1000
+web-31,web,Staff directory,en,light,mockups/web/en/light/web-31-staff.png,1440,1321
+web-31,web,Staff directory,en,dark,mockups/web/en/dark/web-31-staff.png,1440,1321
+web-31,web,スタッフ一覧,ja,light,mockups/web/ja/light/web-31-staff.png,1440,1321
+web-31,web,スタッフ一覧,ja,dark,mockups/web/ja/dark/web-31-staff.png,1440,1321
+web-32,web,Enroll staff,en,light,mockups/web/en/light/web-32-staff-enroll.png,1440,1000
+web-32,web,Enroll staff,en,dark,mockups/web/en/dark/web-32-staff-enroll.png,1440,1000
+web-32,web,スタッフを登録,ja,light,mockups/web/ja/light/web-32-staff-enroll.png,1440,1000
+web-32,web,スタッフを登録,ja,dark,mockups/web/ja/dark/web-32-staff-enroll.png,1440,1000
+web-33,web,Staff profile,en,light,mockups/web/en/light/web-33-staff-detail.png,1440,1000
+web-33,web,Staff profile,en,dark,mockups/web/en/dark/web-33-staff-detail.png,1440,1000
+web-33,web,スタッフ情報,ja,light,mockups/web/ja/light/web-33-staff-detail.png,1440,1000
+web-33,web,スタッフ情報,ja,dark,mockups/web/ja/dark/web-33-staff-detail.png,1440,1000
+web-34,web,Photo library,en,light,mockups/web/en/light/web-34-photos.png,1440,1000
+web-34,web,Photo library,en,dark,mockups/web/en/dark/web-34-photos.png,1440,1000
+web-34,web,写真ライブラリ,ja,light,mockups/web/ja/light/web-34-photos.png,1440,1000
+web-34,web,写真ライブラリ,ja,dark,mockups/web/ja/dark/web-34-photos.png,1440,1000
+web-35,web,Historical search,en,light,mockups/web/en/light/web-35-search.png,1440,1000
+web-35,web,Historical search,en,dark,mockups/web/en/dark/web-35-search.png,1440,1000
+web-35,web,過去記録の検索,ja,light,mockups/web/ja/light/web-35-search.png,1440,1000
+web-35,web,過去記録の検索,ja,dark,mockups/web/ja/dark/web-35-search.png,1440,1000
+web-36,web,Search results,en,light,mockups/web/en/light/web-36-search-results.png,1440,1202
+web-36,web,Search results,en,dark,mockups/web/en/dark/web-36-search-results.png,1440,1202
+web-36,web,検索結果,ja,light,mockups/web/ja/light/web-36-search-results.png,1440,1202
+web-36,web,検索結果,ja,dark,mockups/web/ja/dark/web-36-search-results.png,1440,1202
+web-37,web,Visit reconstruction,en,light,mockups/web/en/light/web-37-visit-detail.png,1440,1000
+web-37,web,Visit reconstruction,en,dark,mockups/web/en/dark/web-37-visit-detail.png,1440,1000
+web-37,web,来店履歴の確認,ja,light,mockups/web/ja/light/web-37-visit-detail.png,1440,1000
+web-37,web,来店履歴の確認,ja,dark,mockups/web/ja/dark/web-37-visit-detail.png,1440,1000
+web-38,web,Checkout exceptions,en,light,mockups/web/en/light/web-38-checkout.png,1440,1000
+web-38,web,Checkout exceptions,en,dark,mockups/web/en/dark/web-38-checkout.png,1440,1000
+web-38,web,レジ例外検知,ja,light,mockups/web/ja/light/web-38-checkout.png,1440,1000
+web-38,web,レジ例外検知,ja,dark,mockups/web/ja/dark/web-38-checkout.png,1440,1000
+web-39,web,Transaction reconciliation,en,light,mockups/web/en/light/web-39-checkout-detail.png,1440,1000
+web-39,web,Transaction reconciliation,en,dark,mockups/web/en/dark/web-39-checkout-detail.png,1440,1000
+web-39,web,取引・映像の照合,ja,light,mockups/web/ja/light/web-39-checkout-detail.png,1440,1000
+web-39,web,取引・映像の照合,ja,dark,mockups/web/ja/dark/web-39-checkout-detail.png,1440,1000
+web-40,web,"POS, RFID & VMS",en,light,mockups/web/en/light/web-40-integrations.png,1440,1000
+web-40,web,"POS, RFID & VMS",en,dark,mockups/web/en/dark/web-40-integrations.png,1440,1000
+web-40,web,POS・RFID・VMS連携,ja,light,mockups/web/ja/light/web-40-integrations.png,1440,1000
+web-40,web,POS・RFID・VMS連携,ja,dark,mockups/web/ja/dark/web-40-integrations.png,1440,1000
+web-41,web,Reports & measured impact,en,light,mockups/web/en/light/web-41-reports.png,1440,1000
+web-41,web,Reports & measured impact,en,dark,mockups/web/en/dark/web-41-reports.png,1440,1000
+web-41,web,レポート・効果測定,ja,light,mockups/web/ja/light/web-41-reports.png,1440,1000
+web-41,web,レポート・効果測定,ja,dark,mockups/web/ja/dark/web-41-reports.png,1440,1000
+web-42,web,Export evidence,en,light,mockups/web/en/light/web-42-report-export.png,1440,1000
+web-42,web,Export evidence,en,dark,mockups/web/en/dark/web-42-report-export.png,1440,1000
+web-42,web,証拠をエクスポート,ja,light,mockups/web/ja/light/web-42-report-export.png,1440,1000
+web-42,web,証拠をエクスポート,ja,dark,mockups/web/ja/dark/web-42-report-export.png,1440,1000
+web-43,web,User management,en,light,mockups/web/en/light/web-43-users.png,1440,1000
+web-43,web,User management,en,dark,mockups/web/en/dark/web-43-users.png,1440,1000
+web-43,web,ユーザー管理,ja,light,mockups/web/ja/light/web-43-users.png,1440,1000
+web-43,web,ユーザー管理,ja,dark,mockups/web/ja/dark/web-43-users.png,1440,1000
+web-44,web,Invite a teammate,en,light,mockups/web/en/light/web-44-user-invite.png,1440,1000
+web-44,web,Invite a teammate,en,dark,mockups/web/en/dark/web-44-user-invite.png,1440,1000
+web-44,web,ユーザーを招待,ja,light,mockups/web/ja/light/web-44-user-invite.png,1440,1000
+web-44,web,ユーザーを招待,ja,dark,mockups/web/ja/dark/web-44-user-invite.png,1440,1000
+web-45,web,Roles & permissions,en,light,mockups/web/en/light/web-45-roles.png,1440,1000
+web-45,web,Roles & permissions,en,dark,mockups/web/en/dark/web-45-roles.png,1440,1000
+web-45,web,権限管理,ja,light,mockups/web/ja/light/web-45-roles.png,1440,1000
+web-45,web,権限管理,ja,dark,mockups/web/ja/dark/web-45-roles.png,1440,1000
+web-46,web,Events & audit log,en,light,mockups/web/en/light/web-46-logs.png,1440,1000
+web-46,web,Events & audit log,en,dark,mockups/web/en/dark/web-46-logs.png,1440,1000
+web-46,web,イベント・監査ログ,ja,light,mockups/web/ja/light/web-46-logs.png,1440,1000
+web-46,web,イベント・監査ログ,ja,dark,mockups/web/ja/dark/web-46-logs.png,1440,1000
+web-47,web,System health,en,light,mockups/web/en/light/web-47-health.png,1440,1204
+web-47,web,System health,en,dark,mockups/web/en/dark/web-47-health.png,1440,1204
+web-47,web,システム稼働状況,ja,light,mockups/web/ja/light/web-47-health.png,1440,1204
+web-47,web,システム稼働状況,ja,dark,mockups/web/ja/dark/web-47-health.png,1440,1204
+web-48,web,Model registry,en,light,mockups/web/en/light/web-48-models.png,1440,1000
+web-48,web,Model registry,en,dark,mockups/web/en/dark/web-48-models.png,1440,1000
+web-48,web,モデル管理,ja,light,mockups/web/ja/light/web-48-models.png,1440,1000
+web-48,web,モデル管理,ja,dark,mockups/web/ja/dark/web-48-models.png,1440,1000
+web-49,web,Organization settings,en,light,mockups/web/en/light/web-49-settings.png,1440,1000
+web-49,web,Organization settings,en,dark,mockups/web/en/dark/web-49-settings.png,1440,1000
+web-49,web,組織設定,ja,light,mockups/web/ja/light/web-49-settings.png,1440,1000
+web-49,web,組織設定,ja,dark,mockups/web/ja/dark/web-49-settings.png,1440,1000
+web-50,web,Retention & privacy,en,light,mockups/web/en/light/web-50-privacy.png,1440,1000
+web-50,web,Retention & privacy,en,dark,mockups/web/en/dark/web-50-privacy.png,1440,1000
+web-50,web,保存・個人情報設定,ja,light,mockups/web/ja/light/web-50-privacy.png,1440,1000
+web-50,web,保存・個人情報設定,ja,dark,mockups/web/ja/dark/web-50-privacy.png,1440,1000
+web-51,web,Notification settings,en,light,mockups/web/en/light/web-51-notifications.png,1440,1000
+web-51,web,Notification settings,en,dark,mockups/web/en/dark/web-51-notifications.png,1440,1000
+web-51,web,通知設定,ja,light,mockups/web/ja/light/web-51-notifications.png,1440,1000
+web-51,web,通知設定,ja,dark,mockups/web/ja/dark/web-51-notifications.png,1440,1000
+web-52,web,Support & diagnostics,en,light,mockups/web/en/light/web-52-support.png,1440,1000
+web-52,web,Support & diagnostics,en,dark,mockups/web/en/dark/web-52-support.png,1440,1000
+web-52,web,サポート・診断,ja,light,mockups/web/ja/light/web-52-support.png,1440,1000
+web-52,web,サポート・診断,ja,dark,mockups/web/ja/dark/web-52-support.png,1440,1000
+web-53,web,No alerts to review,en,light,mockups/web/en/light/web-53-empty.png,1440,1000
+web-53,web,No alerts to review,en,dark,mockups/web/en/dark/web-53-empty.png,1440,1000
+web-53,web,未確認アラートはありません,ja,light,mockups/web/ja/light/web-53-empty.png,1440,1000
+web-53,web,未確認アラートはありません,ja,dark,mockups/web/ja/dark/web-53-empty.png,1440,1000
+web-54,web,Connection interrupted,en,light,mockups/web/en/light/web-54-error.png,1440,1000
+web-54,web,Connection interrupted,en,dark,mockups/web/en/dark/web-54-error.png,1440,1000
+web-54,web,接続が中断されました,ja,light,mockups/web/ja/light/web-54-error.png,1440,1000
+web-54,web,接続が中断されました,ja,dark,mockups/web/ja/dark/web-54-error.png,1440,1000
+ios-01,ios,Welcome to RetailGuard,en,light,mockups/ios/en/light/ios-01-welcome.png,393,852
+ios-01,ios,Welcome to RetailGuard,en,dark,mockups/ios/en/dark/ios-01-welcome.png,393,852
+ios-01,ios,RetailGuardへようこそ,ja,light,mockups/ios/ja/light/ios-01-welcome.png,393,852
+ios-01,ios,RetailGuardへようこそ,ja,dark,mockups/ios/ja/dark/ios-01-welcome.png,393,852
+ios-02,ios,Sign in,en,light,mockups/ios/en/light/ios-02-login.png,393,852
+ios-02,ios,Sign in,en,dark,mockups/ios/en/dark/ios-02-login.png,393,852
+ios-02,ios,ログイン,ja,light,mockups/ios/ja/light/ios-02-login.png,393,852
+ios-02,ios,ログイン,ja,dark,mockups/ios/ja/dark/ios-02-login.png,393,852
+ios-03,ios,Verify sign-in,en,light,mockups/ios/en/light/ios-03-mfa.png,393,852
+ios-03,ios,Verify sign-in,en,dark,mockups/ios/en/dark/ios-03-mfa.png,393,852
+ios-03,ios,ログインを確認,ja,light,mockups/ios/ja/light/ios-03-mfa.png,393,852
+ios-03,ios,ログインを確認,ja,dark,mockups/ios/ja/dark/ios-03-mfa.png,393,852
+ios-04,ios,Enable Face ID,en,light,mockups/ios/en/light/ios-04-faceid.png,393,852
+ios-04,ios,Enable Face ID,en,dark,mockups/ios/en/dark/ios-04-faceid.png,393,852
+ios-04,ios,Face IDを有効にする,ja,light,mockups/ios/ja/light/ios-04-faceid.png,393,852
+ios-04,ios,Face IDを有効にする,ja,dark,mockups/ios/ja/dark/ios-04-faceid.png,393,852
+ios-05,ios,Enable notifications,en,light,mockups/ios/en/light/ios-05-permission.png,393,852
+ios-05,ios,Enable notifications,en,dark,mockups/ios/en/dark/ios-05-permission.png,393,852
+ios-05,ios,通知を有効にする,ja,light,mockups/ios/ja/light/ios-05-permission.png,393,852
+ios-05,ios,通知を有効にする,ja,dark,mockups/ios/ja/dark/ios-05-permission.png,393,852
+ios-06,ios,Select stores,en,light,mockups/ios/en/light/ios-06-stores.png,393,852
+ios-06,ios,Select stores,en,dark,mockups/ios/en/dark/ios-06-stores.png,393,852
+ios-06,ios,店舗を選択,ja,light,mockups/ios/ja/light/ios-06-stores.png,393,852
+ios-06,ios,店舗を選択,ja,dark,mockups/ios/ja/dark/ios-06-stores.png,393,852
+ios-07,ios,Store overview,en,light,mockups/ios/en/light/ios-07-home.png,393,1255
+ios-07,ios,Store overview,en,dark,mockups/ios/en/dark/ios-07-home.png,393,1255
+ios-07,ios,店舗ダッシュボード,ja,light,mockups/ios/ja/light/ios-07-home.png,393,1213
+ios-07,ios,店舗ダッシュボード,ja,dark,mockups/ios/ja/dark/ios-07-home.png,393,1213
+ios-08,ios,Live alerts,en,light,mockups/ios/en/light/ios-08-alerts.png,393,852
+ios-08,ios,Live alerts,en,dark,mockups/ios/en/dark/ios-08-alerts.png,393,852
+ios-08,ios,最新アラート,ja,light,mockups/ios/ja/light/ios-08-alerts.png,393,852
+ios-08,ios,最新アラート,ja,dark,mockups/ios/ja/dark/ios-08-alerts.png,393,852
+ios-09,ios,Review alert,en,light,mockups/ios/en/light/ios-09-alert-detail.png,393,1395
+ios-09,ios,Review alert,en,dark,mockups/ios/en/dark/ios-09-alert-detail.png,393,1395
+ios-09,ios,アラート確認,ja,light,mockups/ios/ja/light/ios-09-alert-detail.png,393,1373
+ios-09,ios,アラート確認,ja,dark,mockups/ios/ja/dark/ios-09-alert-detail.png,393,1373
+ios-10,ios,Evidence player,en,light,mockups/ios/en/light/ios-10-clip.png,393,852
+ios-10,ios,Evidence player,en,dark,mockups/ios/en/dark/ios-10-clip.png,393,852
+ios-10,ios,証拠動画,ja,light,mockups/ios/ja/light/ios-10-clip.png,393,852
+ios-10,ios,証拠動画,ja,dark,mockups/ios/ja/dark/ios-10-clip.png,393,852
+ios-11,ios,Take ownership,en,light,mockups/ios/en/light/ios-11-acknowledge.png,393,1220
+ios-11,ios,Take ownership,en,dark,mockups/ios/en/dark/ios-11-acknowledge.png,393,1220
+ios-11,ios,対応を開始,ja,light,mockups/ios/ja/light/ios-11-acknowledge.png,393,1198
+ios-11,ios,対応を開始,ja,dark,mockups/ios/ja/dark/ios-11-acknowledge.png,393,1198
+ios-12,ios,Record outcome,en,light,mockups/ios/en/light/ios-12-outcome.png,393,1322
+ios-12,ios,Record outcome,en,dark,mockups/ios/en/dark/ios-12-outcome.png,393,1322
+ios-12,ios,結果を記録,ja,light,mockups/ios/ja/light/ios-12-outcome.png,393,1300
+ios-12,ios,結果を記録,ja,dark,mockups/ios/ja/dark/ios-12-outcome.png,393,1300
+ios-13,ios,Request assistance,en,light,mockups/ios/en/light/ios-13-escalate.png,393,1220
+ios-13,ios,Request assistance,en,dark,mockups/ios/en/dark/ios-13-escalate.png,393,1220
+ios-13,ios,応援を依頼,ja,light,mockups/ios/ja/light/ios-13-escalate.png,393,1198
+ios-13,ios,応援を依頼,ja,dark,mockups/ios/ja/dark/ios-13-escalate.png,393,1198
+ios-14,ios,Incident details,en,light,mockups/ios/en/light/ios-14-incident.png,393,1395
+ios-14,ios,Incident details,en,dark,mockups/ios/en/dark/ios-14-incident.png,393,1395
+ios-14,ios,事案詳細,ja,light,mockups/ios/ja/light/ios-14-incident.png,393,1373
+ios-14,ios,事案詳細,ja,dark,mockups/ios/ja/dark/ios-14-incident.png,393,1373
+ios-15,ios,Past records,en,light,mockups/ios/en/light/ios-15-history.png,393,852
+ios-15,ios,Past records,en,dark,mockups/ios/en/dark/ios-15-history.png,393,852
+ios-15,ios,過去の記録,ja,light,mockups/ios/ja/light/ios-15-history.png,393,852
+ios-15,ios,過去の記録,ja,dark,mockups/ios/ja/dark/ios-15-history.png,393,852
+ios-16,ios,Search records,en,light,mockups/ios/en/light/ios-16-search.png,393,1309
+ios-16,ios,Search records,en,dark,mockups/ios/en/dark/ios-16-search.png,393,1309
+ios-16,ios,記録を検索,ja,light,mockups/ios/ja/light/ios-16-search.png,393,1266
+ios-16,ios,記録を検索,ja,dark,mockups/ios/ja/dark/ios-16-search.png,393,1266
+ios-17,ios,Search results,en,light,mockups/ios/en/light/ios-17-results.png,393,1227
+ios-17,ios,Search results,en,dark,mockups/ios/en/dark/ios-17-results.png,393,1227
+ios-17,ios,検索結果,ja,light,mockups/ios/ja/light/ios-17-results.png,393,1205
+ios-17,ios,検索結果,ja,dark,mockups/ios/ja/dark/ios-17-results.png,393,1205
+ios-18,ios,Watchlist,en,light,mockups/ios/en/light/ios-18-watchlist.png,393,1332
+ios-18,ios,Watchlist,en,dark,mockups/ios/en/dark/ios-18-watchlist.png,393,1332
+ios-18,ios,登録対象者,ja,light,mockups/ios/ja/light/ios-18-watchlist.png,393,1310
+ios-18,ios,登録対象者,ja,dark,mockups/ios/ja/dark/ios-18-watchlist.png,393,1310
+ios-19,ios,Subject profile,en,light,mockups/ios/en/light/ios-19-profile.png,393,1457
+ios-19,ios,Subject profile,en,dark,mockups/ios/en/dark/ios-19-profile.png,393,1457
+ios-19,ios,対象者プロフィール,ja,light,mockups/ios/ja/light/ios-19-profile.png,393,1436
+ios-19,ios,対象者プロフィール,ja,dark,mockups/ios/ja/dark/ios-19-profile.png,393,1436
+ios-20,ios,Enroll subject,en,light,mockups/ios/en/light/ios-20-subject-enroll.png,393,1532
+ios-20,ios,Enroll subject,en,dark,mockups/ios/en/dark/ios-20-subject-enroll.png,393,1532
+ios-20,ios,対象者を登録,ja,light,mockups/ios/ja/light/ios-20-subject-enroll.png,393,1511
+ios-20,ios,対象者を登録,ja,dark,mockups/ios/ja/dark/ios-20-subject-enroll.png,393,1511
+ios-21,ios,Staff,en,light,mockups/ios/en/light/ios-21-staff.png,393,1332
+ios-21,ios,Staff,en,dark,mockups/ios/en/dark/ios-21-staff.png,393,1332
+ios-21,ios,スタッフ,ja,light,mockups/ios/ja/light/ios-21-staff.png,393,1310
+ios-21,ios,スタッフ,ja,dark,mockups/ios/ja/dark/ios-21-staff.png,393,1310
+ios-22,ios,Enroll staff,en,light,mockups/ios/en/light/ios-22-staff-enroll.png,393,1430
+ios-22,ios,Enroll staff,en,dark,mockups/ios/en/dark/ios-22-staff-enroll.png,393,1430
+ios-22,ios,スタッフを登録,ja,light,mockups/ios/ja/light/ios-22-staff-enroll.png,393,1409
+ios-22,ios,スタッフを登録,ja,dark,mockups/ios/ja/dark/ios-22-staff-enroll.png,393,1409
+ios-23,ios,Capture reference photo,en,light,mockups/ios/en/light/ios-23-photo-capture.png,393,924
+ios-23,ios,Capture reference photo,en,dark,mockups/ios/en/dark/ios-23-photo-capture.png,393,924
+ios-23,ios,登録写真を撮影,ja,light,mockups/ios/ja/light/ios-23-photo-capture.png,393,902
+ios-23,ios,登録写真を撮影,ja,dark,mockups/ios/ja/dark/ios-23-photo-capture.png,393,902
+ios-24,ios,Review photo quality,en,light,mockups/ios/en/light/ios-24-photo-quality.png,393,1378
+ios-24,ios,Review photo quality,en,dark,mockups/ios/en/dark/ios-24-photo-quality.png,393,1378
+ios-24,ios,写真品質を確認,ja,light,mockups/ios/ja/light/ios-24-photo-quality.png,393,1356
+ios-24,ios,写真品質を確認,ja,dark,mockups/ios/ja/dark/ios-24-photo-quality.png,393,1356
+ios-25,ios,Visit timeline,en,light,mockups/ios/en/light/ios-25-visits.png,393,1395
+ios-25,ios,Visit timeline,en,dark,mockups/ios/en/dark/ios-25-visits.png,393,1395
+ios-25,ios,来店タイムライン,ja,light,mockups/ios/ja/light/ios-25-visits.png,393,1373
+ios-25,ios,来店タイムライン,ja,dark,mockups/ios/ja/dark/ios-25-visits.png,393,1373
+ios-26,ios,Cameras,en,light,mockups/ios/en/light/ios-26-cameras.png,393,947
+ios-26,ios,Cameras,en,dark,mockups/ios/en/dark/ios-26-cameras.png,393,947
+ios-26,ios,カメラ,ja,light,mockups/ios/ja/light/ios-26-cameras.png,393,925
+ios-26,ios,カメラ,ja,dark,mockups/ios/ja/dark/ios-26-cameras.png,393,925
+ios-27,ios,Camera preview,en,light,mockups/ios/en/light/ios-27-camera.png,393,852
+ios-27,ios,Camera preview,en,dark,mockups/ios/en/dark/ios-27-camera.png,393,852
+ios-27,ios,カメラ映像,ja,light,mockups/ios/ja/light/ios-27-camera.png,393,852
+ios-27,ios,カメラ映像,ja,dark,mockups/ios/ja/dark/ios-27-camera.png,393,852
+ios-28,ios,Notification preferences,en,light,mockups/ios/en/light/ios-28-notifications.png,393,1251
+ios-28,ios,Notification preferences,en,dark,mockups/ios/en/dark/ios-28-notifications.png,393,1251
+ios-28,ios,通知の設定,ja,light,mockups/ios/ja/light/ios-28-notifications.png,393,1229
+ios-28,ios,通知の設定,ja,dark,mockups/ios/ja/dark/ios-28-notifications.png,393,1229
+ios-29,ios,Account & security,en,light,mockups/ios/en/light/ios-29-account.png,393,1251
+ios-29,ios,Account & security,en,dark,mockups/ios/en/dark/ios-29-account.png,393,1251
+ios-29,ios,アカウント・セキュリティ,ja,light,mockups/ios/ja/light/ios-29-account.png,393,1229
+ios-29,ios,アカウント・セキュリティ,ja,dark,mockups/ios/ja/dark/ios-29-account.png,393,1229
+ios-30,ios,Response team,en,light,mockups/ios/en/light/ios-30-team.png,393,1332
+ios-30,ios,Response team,en,dark,mockups/ios/en/dark/ios-30-team.png,393,1332
+ios-30,ios,対応チーム,ja,light,mockups/ios/ja/light/ios-30-team.png,393,1310
+ios-30,ios,対応チーム,ja,dark,mockups/ios/ja/dark/ios-30-team.png,393,1310
+ios-31,ios,Offline mode,en,light,mockups/ios/en/light/ios-31-offline.png,393,886
+ios-31,ios,Offline mode,en,dark,mockups/ios/en/dark/ios-31-offline.png,393,886
+ios-31,ios,オフライン,ja,light,mockups/ios/ja/light/ios-31-offline.png,393,864
+ios-31,ios,オフライン,ja,dark,mockups/ios/ja/dark/ios-31-offline.png,393,864
+ios-32,ios,All caught up,en,light,mockups/ios/en/light/ios-32-empty.png,393,886
+ios-32,ios,All caught up,en,dark,mockups/ios/en/dark/ios-32-empty.png,393,886
+ios-32,ios,確認が完了しました,ja,light,mockups/ios/ja/light/ios-32-empty.png,393,864
+ios-32,ios,確認が完了しました,ja,dark,mockups/ios/ja/dark/ios-32-empty.png,393,864
+ios-33,ios,Session expired,en,light,mockups/ios/en/light/ios-33-session-expired.png,393,852
+ios-33,ios,Session expired,en,dark,mockups/ios/en/dark/ios-33-session-expired.png,393,852
+ios-33,ios,セッションが切れました,ja,light,mockups/ios/ja/light/ios-33-session-expired.png,393,852
+ios-33,ios,セッションが切れました,ja,dark,mockups/ios/ja/dark/ios-33-session-expired.png,393,852
+ios-34,ios,Help & diagnostics,en,light,mockups/ios/en/light/ios-34-help.png,393,1220
+ios-34,ios,Help & diagnostics,en,dark,mockups/ios/en/dark/ios-34-help.png,393,1220
+ios-34,ios,ヘルプ・診断,ja,light,mockups/ios/ja/light/ios-34-help.png,393,1198
+ios-34,ios,ヘルプ・診断,ja,dark,mockups/ios/ja/dark/ios-34-help.png,393,1198

@@ -1,0 +1,313 @@
+/* Group C screens (incident review, cases, search, checkout, integrations, reports, exports).
+   Tokens only (styles/tokens.css); no hard-coded colors. Layout classes from components.css are
+   reused (.grid, .card, .stats, .form-grid, .kv, .toolbar...). */
+
+.gc-stack {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+  min-width: 0;
+}
+.gc-section {
+  margin-top: 18px;
+}
+.gc-section h3,
+.gc-subhead {
+  font-size: 14px;
+  margin: 18px 0 8px;
+}
+.gc-form .field {
+  margin-bottom: 14px;
+}
+.gc-form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.gc-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.gc-wrap {
+  overflow-wrap: anywhere;
+}
+
+/* Conflict detail under the shared banner */
+.gc-conflict {
+  margin-bottom: 18px;
+}
+.gc-conflict .conflict-banner {
+  margin-bottom: 6px;
+}
+.gc-conflict-detail {
+  margin: 0;
+  color: var(--warning-ink);
+}
+
+/* Radio cards (outcome, redaction) */
+.gc-radio-group {
+  border: 0;
+  margin: 0 0 14px;
+  padding: 0;
+  min-width: 0;
+}
+.gc-radio-group legend {
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding: 0;
+}
+.gc-radio {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: var(--card);
+}
+.gc-radio:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--soft);
+}
+.gc-radio input {
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--brand);
+  flex: none;
+}
+.gc-radio-label {
+  font-weight: 600;
+  display: block;
+}
+.gc-radio-hint {
+  font-size: 12px;
+  color: var(--muted);
+  display: block;
+}
+.gc-group-error {
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
+
+/* Evidence */
+.gc-evidence-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+.gc-evidence-list li {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.gc-evidence-list li:last-child {
+  border-bottom: 0;
+}
+.gc-evidence-kind {
+  font-weight: 600;
+}
+
+/* Notes */
+.gc-note-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+}
+.gc-note {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.gc-note-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.gc-note-body {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.gc-note-form .field {
+  margin-bottom: 10px;
+}
+
+/* Lists of rows inside cards */
+.gc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.gc-list > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 14px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.gc-list > li:last-child {
+  border-bottom: 0;
+}
+.gc-list-main {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.gc-list-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Chips summarising active search filters */
+.gc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.gc-chip {
+  background: var(--neutral-soft);
+  color: var(--neutral-ink);
+  border-radius: var(--radius-pill);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Coverage gaps */
+.gc-gap {
+  border-left: 3px solid var(--warning);
+  padding: 6px 10px;
+  margin: 6px 0;
+  background: var(--warning-soft);
+  color: var(--warning-ink);
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+}
+
+/* Secrets / code */
+.gc-secret {
+  font-family: var(--font-mono);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  font-size: 13px;
+  margin: 6px 0;
+  user-select: all;
+}
+.gc-code {
+  font-family: var(--font-mono);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 6px 0 12px;
+}
+.gc-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Lane map editor */
+.gc-lane-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+/* Reports */
+.gc-stat-meta {
+  display: block;
+  margin-top: 4px;
+}
+.gc-definition {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+.gc-daily .gc-s-detections {
+  fill: var(--series-a);
+}
+.gc-daily .gc-s-confirmed {
+  fill: var(--critical);
+}
+.gc-daily .gc-s-false {
+  fill: var(--neutral-ink);
+}
+.gc-daily .gc-s-inconclusive {
+  fill: var(--warning);
+}
+.legend-swatch.gc-swatch-detections {
+  background: var(--series-a);
+}
+.legend-swatch.gc-s-confirmed {
+  background: var(--critical);
+}
+.legend-swatch.gc-s-false {
+  background: var(--neutral-ink);
+}
+.legend-swatch.gc-s-inconclusive {
+  background: var(--warning);
+}
+.gc-table-compact td,
+.gc-table-compact th {
+  padding: 8px 10px;
+}
+.align-end {
+  text-align: end;
+}
+
+/* Filters row (date inputs etc.) */
+.gc-filter-date {
+  min-width: 150px;
+}
+
+@media (max-width: 767px) {
+  .gc-lane-row {
+    grid-template-columns: 1fr;
+  }
+  .gc-list > li {
+    align-items: flex-start;
+  }
+}
+
+.gc-incident-escalation {
+  margin-bottom: 18px;
+}
+
+.gc-row-actions {
+  gap: 6px;
+}
+.gc-steps {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+.gc-steps li {
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+}

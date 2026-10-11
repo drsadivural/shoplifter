@@ -1,0 +1,6 @@
+// Copy to Config/Local.xcconfig (git-ignored) to point a Debug build at
+// another API origin, e.g. a staging server or a loopback API for the
+// simulator. Remember "//" starts a comment: use https:/$()/host.
+
+// RG_API_BASE_URL = https:/$()/staging.example.invalid
+// RG_API_BASE_URL = http:/$()/127.0.0.1:8000

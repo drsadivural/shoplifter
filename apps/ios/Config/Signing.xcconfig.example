@@ -1,0 +1,9 @@
+// Copy to Config/Signing.xcconfig (git-ignored) on the build Mac or CI.
+// Never commit the copy.
+
+DEVELOPMENT_TEAM = YOUR_TEAM_ID
+CODE_SIGN_STYLE = Automatic
+
+// Must match the App ID registered in App Store Connect / the developer portal
+// with the Push Notifications capability enabled.
+RG_BUNDLE_IDENTIFIER = com.ayonix.retailguard.responder

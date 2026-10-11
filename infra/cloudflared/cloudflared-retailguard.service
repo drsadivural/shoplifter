@@ -1,0 +1,14 @@
+[Unit]
+Description=cloudflared tunnel (retailguard) - Cloudflare edge -> Caddy 127.0.0.1:8730 for shoplifter.ayonix.com
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/cloudflared tunnel --no-autoupdate --config /etc/cloudflared/retailguard.yml run
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
