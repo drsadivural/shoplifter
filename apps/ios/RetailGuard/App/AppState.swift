@@ -83,8 +83,12 @@ final class AppState {
     /// Relock after this long in the background when Face ID unlock is on.
     private let relockInterval: TimeInterval = 60
 
-    init(config: AppConfig = .load(), preferences: AppPreferences = AppPreferences(),
-         tokenStore: TokenStore = KeychainTokenStore()) {
+    // Defaults are built inside the (main-actor) initializer: default-argument expressions are
+    // evaluated in a nonisolated context and cannot call main-actor initializers.
+    init(config: AppConfig? = nil, preferences: AppPreferences? = nil, tokenStore: TokenStore? = nil) {
+        let config = config ?? .load()
+        let preferences = preferences ?? AppPreferences()
+        let tokenStore = tokenStore ?? KeychainTokenStore()
         self.config = config
         self.preferences = preferences
         self.tokenStore = tokenStore
