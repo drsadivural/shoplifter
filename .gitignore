@@ -19,3 +19,7 @@ third_party/
 weights/
 customer_footage/
 validation/private/
+
+# Browser automation scratch output
+.playwright-mcp/
+apps/ios/build.log
