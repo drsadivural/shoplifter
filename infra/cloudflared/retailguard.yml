@@ -1,0 +1,10 @@
+# RetailGuard (shoplifter.ayonix.com). Cloudflare is the edge (TLS/WAF); this tunnel carries
+# traffic to a loopback-only Caddy listener (127.0.0.1:8730) that serves the web console and
+# proxies /v1 to the API on 127.0.0.1:8720. No public origin port is opened for this site.
+tunnel: <TUNNEL_ID>
+credentials-file: /etc/cloudflared/retailguard.json
+
+ingress:
+  - hostname: shoplifter.ayonix.com
+    service: http://127.0.0.1:8730
+  - service: http_status:404

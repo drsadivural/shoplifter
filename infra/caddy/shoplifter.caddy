@@ -1,0 +1,45 @@
+# Ayonix RetailGuard — shoplifter.ayonix.com
+# Cloudflare is the front door (DNS/TLS/WAF) and reaches this origin only through the
+# `retailguard` Cloudflare Tunnel (infra/cloudflared/retailguard.yml). This listener binds to
+# loopback, so the origin is not reachable from the internet directly.
+http://shoplifter.ayonix.com:8730 {
+	bind 127.0.0.1
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		X-Frame-Options "DENY"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	# API docs are disabled in production; never expose internal surfaces.
+	@blocked path /v1/docs* /.git/* /.env*
+	respond @blocked "Not found" 404
+
+	handle /v1/* {
+		request_body {
+			max_size 70MB
+		}
+		# Only cloudflared connects to this loopback listener, so Cf-Connecting-IP is the real
+		# client address (used for per-client sign-in throttling).
+		reverse_proxy 127.0.0.1:8720 {
+			header_up X-Forwarded-For {http.request.header.Cf-Connecting-Ip}
+			header_up X-Forwarded-Proto https
+		}
+	}
+	handle /healthz {
+		reverse_proxy 127.0.0.1:8720
+	}
+
+	handle {
+		root * /srv/retailguard/web
+		header /assets/* Cache-Control "public, max-age=31536000, immutable"
+		header /index.html Cache-Control "no-cache"
+		header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+		try_files {path} /index.html
+		file_server
+	}
+}

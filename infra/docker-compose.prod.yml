@@ -1,0 +1,71 @@
+# Production-style single-host topology for shoplifter.ayonix.com.
+# Secrets live in /etc/retailguard/retailguard.env (mode 600, not in git); see infra/retailguard.env.example.
+# The API and worker use host networking bound to 127.0.0.1 so Caddy (the only ingress) is the
+# sole client and X-Forwarded-For is trusted from loopback only.
+name: retailguard
+services:
+  postgres:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?}
+      RG_OWNER_PASSWORD: ${RG_OWNER_PASSWORD:?}
+      RG_APP_PASSWORD: ${RG_APP_PASSWORD:?}
+      RG_WORKER_PASSWORD: ${RG_WORKER_PASSWORD:?}
+    ports: ["127.0.0.1:8716:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/10-roles.sh:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d retailguard"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: retailguard-api:${RG_VERSION:?}
+    network_mode: host
+    env_file: /etc/retailguard/retailguard.env
+    command: ["python", "-m", "retailguard_api", "migrate"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    restart: "no"
+
+  api:
+    image: retailguard-api:${RG_VERSION:?}
+    restart: unless-stopped
+    network_mode: host
+    env_file: /etc/retailguard/retailguard.env
+    command: ["python", "-m", "retailguard_api", "serve", "--host", "127.0.0.1", "--port", "8720"]
+    volumes: ["media:/var/lib/retailguard/media"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8720/healthz',timeout=3)"]
+      interval: 30s
+      timeout: 5s
+
+  worker:
+    image: retailguard-api:${RG_VERSION:?}
+    restart: unless-stopped
+    network_mode: host
+    env_file: /etc/retailguard/retailguard.env
+    environment:
+      DATABASE_URL: ${WORKER_DATABASE_URL:?}
+      WORKER_DATABASE_URL: ${WORKER_DATABASE_URL:?}
+    command: ["python", "-m", "retailguard_api", "worker"]
+    volumes: ["media:/var/lib/retailguard/media"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+
+volumes:
+  pgdata:
+  media:

@@ -55,6 +55,8 @@ def bootstrap(args) -> None:
     ZoneInfo(args.timezone)
     from .security import hash_password
     password = secrets.token_urlsafe(18)
+    # Open the output first so a write failure cannot leave an account whose password was never shown.
+    out_fh = os.fdopen(os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w") if args.output else None
     with psycopg.connect(_owner_url(), autocommit=False) as conn:
         if conn.execute("SELECT 1 FROM app_users WHERE lower(email)=lower(%s)", (args.email,)).fetchone():
             raise SystemExit("An account with this email already exists; bootstrap is one-time.")
@@ -78,10 +80,9 @@ def bootstrap(args) -> None:
                      (uuid.uuid4(), org_id, str(org_id), json.dumps(record["detail"]), digest, at))
         conn.commit()
     out = {"org_id": str(org_id), "admin_email": args.email.lower(), "one_time_password": password}
-    if args.output:
-        fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(fd, "w") as fh:
-            json.dump(out, fh, indent=2)
+    if out_fh:
+        with out_fh:
+            json.dump(out, out_fh, indent=2)
         print(f"Bootstrap complete. Credentials written to {args.output} (mode 600). Delete after first sign-in.")
     else:
         print(json.dumps(out, indent=2))
