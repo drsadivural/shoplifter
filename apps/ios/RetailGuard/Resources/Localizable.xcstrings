@@ -2908,6 +2908,23 @@
         }
       }
     },
+    "Date and time the person was last seen, in the store's time zone.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date and time the person was last seen, in the store's time zone."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最後に目撃された日時です（店舗のタイムゾーン）。"
+          }
+        }
+      }
+    },
     "Date range": {
       "extractionState": "manual",
       "localizations": {
@@ -3652,6 +3669,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "登録には、登録根拠、適用範囲、有効期限、および別の確認者による承認が必要です。"
+          }
+        }
+      }
+    },
+    "Enrollment requires reference photos, a store scope, an expiry and approval by another reviewer.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enrollment requires reference photos, a store scope, an expiry and approval by another reviewer."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登録には登録写真、対象店舗、有効期限、および別の担当者による承認が必要です。"
           }
         }
       }
@@ -4999,6 +5033,23 @@
         }
       }
     },
+    "Internal reference number for this record.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Internal reference number for this record."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この記録の社内管理番号です。"
+          }
+        }
+      }
+    },
     "Internal reference. Do not enter a real name unless policy requires it.": {
       "extractionState": "manual",
       "localizations": {
@@ -5135,6 +5186,23 @@
         }
       }
     },
+    "Last seen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last seen"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最終目撃日時"
+          }
+        }
+      }
+    },
     "Last synced": {
       "extractionState": "manual",
       "localizations": {
@@ -5233,6 +5301,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@の最新スナップショット"
+          }
+        }
+      }
+    },
+    "Leave blank if the name is not known.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leave blank if the name is not known."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "氏名が不明な場合は空欄のままにしてください。"
           }
         }
       }
@@ -10537,6 +10622,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "事案は現在「%@」です（更新番号：%@）。"
+          }
+        }
+      }
+    },
+    "The last-seen time cannot be in the future.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last-seen time cannot be in the future."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最終目撃日時に未来の日時は指定できません。"
           }
         }
       }

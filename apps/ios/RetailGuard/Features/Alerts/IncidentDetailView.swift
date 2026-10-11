@@ -164,12 +164,12 @@ struct IncidentDetailView: View {
             if incident.summary.status == .resolved, incident.summary.outcome == .confirmed,
                incident.summary.channel != .unrecognized, appState.can(.watchlistManage) {
                 Button {
-                    appState.open(.subjectEnroll(sourceIncidentId: incident.id))
+                    appState.open(.subjectEnroll)
                 } label: {
-                    Label(L("Enroll subject from this confirmed incident"), systemImage: "person.badge.plus")
+                    Label(L("Enroll subject"), systemImage: "person.badge.plus")
                 }
                 .buttonStyle(.rgSecondaryWide)
-                FieldHint(text: L("Enrollment requires an evidence basis, scope, expiry and approval by another reviewer."))
+                FieldHint(text: L("Enrollment requires reference photos, a store scope, an expiry and approval by another reviewer."))
             }
         }
         .rgCard()
