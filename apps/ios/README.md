@@ -116,8 +116,8 @@ with `GET /v1/auth/config` before sign-in.
    `CURRENT_PROJECT_VERSION` in `Config/Base.xcconfig`, confirm the Release API
    origin, then Product → Archive (Release) and upload via Organizer or
    `xcodebuild -exportArchive`.
-3. Supply a real 1024 px app icon in `Resources/Assets.xcassets/AppIcon.appiconset`
-   (currently an empty placeholder slot — App Store validation will fail without it).
+3. App icon: `Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png` (1024×1024 RGB, no alpha,
+   full-bleed square; iOS applies the rounded mask). Used for both light and dark appearances.
 4. Review `Resources/PrivacyInfo.xcprivacy` (draft: UserDefaults CA92.1; email,
    photos, device push token, diagnostics — linked, app functionality, no
    tracking) and the App Privacy answers against the real backend; review
