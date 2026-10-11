@@ -1,0 +1,78 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "comment": "App name shown on the Home Screen.",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "RetailGuard"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetailGuard"
+          }
+        }
+      }
+    },
+    "NSFaceIDUsageDescription": {
+      "comment": "Face ID permission prompt (app unlock only).",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "RetailGuard uses Face ID only to unlock your session on this device. Your face data never leaves the device and is not used for store face matching."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetailGuardは、この端末でセッションのロックを解除するためだけにFace IDを使用します。顔データが端末の外に送信されることはなく、店舗での顔照合にも使用されません。"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription": {
+      "comment": "Camera permission prompt (reference photo capture).",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "RetailGuard uses the camera to take reference photos for staff or approved subject profiles. Photos are uploaded only when you choose Use photo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetailGuardは、スタッフまたは承認済みの登録対象者のプロフィール用に登録写真を撮影するためにカメラを使用します。写真は「この写真を使用」を選んだ場合にのみアップロードされます。"
+          }
+        }
+      }
+    },
+    "NSPhotoLibraryUsageDescription": {
+      "comment": "Photo library permission prompt (choose a reference/search photo).",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "RetailGuard lets you choose an existing photo as a reference or search photo. Only the photo you pick is used."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetailGuardでは、既存の写真を登録写真または検索用の参照写真として選択できます。使用されるのは選択した写真のみです。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

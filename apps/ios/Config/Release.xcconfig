@@ -1,0 +1,13 @@
+#include "Base.xcconfig"
+
+// Production API origin. Confirm against the deployed environment before
+// archiving; override in Config/Local.Release.xcconfig (git-ignored) or CI.
+RG_API_BASE_URL = https:/$()/shoplifter.ayonix.com
+
+RG_APNS_ENVIRONMENT = production
+APS_ENVIRONMENT = production
+
+RG_ALLOW_INSECURE_LOOPBACK = NO
+INFOPLIST_FILE = Support/Info.plist
+
+#include? "Local.Release.xcconfig"
