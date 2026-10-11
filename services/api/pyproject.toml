@@ -1,27 +1,27 @@
 [project]
 name = "retailguard-api"
 version = "0.1.0"
-description = "Add your description here"
+description = "Ayonix RetailGuard regional API, BFF and background worker"
 readme = "README.md"
 authors = [
     { name = "drsadivural", email = "drsadivural@gmail.com" }
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "argon2-cffi>=25.1.0",
-    "cryptography>=50.0.2",
-    "fastapi>=0.143.0",
-    "httpx[http2]>=0.28.1",
-    "jsonschema>=4.26.0",
-    "pillow>=12.3.0",
-    "psycopg-pool>=3.3.3",
-    "psycopg[binary]>=3.3.6",
-    "pydantic>=2.14.0",
-    "pyjwt[crypto]>=2.15.1",
-    "pynacl>=1.6.2",
-    "pyotp>=2.10.0",
-    "python-multipart>=0.0.32",
-    "uvicorn[standard]>=0.54.0",
+    "argon2-cffi==25.1.0",
+    "cryptography==50.0.2",
+    "fastapi==0.143.0",
+    "httpx[http2]==0.28.1",
+    "jsonschema==4.26.0",
+    "pillow==12.3.0",
+    "psycopg-pool==3.3.3",
+    "psycopg[binary]==3.3.6",
+    "pydantic==2.14.0",
+    "pyjwt[crypto]==2.15.1",
+    "pynacl==1.6.2",
+    "pyotp==2.10.0",
+    "python-multipart==0.0.32",
+    "uvicorn[standard]==0.54.0",
 ]
 
 [build-system]
@@ -30,7 +30,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "pytest>=9.1.1",
+    "pytest==9.1.1",
 ]
 
 [tool.pytest.ini_options]
