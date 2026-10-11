@@ -12,7 +12,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .authz import request_id_var
 from .db import close_pool, transaction
 from .errors import ApiError
-from .routers import auth, cameras, edge, incidents, ops, org, profiles
+from .routers import auth, cameras, edge, incidents, ops, org, privacy, profiles
 from .settings import get_settings
 
 log = logging.getLogger("retailguard.api")
@@ -92,7 +92,7 @@ def create_app() -> FastAPI:
         err = ApiError(500, "internal_error", "Something went wrong. Quote the request ID to support.", retriable=True)
         return JSONResponse(err.body(request_id_var.get()), status_code=500)
 
-    for r in (auth.router, org.router, edge.router, cameras.router, profiles.router, incidents.router, ops.router):
+    for r in (auth.router, org.router, edge.router, cameras.router, profiles.router, incidents.router, ops.router, privacy.router):
         app.include_router(r)
 
     @app.get("/healthz", include_in_schema=False)

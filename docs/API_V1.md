@@ -187,7 +187,7 @@ Command payloads: `discover {job_id, interface, timeout_s, cidr}` → result `{d
 |---|---|---|
 | GET | `/v1/search?from=&to=&store_id=&camera_id=&channel=&outcome=&assignee=&profile_id=&evidence_state=` | `{items: IncidentSummary[], next_cursor, coverage: {from, to, retention_cutoff, cameras: [{id, name, store_id, activated_at, outages: [{from, to}]}], gaps: [{camera_id|null, from, to, reason: "before_activation"|"outage"|"beyond_retention"|"no_cameras"}]}}` |
 | POST | `/v1/search/photo` | multipart `file` → image validated (422 on invalid/low quality); then 503 `face_sdk_unavailable` while the licensed SDK is absent; query photo is deleted immediately |
-| GET | `/v1/media/{id}?variant=thumb` | authorized bytes; `Cache-Control: private, no-store` |
+| GET | `/v1/media/{id}` | authorized bytes (photos expose separate `media_id` and `thumb_media_id`); `Cache-Control: private, no-store` |
 | GET | `/v1/dashboard?store_id=` | `{open_alerts, reviewed_today, cameras: {online, total}, median_ack_seconds|null, awaiting_review: IncidentSummary[], camera_health: [{id, name, readiness, analysis_state, last_frame_at}], trend: [{date, detections, reviewed}], last_refresh}` |
 | GET | `/v1/reports/summary?store_id=&from=&to=` | `{detections: {by_channel}, reviewed, confirmed, false_alert, inconclusive, reviewed_precision: {value|null, n, ci95: [lo, hi]|null}, false_alerts_per_camera_hour: {value|null, false_alerts, camera_hours}, median_ack_seconds, confirmed_loss, recovered_value, currency, daily: [...]}` |
 | GET | `/v1/checkout/exceptions?store_id=` | checkout_exception incidents + POS availability per store |
@@ -202,4 +202,10 @@ Command payloads: `discover {job_id, interface, timeout_s, cidr}` → result `{d
 | GET | `/v1/notifications` / POST `/v1/notifications/read` `{ids?: [] (all if omitted)}` | in-app notices `{id, kind, incident_id, created_at, read_at}` |
 | POST | `/v1/push/devices` | `{token, environment: "sandbox"|"production", bundle_id}` → `{id}`; DELETE `/v1/push/devices/{id}` |
 | POST | `/v1/support/bundles` | `{category, store_id?, consent: true, description}` → `{id, download_url, expires_at}` (redacted diagnostics) |
+| POST | `/v1/incidents/{id}/legal-hold` | `{reason, review_days?}` → keeps evidence beyond retention until review (privacy.manage) |
+| POST | `/v1/incidents/{id}/legal-hold/release` | `{reason}` |
+| GET | `/v1/privacy/holds` | active holds `{id, ref, store_id, legal_hold_reason, legal_hold_review_at, placed_by, review_overdue}` |
+| GET/POST | `/v1/privacy/requests` | data-subject requests `{kind: "access"|"correction"|"deletion", subject_reference, received_at, notes}` → `{id, status: "open"|"completed"|"rejected", due_at, overdue, version, ...}` |
+| POST | `/v1/privacy/requests/{id}/complete` | `{expected_version, status: "completed"|"rejected", resolution}` |
+| GET | `/v1/audit/verify` | recompute the audit hash chain `{valid, checked, head}` (org.manage) |
 | GET | `/healthz`, `/readyz` | liveness / dependency readiness |

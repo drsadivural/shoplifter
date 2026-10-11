@@ -5107,6 +5107,259 @@
           }
         }
       }
+    },
+    "/v1/incidents/{incident_id}/legal-hold": {
+      "post": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Place Hold",
+        "description": "Holds keep evidence beyond retention; they require a reason and a review date (not indefinite).",
+        "operationId": "place_hold_v1_incidents__incident_id__legal_hold_post",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Incident Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoldIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Place Hold V1 Incidents  Incident Id  Legal Hold Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/incidents/{incident_id}/legal-hold/release": {
+      "post": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Release Hold",
+        "operationId": "release_hold_v1_incidents__incident_id__legal_hold_release_post",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Incident Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReleaseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Release Hold V1 Incidents  Incident Id  Legal Hold Release Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/privacy/holds": {
+      "get": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "List Holds",
+        "operationId": "list_holds_v1_privacy_holds_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response List Holds V1 Privacy Holds Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/privacy/requests": {
+      "get": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "List Requests",
+        "operationId": "list_requests_v1_privacy_requests_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response List Requests V1 Privacy Requests Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Create Request",
+        "operationId": "create_request_v1_privacy_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Create Request V1 Privacy Requests Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/privacy/requests/{request_id}/complete": {
+      "post": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Complete Request",
+        "operationId": "complete_request_v1_privacy_requests__request_id__complete_post",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Complete Request V1 Privacy Requests  Request Id  Complete Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5357,6 +5610,31 @@
         ],
         "title": "CaseIn"
       },
+      "CompleteIn": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "title": "Expected Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "resolution": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 3,
+            "title": "Resolution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expected_version",
+          "status",
+          "resolution"
+        ],
+        "title": "CompleteIn"
+      },
       "DiscoveryAddIn": {
         "properties": {
           "endpoint": {
@@ -5529,6 +5807,34 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HoldIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "review_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 365.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "HoldIn"
       },
       "ImportIn": {
         "properties": {
@@ -6478,6 +6784,53 @@
           "reason"
         ],
         "title": "ReasonIn"
+      },
+      "ReleaseIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "ReleaseIn"
+      },
+      "RequestIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "subject_reference": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject Reference"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Received At"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "subject_reference",
+          "received_at"
+        ],
+        "title": "RequestIn"
       },
       "ResetCompleteIn": {
         "properties": {

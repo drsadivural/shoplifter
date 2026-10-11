@@ -196,6 +196,8 @@ def detail(c: Ctx, incident_id) -> dict:
         "resolved_at": iso(r["resolved_at"]), "escalated_at": iso(r["escalated_at"]),
         "association_decision": r["association_decision"],
         "profile_id": str(r["profile_id"]) if r["profile_id"] else None,
+        "legal_hold": {"reason": r["legal_hold_reason"], "review_at": iso(r["legal_hold_review_at"])}
+        if r["legal_hold_reason"] else None,
     })
     out["evidence"] = [clean(e) for e in c.tx.all(
         """SELECT m.id AS media_id, m.mime, m.sha256, ie.kind, m.created_at, m.expires_at, m.deleted_at IS NOT NULL AS expired

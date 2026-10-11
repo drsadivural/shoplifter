@@ -1,0 +1,68 @@
+# Architecture decision records
+
+Decisions made while implementing the package. Each records context, decision and consequences.
+
+## ADR-001 Monorepo layout
+`apps/web` (React/TypeScript), `apps/ios` (SwiftUI + Foundation-only `RetailGuardCore` Swift package),
+`services/api` (FastAPI API/BFF + background worker module), `services/edge` (store appliance),
+`packages/contracts` (generated OpenAPI + event schema), `packages/design` (tokens, Japanese catalog),
+`infra` (compose, Caddy, Cloudflare tunnel, Postgres roles, deploy script). The original package
+(`reference/`, `ios/`, `edge/discover.py`, `tests/`) is kept unchanged and runnable for contract regression.
+The worker shares the API's domain code (`retailguard_api.worker`) and runs as a separate process/container
+with its own DB role, instead of a separate codebase (CLAUDE_CODE_JOB §1.4 lists `services/worker`; we
+deliberately avoid duplicating the domain layer — see "small modular API" in docs/IMPLEMENTATION.md).
+
+## ADR-002 PostgreSQL with RLS and three roles
+`retailguard_owner` (migrations, BYPASSRLS), `retailguard_app` (API, NOBYPASSRLS, cannot UPDATE/DELETE
+audit), `retailguard_worker` (cross-tenant outbox/retention, BYPASSRLS, every query org-scoped explicitly).
+Each API request is one transaction that sets `app.org_id` via `set_config(..., true)` after authentication.
+Pre-authentication lookups (login, session, edge key, pairing code, invitation, reset, webhook) use narrow
+`SECURITY DEFINER` functions returning only what is needed to set tenant context. RLS is defense in
+depth; every endpoint still checks role permission and store scope (out-of-scope objects return 404).
+
+## ADR-003 Identity: built-in password + TOTP now, OIDC when configured
+No OIDC issuer/client was supplied, so production starts with built-in identity: Argon2id password
+hashes, TOTP MFA mandatory for `org_admin`, `store_admin` and `investigator`, single-use hashed recovery
+codes, optional 30-day trusted-device cookie, per-email and per-email+IP lockout, admin-issued
+invitation and reset links (no SMTP configured, so links are shown once to the administrator for delivery
+through an approved channel). OIDC Authorization Code + PKCE (`/v1/auth/oidc/*`) activates when
+`OIDC_ISSUER`/`OIDC_CLIENT_ID` are set; accounts must already be invited (no just-in-time provisioning);
+RetailGuard MFA is still required for sensitive roles unless the IdP asserts `amr=mfa`.
+Browser sessions are BFF cookies (`HttpOnly; Secure; SameSite=Strict`) with a double-submit CSRF token
+checked against the server session; iOS uses bearer tokens stored in the Keychain.
+
+## ADR-004 Edge trust: Ed25519 request signing instead of mTLS at the proxy
+Pairing exchanges a single-use, 15-minute, store-bound code for registration of the appliance's
+Ed25519 signing key and X25519 box key. Every edge request is signed over method, path, timestamp,
+nonce and body hash, with a ±300 s window and single-use nonces; revocation is immediate. This gives the
+properties the package asks of mTLS (key-bound identity, revocation, replay protection) without
+requiring client-certificate termination on the shared Cloudflare/Caddy front door. Camera credentials
+entered in the console are sealed (libsodium SealedBox) to the store appliance's X25519 key on receipt,
+so the cloud stores only ciphertext it cannot decrypt.
+
+## ADR-005 Media encryption
+Each object is encrypted with a random AES-256-GCM data key, wrapped by `MEDIA_MASTER_KEY` (AAD binds
+the media ID). Storage keys are random. Integrity is verified against the stored SHA-256 on every read.
+The wrap/unwrap functions are the seam for a KMS (`KMS_KEY_ID` in docs/CONFIG_AND_INPUTS.md) — no KMS
+was provided, so the master key lives in the root-only secrets file.
+
+## ADR-006 Honest unavailability
+The Ayonix face SDK, behavior/pose models, re-identification, automated redaction, APNs credentials,
+SMTP and OIDC were not supplied. The corresponding features are implemented up to the integration seam
+and report `unconfigured`/`unavailable` with a reason (`face_sdk_unavailable`, `model_not_installed`,
+`reid_unavailable`, `redaction_unavailable`, `push_unconfigured`). Cameras never show `analyzing` unless the
+appliance reports a running channel; readiness requires ≥10 s of decoded frames reported by the edge.
+Photo quality shows measured image statistics (brightness, edge variance) and labels face checks as
+unavailable rather than estimating them.
+
+## ADR-007 Hosting topology
+Single host: Cloudflare (DNS/TLS/WAF) → dedicated `retailguard` Cloudflare Tunnel → Caddy listener bound
+to 127.0.0.1:8730 (static web + `/v1` proxy) → API on 127.0.0.1:8720 (container, host network, read-only
+root FS, no capabilities) + worker + PostgreSQL 17 (127.0.0.1:8716). This follows docs/DEPLOYMENT.md
+("Cloudflare front door ... Cloudflare Tunnel may expose the API origin"). Secrets live in
+`/etc/retailguard/retailguard.env` (root, 0600), never in git.
+
+## ADR-008 Incident numbering and versions
+Human-readable references (`INC-2026-000042`, `CASE-2026-000003`) come from per-organization sequences;
+all APIs use opaque UUIDs. Every state transition is a compare-and-swap on `version` inside one
+transaction with the audit row and outbox message.
