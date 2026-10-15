@@ -35,6 +35,25 @@ export const APP_EN: Record<string, string> = {
 };
 
 export const APP_JA: Record<string, string> = {
+  // ---- sign-in design (shoplifter.ayonix.com)
+  'auth|Email Address': 'メールアドレス',
+  'auth|Enter your email': 'メールアドレスを入力',
+  'auth|Enter your password': 'パスワードを入力',
+  'auth|Forgot password?': 'パスワードをお忘れですか？',
+  'auth|Sign In': 'ログイン',
+  'auth|OR': 'または',
+  'auth|Sign in with Google': 'Googleでログイン',
+  'auth|Google sign-in has not been set up for this workspace yet. Sign in with your email address and password, or ask your administrator.': 'このワークスペースではGoogleログインがまだ設定されていません。メールアドレスとパスワードでログインするか、管理者にお問い合わせください。',
+  'auth|Detect': '検知',
+  'auth|Suspicious Activity': '不審な行動',
+  'auth|Prevent': '防止',
+  'auth|Losses': 'ロスの削減',
+  'auth|Create': '実現',
+  'auth|Safer Stores': '安全な店舗',
+  'auth|Safer Retail': 'より安全な店舗は、',
+  'auth|Starts Here.': 'ここから。',
+  'auth|AI-powered insights to detect, prevent and reduce shoplifting in real time.': 'AIを活用したインサイトで、万引きをリアルタイムに検知・防止・削減します。',
+  'auth|DETECT · PREVENT · PROTECT': '検知 · 防止 · 保護',
   // ---- navigation / shell
   'nav|Operations': '店舗運営',
   'nav|Administration': '管理',
