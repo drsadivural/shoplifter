@@ -75,6 +75,8 @@ class General(BaseModel):
     default_locale: Literal["browser", "ja", "en"] = "browser"
     session_timeout_minutes: int = Field(default=60, ge=5, le=1440)
     currency: Literal["JPY", "USD", "EUR"] = "JPY"
+    # Authenticator app (TOTP) for org_admin, store_admin and investigator. Other roles may opt in.
+    require_mfa_for_privileged_roles: bool = True
 
 
 class Privacy(BaseModel):

@@ -1,5 +1,6 @@
 // web-49 Organization settings. Personal: display language + appearance (PATCH /v1/me/preferences
-// via the session), password change (POST /v1/me/password) and active sessions (GET/DELETE /v1/me/sessions). Organization (org.manage):
+// via the session), password change (POST /v1/me/password), two-step verification on/off (enrollment on web-02,
+// POST /v1/me/mfa/disable) and active sessions (GET/DELETE /v1/me/sessions). Organization (org.manage):
 // GET/PUT /v1/org/settings/general {expected_version, settings}. Timezone and retention are shown
 // with links to the screens that own them.
 import '../styles/group-d.css';
@@ -9,10 +10,10 @@ import { useApiQuery, useMutation } from '../api/hooks';
 import type { Locale, SessionInfo, ThemePreference } from '../api/types';
 import { gd, type GeneralSettingsD } from '../components/groupd/api';
 import { apiErrorText, fieldMessage, isVersionConflict } from '../components/groupd/errors';
-import { SelectField, TextField } from '../components/forms';
+import { SelectField, TextField, Toggle } from '../components/forms';
 import { ConfirmDialog } from '../components/Modal';
 import { PageHeader } from '../components/PageHeader';
-import { Badge, Button, ButtonLink, Card, FilterTabs, KeyValueList, Notice } from '../components/primitives';
+import { Badge, Button, ButtonLink, Card, FilterTabs, KeyValueList, Notice, StatusPill } from '../components/primitives';
 import { RouteStateBoundary } from '../components/RouteStateBoundary';
 import { ConflictBanner, EmptyState } from '../components/states';
 import { useToast } from '../components/Toast';
@@ -33,6 +34,7 @@ export default function SettingsPage() {
         <div className="gd-stack">
           <PersonalPreferences />
           <ChangePasswordCard onChanged={() => setSessionsVersion((v) => v + 1)} />
+          <TwoStepCard />
           <SessionsCard version={sessionsVersion} />
         </div>
         <div className="gd-stack">
@@ -205,6 +207,145 @@ function ChangePasswordCard({ onChanged }: { onChanged: () => void }) {
   );
 }
 
+function TwoStepCard() {
+  const { t } = useI18n();
+  const { me, reload } = useSession();
+  const [turningOff, setTurningOff] = useState(false);
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [useRecovery, setUseRecovery] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const reset = () => {
+    setTurningOff(false);
+    setPassword('');
+    setCode('');
+    setUseRecovery(false);
+    setErrors({});
+    setFormError(null);
+  };
+  const disable = useMutation((body: { password: string; code?: string; recovery_code?: string }) => endpoints.me.disableMfa(body), {
+    successMessage: t('Two-step verification turned off.'),
+    onSuccess: () => {
+      reset();
+      reload();
+    },
+    onError: (e) => {
+      if (e.status === 422 && Object.keys(e.fieldErrors).length) {
+        const msg: Record<string, string> = {
+          password: t('The password is incorrect.'),
+          code: useRecovery ? t('That recovery code is not valid.') : t('That code is not valid. Check the time on your device and try again.'),
+        };
+        setErrors(Object.fromEntries(Object.keys(e.fieldErrors).map((k) => [k, msg[k] ?? t('This value is not valid.')])));
+        return true;
+      }
+      if (e.status === 429) {
+        setFormError(t('Too many attempts. Wait a few minutes and try again.'));
+        return true;
+      }
+      if (e.code === 'mfa_required_by_policy' || e.code === 'mfa_not_enabled') {
+        reset();
+        reload();
+        return false;
+      }
+      return false;
+    },
+  });
+  if (!me) return null;
+  const { mfa_enabled: enabled, mfa_required: required } = me.user;
+
+  const submit = (ev: FormEvent) => {
+    ev.preventDefault();
+    setFormError(null);
+    const e: Record<string, string> = {};
+    if (!password) e.password = t('Enter your password.');
+    const c = code.trim();
+    if (!c) e.code = useRecovery ? t('Enter a recovery code.') : t('Enter the 6-digit code from your authenticator app.');
+    else if (!useRecovery && !/^\d{6}$/.test(c.replace(/\s/g, ''))) e.code = t('Enter the 6-digit code from your authenticator app.');
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    void disable.run(useRecovery ? { password, recovery_code: c } : { password, code: c.replace(/\s/g, '') });
+  };
+
+  return (
+    <Card
+      title={t('Two-step verification')}
+      titleAddon={enabled ? <StatusPill tone="ok">{t('On')}</StatusPill> : <StatusPill tone="neutral">{t('Off')}</StatusPill>}
+    >
+      <p className="muted">
+        {enabled
+          ? t('Sign-in asks for a code from your authenticator app after your password.')
+          : t('Sign-in asks only for your password. Turn this on to also require a code from an authenticator app.')}
+      </p>
+      {enabled && required ? (
+        <Notice tone="info">{t('Your organization requires two-step verification for your role, so it cannot be turned off.')}</Notice>
+      ) : null}
+      {!enabled ? (
+        <>
+          <p className="muted small">{t('Evidence export requires two-step verification.')}</p>
+          <div className="action-row">
+            <ButtonLink variant="primary" to={`/web/mfa?enroll=1&optional=1&next=${encodeURIComponent(screenPath('web-49'))}`}>{t('Turn on')}</ButtonLink>
+          </div>
+        </>
+      ) : null}
+      {enabled && !required && !turningOff ? (
+        <div className="action-row">
+          <Button variant="secondary" onClick={() => setTurningOff(true)}>
+            {t('Turn off')}
+          </Button>
+        </div>
+      ) : null}
+      {enabled && !required && turningOff ? (
+        <form onSubmit={submit} noValidate className="gd-form">
+          <p className="muted small">{t('To turn off two-step verification, confirm your password and a current code from your authenticator app.')}</p>
+          <TextField
+            label={t('Password')}
+            type="password"
+            autoComplete="current-password"
+            maxLength={1024}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+          />
+          <TextField
+            label={useRecovery ? t('Recovery code') : t('Authentication code')}
+            inputMode={useRecovery ? 'text' : 'numeric'}
+            autoComplete="one-time-code"
+            maxLength={useRecovery ? 40 : 7}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            error={errors.code}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setUseRecovery(!useRecovery);
+              setCode('');
+              setErrors({});
+            }}
+          >
+            {useRecovery ? t('Use a code from the authenticator app') : t('Use a recovery code instead')}
+          </Button>
+          {formError ? (
+            <div className="field-error" role="alert">
+              {formError}
+            </div>
+          ) : null}
+          <div className="action-row">
+            <Button type="submit" variant="danger" pending={disable.pending}>
+              {t('Turn off two-step verification')}
+            </Button>
+            <Button variant="secondary" onClick={reset}>
+              {t('Cancel')}
+            </Button>
+          </div>
+        </form>
+      ) : null}
+    </Card>
+  );
+}
+
 function SessionsCard({ version }: { version: number }) {
   const { t, fmt } = useI18n();
   const { me, timeZone, signOut } = useSession();
@@ -259,18 +400,27 @@ function SessionsCard({ version }: { version: number }) {
   );
 }
 
+type GeneralForm = { default_locale: string; session_timeout_minutes: string; currency: string; require_mfa: boolean };
+
+const toGeneralForm = (s: GeneralSettingsD): GeneralForm => ({
+  default_locale: s.default_locale,
+  session_timeout_minutes: String(s.session_timeout_minutes),
+  currency: s.currency,
+  require_mfa: s.require_mfa_for_privileged_roles,
+});
+
 function OrgGeneral() {
   const { t, locale } = useI18n();
   const { can } = useSession();
   const editable = can('org.manage');
   const q = useApiQuery((signal) => gd.org.getGeneral({ signal }), []);
-  const [form, setForm] = useState<{ default_locale: string; session_timeout_minutes: string; currency: string } | null>(null);
+  const [form, setForm] = useState<GeneralForm | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [conflict, setConflict] = useState(false);
   const data = q.data;
 
   useEffect(() => {
-    if (data) setForm({ default_locale: data.settings.default_locale, session_timeout_minutes: String(data.settings.session_timeout_minutes), currency: data.settings.currency });
+    if (data) setForm(toGeneralForm(data.settings));
   }, [data]);
 
   const save = useMutation(
@@ -303,7 +453,12 @@ function OrgGeneral() {
     if (Object.keys(e).length) return;
     void save.run({
       expected_version: data.version,
-      settings: { default_locale: form.default_locale as GeneralSettingsD['default_locale'], session_timeout_minutes: minutes, currency: form.currency as GeneralSettingsD['currency'] },
+      settings: {
+        default_locale: form.default_locale as GeneralSettingsD['default_locale'],
+        session_timeout_minutes: minutes,
+        currency: form.currency as GeneralSettingsD['currency'],
+        require_mfa_for_privileged_roles: form.require_mfa,
+      },
     });
   };
 
@@ -353,6 +508,17 @@ function OrgGeneral() {
                 options={['JPY', 'USD', 'EUR'].map((c) => ({ value: c, label: c }))}
                 error={errors.currency ?? errors['settings.currency']}
               />
+              <Toggle
+                label={t('Require two-step verification for admins and investigators')}
+                hint={t('When on, organization admins, store admins and investigators must enter a code from an authenticator app at sign-in. When off, each person chooses in their own settings.')}
+                checked={form.require_mfa}
+                onChange={(v) => setForm({ ...form, require_mfa: v })}
+              />
+              {!form.require_mfa && d.settings.require_mfa_for_privileged_roles ? (
+                <Notice tone="warning">
+                  {t('Accounts with access to every store and to evidence will be protected by a password only, unless the person turns on two-step verification. Evidence export still requires it.')}
+                </Notice>
+              ) : null}
               {save.error && !isVersionConflict(save.error) && !(save.error.status === 422 && Object.keys(save.error.fieldErrors).length) ? (
                 <div className="field-error" role="alert">
                   {apiErrorText(save.error, locale)}
@@ -364,9 +530,7 @@ function OrgGeneral() {
                 </Button>
                 <Button
                   variant="secondary"
-                  onClick={() =>
-                    setForm({ default_locale: d.settings.default_locale, session_timeout_minutes: String(d.settings.session_timeout_minutes), currency: d.settings.currency })
-                  }
+                  onClick={() => setForm(toGeneralForm(d.settings))}
                 >
                   {t('Cancel')}
                 </Button>
@@ -381,6 +545,10 @@ function OrgGeneral() {
                 { label: t('Default language'), value: localeLabel(d.settings.default_locale) },
                 { label: t('Session timeout'), value: t('{n} minutes', { n: d.settings.session_timeout_minutes }) },
                 { label: t('Currency'), value: d.settings.currency },
+                {
+                  label: t('Two-step verification for admins and investigators'),
+                  value: d.settings.require_mfa_for_privileged_roles ? t('Required') : t('Optional'),
+                },
               ]}
             />
           )

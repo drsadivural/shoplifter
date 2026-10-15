@@ -147,3 +147,54 @@ def test_change_password_is_rate_limited(org):
     codes = [cl.post("/v1/me/password", json={"current_password": f"wrong-{i}-password", "new_password": "another-good-passphrase"}).status_code
              for i in range(6)]
     assert codes[:5] == [422] * 5 and codes[5] == 429
+
+
+def _set_general(admin, **changes):
+    cur = admin.get("/v1/org/settings/general").json()
+    r = admin.put("/v1/org/settings/general",
+                  json={"expected_version": cur["version"], "settings": {**cur["settings"], **changes}})
+    assert r.status_code == 200, r.text
+    return r.json()
+
+
+def test_org_can_make_authenticator_optional_and_admin_can_turn_theirs_off(org):
+    app, admin, creds = org["app"], org["admin"], org["creds"]
+    assert admin.get("/v1/org/settings/general").json()["settings"]["require_mfa_for_privileged_roles"] is True
+    assert admin.get("/v1/me").json()["user"]["mfa_required"] is True
+    code = pyotp.TOTP(creds["totp"]).now()
+    r = admin.post("/v1/me/mfa/disable", json={"password": creds["password"], "code": code})
+    assert r.status_code == 409 and r.json()["code"] == "mfa_required_by_policy"
+
+    _set_general(admin, require_mfa_for_privileged_roles=False)
+    assert admin.get("/v1/me").json()["user"]["mfa_required"] is False
+    r = admin.post("/v1/me/mfa/disable", json={"password": "wrong-password-xyz", "code": "000000"})
+    assert r.status_code == 422 and r.json()["field_errors"] == {"password": "incorrect", "code": "incorrect"}
+    assert admin.post("/v1/me/mfa/disable", json={"password": creds["password"]}).json()["field_errors"] == {"code": "required"}
+    r = admin.post("/v1/me/mfa/disable", json={"password": creds["password"], "code": pyotp.TOTP(creds["totp"]).now()})
+    assert r.status_code == 200, r.text
+    me = admin.get("/v1/me").json()
+    assert me["user"]["mfa_enabled"] is False and me["session"]["mfa_verified"] is False
+    assert admin.post("/v1/me/mfa/disable", json={"password": creds["password"], "code": "123456"}).json()["code"] == "mfa_not_enabled"
+    # Signing in no longer asks for a code.
+    fresh = Client(app)
+    assert fresh.post("/v1/auth/login", json={"email": creds["email"], "password": creds["password"]}).json()["state"] == "authenticated"
+    assert "auth.mfa_disabled" in [a["action"] for a in admin.get("/v1/audit?action=auth.mfa_disabled").json()["items"]]
+
+    # Turning the requirement back on sends an admin without an authenticator to enrollment.
+    _set_general(admin, require_mfa_for_privileged_roles=True)
+    assert admin.get("/v1/me").json()["code"] == "mfa_enrollment_required"
+    assert Client(app).post("/v1/auth/login", json={"email": creds["email"], "password": creds["password"]}).json()["state"] == "mfa_enrollment_required"
+
+
+def test_any_user_can_opt_in_and_out_of_the_authenticator(org):
+    app, admin = org["app"], org["admin"]
+    cl, creds = invite_and_login(app, admin, "responder", [org["store"]["id"]])
+    assert cl.get("/v1/me").json()["user"]["mfa_required"] is False
+    secret = cl.get("/v1/auth/mfa/setup").json()["secret"]
+    codes = cl.post("/v1/auth/mfa/enable", json={"code": pyotp.TOTP(secret).now()}).json()["recovery_codes"]
+    c2 = Client(app)
+    assert c2.post("/v1/auth/login", json={"email": creds["email"], "password": creds["password"]}).json()["state"] == "mfa_required"
+    r = cl.post("/v1/me/mfa/disable", json={"password": creds["password"], "recovery_code": codes[0]})
+    assert r.status_code == 200, r.text
+    c3 = Client(app)
+    assert c3.post("/v1/auth/login", json={"email": creds["email"], "password": creds["password"]}).json()["state"] == "authenticated"

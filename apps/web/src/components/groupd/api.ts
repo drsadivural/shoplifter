@@ -70,6 +70,8 @@ export interface GeneralSettingsD {
   default_locale: 'browser' | Locale;
   session_timeout_minutes: number;
   currency: 'JPY' | 'USD' | 'EUR';
+  /** Organization admins, store admins and investigators must use an authenticator app. */
+  require_mfa_for_privileged_roles: boolean;
 }
 
 export interface NotificationRoutingSettings {

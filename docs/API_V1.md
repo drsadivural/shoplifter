@@ -63,8 +63,9 @@ the requirement source; this file states what the code actually does.
 | GET | `/v1/me/sessions` | → `{items: [{id, client, created_at, last_seen_at, expires_at, current: bool, user_agent}]}` |
 | DELETE | `/v1/me/sessions/{id}` | revoke one of own sessions |
 | POST | `/v1/me/password` | `{current_password, new_password}` → `{ok, other_sessions_revoked}`. Wrong current password → 422 `field_errors.current_password=incorrect` (rate-limited, 429 after 5 failures); weak → 422 `weak_password`; same as current → 422 `same_as_current`; SSO-only account → 409 `password_not_set`. Signs out every other session; the current one stays. |
+| POST | `/v1/me/mfa/disable` | `{password, code}` or `{password, recovery_code}` → `{ok}`. Turns off the caller's own authenticator app. 409 `mfa_required_by_policy` when the organization requires it for the caller's role; 409 `mfa_not_enabled`; wrong password/code → 422 `field_errors.{password,code}` (rate-limited, 429). Clears the secret, recovery codes and remembered browsers; open sessions become not MFA-verified (evidence export needs a verified session). Turning it on uses `GET /v1/auth/mfa/setup` + `POST /v1/auth/mfa/enable` from a signed-in session. |
 
-`Me = {user: {id, email, display_name, role, locale, theme, mfa_enabled, notification_prefs}, org: {id, name, timezone, region}, stores: [{id, name, timezone, region}], permissions: [action strings], session: {id, expires_at, mfa_verified}, unread_notifications: int}`
+`Me = {user: {id, email, display_name, role, locale, theme, mfa_enabled, mfa_required, notification_prefs}, org: {id, name, timezone, region}, stores: [{id, name, timezone, region}], permissions: [action strings], session: {id, expires_at, mfa_verified}, unread_notifications: int}`
 
 Roles: `viewer`, `responder`, `investigator`, `store_admin`, `org_admin`.
 Permission action strings (from `GET /v1/roles`):
@@ -78,7 +79,7 @@ Clients hide controls the user lacks; the server enforces regardless.
 | Method | Path | Notes |
 |---|---|---|
 | GET/PATCH | `/v1/org` | `{id, name, timezone, region, primary_admin_id, version}`; PATCH `{expected_version, name?, timezone?, region?, primary_admin_id?}` (org.manage) |
-| GET/PUT | `/v1/org/settings/{kind}` | kind `general` `{default_locale, session_timeout_minutes, currency}` or `privacy` `{raw_video_retention_hours, evidence_retention_days, profile_max_expiry_days, query_photo_ttl_minutes, legal_hold_review_days, deletion_contact}` → `{kind, settings, version, updated_at, updated_by}`; PUT `{expected_version, settings}` |
+| GET/PUT | `/v1/org/settings/{kind}` | kind `general` `{default_locale, session_timeout_minutes, currency, require_mfa_for_privileged_roles}` (default `true`: org_admin, store_admin and investigator must use an authenticator app; `false` makes it each person's choice) or `privacy` `{raw_video_retention_hours, evidence_retention_days, profile_max_expiry_days, query_photo_ttl_minutes, legal_hold_review_days, deletion_contact}` → `{kind, settings, version, updated_at, updated_by}`; PUT `{expected_version, settings}` |
 | GET | `/v1/stores` | items `Store = {id, name, region, address, timezone, manager_name, opening_hours, version, camera_count, cameras_ready, open_alerts, edge_state: "unpaired"|"online"|"offline"}` |
 | POST | `/v1/stores` | `{name, region, address, timezone, manager_name, opening_hours}` → Store |
 | GET/PATCH | `/v1/stores/{id}` | GET adds `summary: {coverage: {cameras_total, cameras_ready, cameras_analyzing}, open_incidents, review_queue, last_refresh}` |

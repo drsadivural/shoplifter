@@ -580,6 +580,50 @@
         }
       }
     },
+    "/v1/me/mfa/disable": {
+      "post": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Disable Own Mfa",
+        "description": "Turn off one's own authenticator app. Allowed only when the organization does not require\nit for this role; proves possession of the password and a current code (or a recovery code).",
+        "operationId": "disable_own_mfa_v1_me_mfa_disable_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaDisableIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Disable Own Mfa V1 Me Mfa Disable Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/org": {
       "get": {
         "tags": [
@@ -6166,6 +6210,48 @@
           "description"
         ],
         "title": "ManualIn"
+      },
+      "MfaDisableIn": {
+        "properties": {
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1024
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "recovery_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recovery Code"
+          }
+        },
+        "type": "object",
+        "title": "MfaDisableIn"
       },
       "MfaEnableIn": {
         "properties": {
