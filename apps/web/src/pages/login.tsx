@@ -1,34 +1,26 @@
-// web-01 Sign in. POST /v1/auth/login; SSO via GET /v1/auth/config -> /v1/auth/oidc/start.
+// web-01 Sign in. POST /v1/auth/login; "Sign in with Google" uses the OIDC flow
+// (GET /v1/auth/config -> /v1/auth/oidc/start) when Google is configured as the identity provider.
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { endpoints } from '../api/endpoints';
 import { useMutation } from '../api/hooks';
-import { Button } from '../components/primitives';
-import { Checkbox, TextField } from '../components/forms';
+import { ArrowRightIcon, GoogleGIcon, LockIcon, MailIcon } from '../components/auth-icons';
+import { FormField } from '../components/forms';
 import { UnavailableNotice } from '../components/states';
 import { useI18n } from '../i18n';
 import { safeNext } from '../lib/nav';
 import { getScreen } from '../routes.meta';
 import { AuthLayout } from '../shell/AuthLayout';
 
-const REMEMBER_KEY = 'rg.rememberedEmail';
-
-function readRemembered(): string {
-  try {
-    return localStorage.getItem(REMEMBER_KEY) ?? '';
-  } catch {
-    return '';
-  }
-}
+const EMAIL_RE = /^\S+@\S+\.\S+$/;
 
 export default function LoginPage() {
   const { t, locale } = useI18n();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
-  const [email, setEmail] = useState(readRemembered);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(() => readRemembered() !== '');
   const [formError, setFormError] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
   const [ssoNotice, setSsoNotice] = useState<{ support: string | null } | null>(null);
@@ -52,20 +44,14 @@ export default function LoginPage() {
     },
   });
 
-  const emailError = touched && !/^\S+@\S+\.\S+$/.test(email.trim()) ? t('Enter your work email address.') : null;
+  const emailError = touched && !EMAIL_RE.test(email.trim()) ? t('Enter your work email address.') : null;
   const passwordError = touched && password.length === 0 ? t('Enter your password.') : null;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setTouched(true);
     setFormError(null);
-    if (!/^\S+@\S+\.\S+$/.test(email.trim()) || !password) return;
-    try {
-      if (remember) localStorage.setItem(REMEMBER_KEY, email.trim());
-      else localStorage.removeItem(REMEMBER_KEY);
-    } catch {
-      /* storage unavailable */
-    }
+    if (!EMAIL_RE.test(email.trim()) || !password) return;
     const r = await login.run({ email: email.trim(), password });
     if (!r.ok) return;
     setPassword('');
@@ -74,7 +60,7 @@ export default function LoginPage() {
     else navigate(`/web/mfa?enroll=1&next=${encodeURIComponent(next)}`, { replace: true });
   };
 
-  const startSso = async () => {
+  const startGoogle = async () => {
     setFormError(null);
     setSsoNotice(null);
     const r = await sso.run(undefined);
@@ -86,61 +72,70 @@ export default function LoginPage() {
   const expired = params.get('reason') === 'expired';
 
   return (
-    <AuthLayout
-      title={getScreen('web-01').title[locale]}
-      subtitle={t('Secure access to your assigned stores')}
-      footer={<Link to="/web/reset">{t('Forgot your password?')}</Link>}
-    >
+    <AuthLayout title={getScreen('web-01').title[locale]} hideTitle>
       {expired ? (
         <div className="notice notice-info" role="status">
           {t('Your session ended. Sign in again to continue.')}
         </div>
       ) : null}
-      <form onSubmit={submit} noValidate className="auth-fields">
-        <div className="form-grid">
-          <TextField
-            label={t('Work email')}
-            type="email"
-            autoComplete="username"
-            inputMode="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={emailError}
-          />
-          <TextField
-            label={t('Password')}
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={passwordError}
-          />
+      <form onSubmit={submit} noValidate className="auth2-form">
+        <FormField label={t('auth|Email Address')} error={emailError}>
+          {(p) => (
+            <div className="auth2-input">
+              <MailIcon />
+              <input
+                {...p}
+                type="email"
+                autoComplete="username"
+                inputMode="email"
+                placeholder={t('auth|Enter your email')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          )}
+        </FormField>
+        <div className="auth2-pw">
+          <FormField label={t('Password')} error={passwordError}>
+            {(p) => (
+              <div className="auth2-input">
+                <LockIcon />
+                <input
+                  {...p}
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder={t('auth|Enter your password')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            )}
+          </FormField>
+          <Link to="/web/reset" className="auth2-forgot">
+            {t('auth|Forgot password?')}
+          </Link>
         </div>
-        <Checkbox
-          label={t('Remember this device')}
-          hint={t('Remembers your work email on this browser only. Your password is never stored.')}
-          checked={remember}
-          onChange={(e) => setRemember(e.target.checked)}
-        />
         {formError ? (
           <div className="form-error" role="alert">
             {formError}
           </div>
         ) : null}
-        <div className="auth-actions">
-          <Button type="submit" pending={login.pending}>
-            {t('Sign in')}
-          </Button>
-          <Button variant="secondary" onClick={startSso} pending={sso.pending}>
-            {t('Continue with company SSO')}
-          </Button>
-        </div>
+        <button type="submit" className="auth2-primary" disabled={login.pending} aria-busy={login.pending || undefined}>
+          {login.pending ? <span className="auth2-spinner" aria-hidden="true" /> : null}
+          {t('auth|Sign In')}
+          {login.pending ? null : <ArrowRightIcon />}
+        </button>
       </form>
+      <div className="auth2-or" role="separator">
+        {t('auth|OR')}
+      </div>
+      <button type="button" className="auth2-google" onClick={startGoogle} disabled={sso.pending} aria-busy={sso.pending || undefined}>
+        <GoogleGIcon />
+        {t('auth|Sign in with Google')}
+      </button>
       {ssoNotice ? (
         <UnavailableNotice code="oidc_unconfigured">
-          {t('Single sign-on has not been set up for this workspace. Sign in with your work email and password, or ask your administrator.')}
+          {t('auth|Google sign-in has not been set up for this workspace yet. Sign in with your email address and password, or ask your administrator.')}
           {ssoNotice.support ? (
             <>
               {' '}

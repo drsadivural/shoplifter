@@ -1,60 +1,97 @@
-// Signed-out layout (web-01/02/03, invite): brand panel on the left, form card on the right.
-// The brand panel is decorative and contains no camera imagery or demonstration records.
+// Signed-out layout (web-01/02/03, invite): photo + message panel on the left, form card on the
+// right, following the shoplifter.ayonix.com sign-in design. The photo is a decorative brand image.
 import { useEffect, type ReactNode } from 'react';
+import heroUrl from '../assets/login-hero.webp';
+import { BarsIcon, PeopleIcon, ShieldCheckIcon } from '../components/auth-icons';
 import { useI18n } from '../i18n';
+import '../styles/auth.css';
 
-export function AuthLayout({ title, subtitle, children, footer }: { title: string; subtitle?: ReactNode; children: ReactNode; footer?: ReactNode }) {
+export function AuthLayout({
+  title,
+  subtitle,
+  children,
+  footer,
+  hideTitle = false,
+}: {
+  title: string;
+  subtitle?: ReactNode;
+  children: ReactNode;
+  footer?: ReactNode;
+  /** The sign-in card shows only the wordmark; the page title stays available to assistive tech. */
+  hideTitle?: boolean;
+}) {
   const { t, locale, setLocale } = useI18n();
   useEffect(() => {
-    document.title = `${title} · RetailGuard`;
+    document.title = `${title} · shoplifter.ayonix.com`;
   }, [title]);
+  const features = [
+    { icon: <ShieldCheckIcon width={30} height={30} />, title: t('auth|Detect'), sub: t('auth|Suspicious Activity') },
+    { icon: <BarsIcon width={30} height={30} />, title: t('auth|Prevent'), sub: t('auth|Losses') },
+    { icon: <PeopleIcon width={30} height={30} />, title: t('auth|Create'), sub: t('auth|Safer Stores') },
+  ];
   return (
-    <div className="auth">
+    <div className="auth2">
       <a href="#main" className="skip-link">
         {t('Skip to content')}
       </a>
-      <div className="auth-art" aria-hidden="true">
-        <div className="brand brand-inverse">
-          <span className="mark">◈</span> Ayonix RetailGuard
-        </div>
-        <div>
-          <p className="auth-headline">{t('Safer stores. Informed decisions.')}</p>
-          <p className="auth-lead">{t('Video evidence, enrolled profiles and staff response in one workspace.')}</p>
-          <ul className="auth-points">
-            <li>{t('AI signals are candidate evidence. People make the decisions.')}</li>
-            <li>{t('Every action is recorded in the audit log.')}</li>
-            <li>{t('Access follows your role and assigned stores.')}</li>
+      <svg className="auth2-swoosh" viewBox="0 0 1440 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="auth2-swoosh-blue" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stopColor="var(--auth2-swoosh-a)" />
+            <stop offset="1" stopColor="var(--auth2-swoosh-b)" />
+          </linearGradient>
+        </defs>
+        <path className="auth2-swoosh-soft" d="M0 520 C 380 470 560 760 900 860 C 1130 925 1300 900 1440 820 L1440 1000 L0 1000 Z" />
+        <path fill="url(#auth2-swoosh-blue)" d="M960 1000 C 1150 975 1330 900 1440 770 L1440 1000 Z" />
+      </svg>
+      <button
+        type="button"
+        className="auth2-lang"
+        onClick={() => setLocale(locale === 'ja' ? 'en' : 'ja')}
+        aria-label={t('Display language: {current}. Switch to {other}.', {
+          current: locale === 'ja' ? '日本語' : 'English',
+          other: locale === 'ja' ? 'English' : '日本語',
+        })}
+      >
+        English / 日本語
+      </button>
+
+      <aside className="auth2-hero">
+        <img className="auth2-photo" src={heroUrl} alt="" width={840} height={640} decoding="async" />
+        <div className="auth2-copy">
+          <p className="auth2-headline">
+            <span>{t('auth|Safer Retail')}</span>
+            <span className="auth2-accent">{t('auth|Starts Here.')}</span>
+          </p>
+          <p className="auth2-lead">{t('auth|AI-powered insights to detect, prevent and reduce shoplifting in real time.')}</p>
+          <ul className="auth2-features">
+            {features.map((f) => (
+              <li key={f.title}>
+                <span className="auth2-feature-icon">{f.icon}</span>
+                <span>
+                  <strong>{f.title}</strong>
+                  <span>{f.sub}</span>
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
-        <div className="auth-foot">© Ayonix</div>
-      </div>
-      <main className="auth-form" id="main" tabIndex={-1}>
-        <div className="card auth-card">
-          <div className="brand auth-card-brand">
-            <span className="mark" aria-hidden="true">
-              ◈
-            </span>{' '}
-            RetailGuard
+      </aside>
+
+      <main className="auth2-main" id="main" tabIndex={-1}>
+        <div className="auth2-card">
+          <div className="auth2-wordmark" aria-label="shoplifter.ayonix.com">
+            <span className="auth2-wm-strong">shoplifter</span>
+            <span className="auth2-wm-dot">.</span>
+            <span className="auth2-wm-light">ayonix.com</span>
           </div>
-          <h1 id="page-title" tabIndex={-1}>
+          <p className="auth2-tagline">{t('auth|DETECT · PREVENT · PROTECT')}</p>
+          <h1 id="page-title" tabIndex={-1} className={hideTitle ? 'visually-hidden' : 'auth2-title'}>
             {title}
           </h1>
-          {subtitle ? <p className="muted">{subtitle}</p> : null}
+          {subtitle ? <p className="auth2-subtitle">{subtitle}</p> : null}
           {children}
-          <div className="auth-card-foot">
-            <span>{footer}</span>
-            <button
-              type="button"
-              className="link-btn"
-              onClick={() => setLocale(locale === 'ja' ? 'en' : 'ja')}
-              aria-label={t('Display language: {current}. Switch to {other}.', {
-                current: locale === 'ja' ? '日本語' : 'English',
-                other: locale === 'ja' ? 'English' : '日本語',
-              })}
-            >
-              English / 日本語
-            </button>
-          </div>
+          {footer ? <div className="auth2-card-foot">{footer}</div> : null}
         </div>
       </main>
     </div>
