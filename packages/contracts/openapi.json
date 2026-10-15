@@ -536,6 +536,50 @@
         }
       }
     },
+    "/v1/me/password": {
+      "post": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Change Password",
+        "description": "Self-service password change. Requires the current password; on success every other\nsession (and its push registration) is signed out, the current session stays signed in.",
+        "operationId": "change_password_v1_me_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Change Password V1 Me Password Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/org": {
       "get": {
         "tags": [
@@ -5609,6 +5653,27 @@
           "title"
         ],
         "title": "CaseIn"
+      },
+      "ChangePasswordIn": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Current Password"
+          },
+          "new_password": {
+            "type": "string",
+            "maxLength": 1024,
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "title": "ChangePasswordIn"
       },
       "CompleteIn": {
         "properties": {

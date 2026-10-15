@@ -113,3 +113,37 @@ def test_rls_blocks_rows_without_tenant_context(org):
             assert False, "audit delete should be denied"
         except psycopg.errors.InsufficientPrivilege:
             pass
+
+
+def test_change_password_requires_current_and_signs_out_other_sessions(org):
+    app, admin = org["app"], org["admin"]
+    _, creds = invite_and_login(app, admin, "responder", [org["store"]["id"]])
+    first = Client(app)
+    assert first.post("/v1/auth/login", json={"email": creds["email"], "password": creds["password"]}).status_code == 200
+    second = Client(app)
+    assert second.post("/v1/auth/login", json={"email": creds["email"], "password": creds["password"]}).status_code == 200
+    r = first.post("/v1/me/password", json={"current_password": "wrong-password-xyz", "new_password": "a-brand-new-passphrase"})
+    assert r.status_code == 422 and r.json()["field_errors"] == {"current_password": "incorrect"}
+    r = first.post("/v1/me/password", json={"current_password": creds["password"], "new_password": "short"})
+    assert r.status_code == 422 and r.json()["code"] == "weak_password"
+    r = first.post("/v1/me/password", json={"current_password": creds["password"], "new_password": creds["password"]})
+    assert r.json()["field_errors"] == {"new_password": "same_as_current"}
+    # CSRF still required for the cookie session
+    assert first.c.post("/v1/me/password", json={"current_password": creds["password"], "new_password": "x" * 20}).status_code == 403
+    r = first.post("/v1/me/password", json={"current_password": creds["password"], "new_password": "a-brand-new-passphrase"})
+    assert r.status_code == 200 and r.json()["other_sessions_revoked"] >= 1
+    assert first.get("/v1/me").status_code == 200          # this session stays signed in
+    assert second.get("/v1/me").status_code == 401         # other sessions are signed out
+    anon = Client(app)
+    assert anon.post("/v1/auth/login", json={"email": creds["email"], "password": creds["password"]}).status_code == 401
+    assert anon.post("/v1/auth/login", json={"email": creds["email"], "password": "a-brand-new-passphrase"}).status_code == 200
+    actions = [a["action"] for a in admin.get("/v1/audit?action=auth.password_changed").json()["items"]]
+    assert "auth.password_changed" in actions
+
+
+def test_change_password_is_rate_limited(org):
+    app, admin = org["app"], org["admin"]
+    cl, creds = invite_and_login(app, admin, "responder", [org["store"]["id"]])
+    codes = [cl.post("/v1/me/password", json={"current_password": f"wrong-{i}-password", "new_password": "another-good-passphrase"}).status_code
+             for i in range(6)]
+    assert codes[:5] == [422] * 5 and codes[5] == 429

@@ -92,6 +92,8 @@ export const endpoints = {
     ) => http.patch<Me>('/v1/me/preferences', body, o),
     sessions: (o?: Opts) => http.get<{ items: SessionInfo[] }>('/v1/me/sessions', undefined, o),
     revokeSession: (id: Id, o?: Opts) => http.del<void>(`/v1/me/sessions/${enc(id)}`, o),
+    changePassword: (body: { current_password: string; new_password: string }, o?: Opts) =>
+      http.post<{ ok: true; other_sessions_revoked: number }>('/v1/me/password', body, o),
   },
 
   org: {

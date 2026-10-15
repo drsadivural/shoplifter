@@ -62,6 +62,7 @@ the requirement source; this file states what the code actually does.
 | PATCH | `/v1/me/preferences` | `{locale?: "ja"|"en", theme?: "light"|"dark"|"system", notification_prefs?: NotificationPrefs}` → `Me` |
 | GET | `/v1/me/sessions` | → `{items: [{id, client, created_at, last_seen_at, expires_at, current: bool, user_agent}]}` |
 | DELETE | `/v1/me/sessions/{id}` | revoke one of own sessions |
+| POST | `/v1/me/password` | `{current_password, new_password}` → `{ok, other_sessions_revoked}`. Wrong current password → 422 `field_errors.current_password=incorrect` (rate-limited, 429 after 5 failures); weak → 422 `weak_password`; same as current → 422 `same_as_current`; SSO-only account → 409 `password_not_set`. Signs out every other session; the current one stays. |
 
 `Me = {user: {id, email, display_name, role, locale, theme, mfa_enabled, notification_prefs}, org: {id, name, timezone, region}, stores: [{id, name, timezone, region}], permissions: [action strings], session: {id, expires_at, mfa_verified}, unread_notifications: int}`
 
