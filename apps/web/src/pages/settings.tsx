@@ -1,5 +1,5 @@
 // web-49 Organization settings. Personal: display language + appearance (PATCH /v1/me/preferences
-// via the session) and active sessions (GET/DELETE /v1/me/sessions). Organization (org.manage):
+// via the session), password change (POST /v1/me/password) and active sessions (GET/DELETE /v1/me/sessions). Organization (org.manage):
 // GET/PUT /v1/org/settings/general {expected_version, settings}. Timezone and retention are shown
 // with links to the screens that own them.
 import '../styles/group-d.css';
@@ -24,13 +24,16 @@ import { useSession } from '../session/SessionProvider';
 export default function SettingsPage() {
   const { t } = useI18n();
   const { can } = useSession();
+  // Bumped after a password change so the session list reflects the signed-out sessions.
+  const [sessionsVersion, setSessionsVersion] = useState(0);
   return (
     <>
       <PageHeader screenId="web-49" />
       <div className="grid gd-two">
         <div className="gd-stack">
           <PersonalPreferences />
-          <SessionsCard />
+          <ChangePasswordCard onChanged={() => setSessionsVersion((v) => v + 1)} />
+          <SessionsCard version={sessionsVersion} />
         </div>
         <div className="gd-stack">
           <OrgGeneral />
@@ -97,11 +100,116 @@ function PersonalPreferences() {
   );
 }
 
-function SessionsCard() {
+const MIN_PASSWORD = 12;
+
+function ChangePasswordCard({ onChanged }: { onChanged: () => void }) {
+  const { t } = useI18n();
+  const [current, setCurrent] = useState('');
+  const [next, setNext] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const messages = {
+    incorrect: t('The current password is incorrect.'),
+    too_short: t('Use at least {n} characters.', { n: MIN_PASSWORD }),
+    too_long: t('Use 256 characters or fewer.'),
+    too_simple: t('Use more varied characters.'),
+    same_as_current: t('Choose a password different from the current one.'),
+  };
+  const change = useMutation((body: { current_password: string; new_password: string }) => endpoints.me.changePassword(body), {
+    successMessage: (r) =>
+      r.other_sessions_revoked > 0
+        ? t('Password changed. {n} other sessions were signed out.', { n: r.other_sessions_revoked })
+        : t('Password changed.'),
+    onSuccess: () => {
+      setCurrent('');
+      setNext('');
+      setConfirm('');
+      setErrors({});
+      onChanged();
+    },
+    onError: (e) => {
+      if (e.status === 422 && Object.keys(e.fieldErrors).length) {
+        setErrors(Object.fromEntries(Object.entries(e.fieldErrors).map(([k, code]) => [k, messages[code as keyof typeof messages] ?? t('This value is not valid.')])));
+        return true;
+      }
+      if (e.status === 429) {
+        setFormError(t('Too many attempts. Wait a few minutes and try again.'));
+        return true;
+      }
+      if (e.status === 409) {
+        setFormError(t('This account signs in with company SSO and has no password to change.'));
+        return true;
+      }
+      return false;
+    },
+  });
+
+  const submit = (ev: FormEvent) => {
+    ev.preventDefault();
+    setFormError(null);
+    const e: Record<string, string> = {};
+    if (!current) e.current_password = t('Enter your current password.');
+    if (next.length < MIN_PASSWORD) e.new_password = messages.too_short;
+    else if (next === current) e.new_password = messages.same_as_current;
+    if (confirm !== next) e.confirm = t('The new passwords do not match.');
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    void change.run({ current_password: current, new_password: next });
+  };
+
+  return (
+    <Card title={t('Change password')}>
+      <form onSubmit={submit} noValidate className="gd-form">
+        <TextField
+          label={t('Current password')}
+          type="password"
+          autoComplete="current-password"
+          maxLength={1024}
+          value={current}
+          onChange={(e) => setCurrent(e.target.value)}
+          error={errors.current_password}
+        />
+        <TextField
+          label={t('New password')}
+          type="password"
+          autoComplete="new-password"
+          maxLength={256}
+          value={next}
+          onChange={(e) => setNext(e.target.value)}
+          error={errors.new_password}
+          hint={t('At least {n} characters. A long passphrase is easiest to remember.', { n: MIN_PASSWORD })}
+        />
+        <TextField
+          label={t('Confirm new password')}
+          type="password"
+          autoComplete="new-password"
+          maxLength={256}
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          error={errors.confirm}
+        />
+        {formError ? (
+          <div className="field-error" role="alert">
+            {formError}
+          </div>
+        ) : null}
+        <p className="muted small">{t('Your other signed-in browsers and devices are signed out when the password changes. This session stays signed in.')}</p>
+        <div className="action-row">
+          <Button type="submit" pending={change.pending}>
+            {t('Change password')}
+          </Button>
+        </div>
+      </form>
+    </Card>
+  );
+}
+
+function SessionsCard({ version }: { version: number }) {
   const { t, fmt } = useI18n();
   const { me, timeZone, signOut } = useSession();
   const tz = me?.org.timezone ?? timeZone;
-  const q = useApiQuery((signal) => endpoints.me.sessions({ signal }), []);
+  const q = useApiQuery((signal) => endpoints.me.sessions({ signal }), [version]);
   const [target, setTarget] = useState<SessionInfo | null>(null);
   const revoke = useMutation((s: SessionInfo) => endpoints.me.revokeSession(s.id), {
     successMessage: t('Session signed out'),

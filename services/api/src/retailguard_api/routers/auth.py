@@ -62,6 +62,11 @@ class InviteAcceptIn(BaseModel):
     password: str = Field(max_length=1024)
 
 
+class ChangePasswordIn(BaseModel):
+    current_password: str = Field(min_length=1, max_length=1024)
+    new_password: str = Field(max_length=1024)
+
+
 class PrefsIn(BaseModel):
     locale: str | None = None
     theme: str | None = None
@@ -467,3 +472,36 @@ def revoke_my_session(session_id: uuid.UUID, c: Ctx = Depends(ctx)) -> dict:
     c.tx.run("UPDATE push_devices SET revoked_at=now() WHERE session_id=%s AND revoked_at IS NULL", (session_id,))
     audit(c.tx, c.actor.org_id, "auth.session_revoked", "session", session_id, actor=c.actor)
     return {"ok": True}
+
+
+@router.post("/me/password")
+def change_password(body: ChangePasswordIn, c: Ctx = Depends(ctx)) -> dict:
+    """Self-service password change. Requires the current password; on success every other
+    session (and its push registration) is signed out, the current session stays signed in."""
+    a = c.actor
+    key = f"pwchange:{a.user_id}"
+    _throttle_check(c.tx, key)
+    user = c.tx.one("SELECT * FROM app_users WHERE id=%s FOR UPDATE", (a.user_id,))
+    if not user["password_hash"]:
+        raise ApiError(409, "password_not_set", "This account signs in with company SSO and has no password to change")
+    if not verify_password(user["password_hash"], body.current_password):
+        _throttle_fail(key)
+        raise ApiError(422, "validation_failed", "The current password is incorrect",
+                       field_errors={"current_password": "incorrect"})
+    problem = password_problem(body.new_password)
+    if problem:
+        raise ApiError(422, "weak_password", "Choose a longer password", field_errors={"new_password": problem})
+    if verify_password(user["password_hash"], body.new_password):
+        raise ApiError(422, "validation_failed", "Choose a password different from the current one",
+                       field_errors={"new_password": "same_as_current"})
+    c.tx.run("UPDATE app_users SET password_hash=%s, version=version+1 WHERE id=%s",
+             (hash_password(body.new_password), a.user_id))
+    others = c.tx.run("""UPDATE sessions SET revoked_at=now() WHERE user_id=%s AND id<>%s AND revoked_at IS NULL""",
+                      (a.user_id, a.session_id))
+    c.tx.run("""UPDATE push_devices SET revoked_at=now() WHERE user_id=%s AND revoked_at IS NULL
+                AND (session_id IS NULL OR session_id<>%s)""", (a.user_id, a.session_id))
+    c.tx.run("UPDATE password_resets SET used_at=now() WHERE user_id=%s AND used_at IS NULL", (a.user_id,))
+    c.tx.run("DELETE FROM login_throttle WHERE key=%s", (key,))
+    audit(c.tx, a.org_id, "auth.password_changed", "user", a.user_id, actor=a,
+          detail={"other_sessions_revoked": others})
+    return {"ok": True, "other_sessions_revoked": others}
