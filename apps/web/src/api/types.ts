@@ -113,6 +113,8 @@ export interface Me {
     locale: Locale | null;
     theme: ThemePreference | null;
     mfa_enabled: boolean;
+    /** The organization requires an authenticator app for this person's role. */
+    mfa_required: boolean;
     notification_prefs: NotificationPrefs;
   };
   org: { id: Id; name: string; timezone: string; region: string };
@@ -155,6 +157,7 @@ export interface GeneralSettings {
   default_locale: Locale;
   session_timeout_minutes: number;
   currency: string;
+  require_mfa_for_privileged_roles: boolean;
 }
 
 export interface PrivacySettings {

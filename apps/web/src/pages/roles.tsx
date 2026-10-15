@@ -47,6 +47,8 @@ export default function RolesPage() {
   const { t, locale } = useI18n();
   const q = useApiQuery((signal) => endpoints.roles({ signal }), []);
   const cfg = useApiQuery((signal) => endpoints.auth.config({ signal }), []);
+  // Organization admins can switch the requirement off (Settings › Organization settings).
+  const general = useApiQuery((signal) => endpoints.org.getSettings('general', { signal }), []);
   const label = (action: string) => {
     const key = PERMISSION_LABEL[action];
     return key && (hasTranslation(locale, key) || hasTranslation('en', key)) ? t(key) : action;
@@ -102,7 +104,9 @@ export default function RolesPage() {
                 </tbody>
               </table>
             </div>
-            {cfg.data && cfg.data.mfa_required_roles.length > 0 ? (
+            {general.data && !general.data.settings.require_mfa_for_privileged_roles ? (
+              <p className="muted small">{t('Two-step verification is optional for every role in this organization. Each person can turn it on in Settings.')}</p>
+            ) : general.data && cfg.data && cfg.data.mfa_required_roles.length > 0 ? (
               <p className="muted small">
                 {t('Two-step verification is required for: {roles}', { roles: cfg.data.mfa_required_roles.map((r) => t(`role|${r}`)).join(locale === 'ja' ? '、' : ', ') })}
               </p>

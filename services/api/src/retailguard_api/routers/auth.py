@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
-from ..authz import MFA_REQUIRED_ROLES, PERMISSIONS, audit, clean, iso, now
+from ..authz import MFA_REQUIRED_ROLES, PERMISSIONS, audit, clean, iso, mfa_required, now
 from ..db import J, Tx, transaction
 from ..deps import CSRF_COOKIE, SESSION_COOKIE, Ctx, ctx, partial_ctx, public_tx
 from ..errors import ApiError, invalid
@@ -45,6 +45,12 @@ class MfaVerifyIn(BaseModel):
 
 class MfaEnableIn(BaseModel):
     code: str = Field(max_length=12)
+
+
+class MfaDisableIn(BaseModel):
+    password: str | None = Field(default=None, max_length=1024)
+    code: str | None = Field(default=None, max_length=12)
+    recovery_code: str | None = Field(default=None, max_length=40)
 
 
 class ResetRequestIn(BaseModel):
@@ -114,7 +120,7 @@ def _clear_cookies(response: Response) -> None:
 
 def create_session(tx: Tx, user: dict, client: str, request: Request, *, mfa_verified: bool) -> tuple[str, dict]:
     s = get_settings()
-    if user["role"] in MFA_REQUIRED_ROLES and not mfa_verified:
+    if not mfa_verified and mfa_required(tx, user["org_id"], user["role"]):
         state = "mfa_required" if user["mfa_enabled"] else "mfa_enrollment_required"
     elif user["mfa_enabled"] and not mfa_verified:
         state = "mfa_required"
@@ -400,6 +406,7 @@ def me_payload(c: Ctx) -> dict:
     return {
         "user": {"id": str(u["id"]), "email": u["email"], "display_name": u["display_name"], "role": u["role"],
                  "locale": u["locale"], "theme": u["theme"], "mfa_enabled": u["mfa_enabled"],
+                 "mfa_required": mfa_required(c.tx, a.org_id, u["role"]),
                  "notification_prefs": notification_prefs(u)},
         "org": clean(org), "stores": stores, "permissions": sorted(PERMISSIONS[u["role"]]),
         "session": clean(sess), "unread_notifications": unread,
@@ -505,3 +512,41 @@ def change_password(body: ChangePasswordIn, c: Ctx = Depends(ctx)) -> dict:
     audit(c.tx, a.org_id, "auth.password_changed", "user", a.user_id, actor=a,
           detail={"other_sessions_revoked": others})
     return {"ok": True, "other_sessions_revoked": others}
+
+
+@router.post("/me/mfa/disable")
+def disable_own_mfa(body: MfaDisableIn, c: Ctx = Depends(ctx)) -> dict:
+    """Turn off one's own authenticator app. Allowed only when the organization does not require
+    it for this role; proves possession of the password and a current code (or a recovery code)."""
+    a = c.actor
+    key = f"mfadisable:{a.user_id}"
+    _throttle_check(c.tx, key)
+    user = c.tx.one("SELECT * FROM app_users WHERE id=%s FOR UPDATE", (a.user_id,))
+    if not user["mfa_enabled"]:
+        raise ApiError(409, "mfa_not_enabled", "Two-step verification is already off")
+    if mfa_required(c.tx, a.org_id, user["role"]):
+        raise ApiError(409, "mfa_required_by_policy",
+                       "Your organization requires two-step verification for your role")
+    errors: dict[str, str] = {}
+    if user["password_hash"] and not verify_password(user["password_hash"], body.password or ""):
+        errors["password"] = "incorrect"
+    if body.code:
+        code_ok = verify_totp(decrypt_secret(user["mfa_secret_enc"], "mfa"), body.code)
+    elif body.recovery_code:
+        code_ok = token_hash(body.recovery_code.strip().lower()) in list(user["recovery_codes"])
+    else:
+        code_ok = False
+    if not code_ok:
+        errors["code"] = "incorrect" if (body.code or body.recovery_code) else "required"
+    if errors:
+        _throttle_fail(key)
+        raise ApiError(422, "validation_failed", "The password or code is incorrect", field_errors=errors)
+    c.tx.run("""UPDATE app_users SET mfa_enabled=false, mfa_secret_enc=NULL, recovery_codes='[]', version=version+1
+                WHERE id=%s""", (a.user_id,))
+    c.tx.run("DELETE FROM trusted_devices WHERE user_id=%s", (a.user_id,))
+    # Sessions no longer count as verified: evidence export requires a verified session.
+    c.tx.run("UPDATE sessions SET mfa_verified=false WHERE user_id=%s AND revoked_at IS NULL", (a.user_id,))
+    c.tx.run("DELETE FROM login_throttle WHERE key=%s", (key,))
+    audit(c.tx, a.org_id, "auth.mfa_disabled", "user", a.user_id, actor=a,
+          detail={"method": "recovery_code" if body.recovery_code and not body.code else "totp"})
+    return {"ok": True}

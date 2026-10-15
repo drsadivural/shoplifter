@@ -2,6 +2,7 @@
 //   verify mode:   POST /v1/auth/mfa/verify {code | recovery_code, trust_device}
 //   enroll mode:   ?enroll=1 -> GET /v1/auth/mfa/setup (QR + secret) -> POST /v1/auth/mfa/enable
 //                  -> recovery codes shown exactly once.
+//   &optional=1:   opened from Settings by someone whose role does not require it; Cancel returns to `next`.
 import QRCode from 'qrcode';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
@@ -31,10 +32,14 @@ export default function MfaPage() {
   const { t, locale } = useI18n();
   const [params] = useSearchParams();
   const enroll = params.get('enroll') === '1';
+  const optional = enroll && params.get('optional') === '1';
   const next = safeNext(params.get('next'));
   return (
-    <AuthLayout title={getScreen('web-02').title[locale]} footer={<Link to="/web/login">{t('Back to sign in')}</Link>}>
-      {enroll ? <EnrollMfa next={next} /> : <VerifyMfa next={next} />}
+    <AuthLayout
+      title={getScreen('web-02').title[locale]}
+      footer={optional ? <Link to={next}>{t('Cancel and go back')}</Link> : <Link to="/web/login">{t('Back to sign in')}</Link>}
+    >
+      {enroll ? <EnrollMfa next={next} optional={optional} /> : <VerifyMfa next={next} />}
     </AuthLayout>
   );
 }
@@ -134,7 +139,7 @@ function VerifyMfa({ next }: { next: string }) {
   );
 }
 
-function EnrollMfa({ next }: { next: string }) {
+function EnrollMfa({ next, optional }: { next: string; optional: boolean }) {
   const { t } = useI18n();
   const navigate = useNavigate();
   const errorText = useMfaErrorText();
@@ -230,7 +235,9 @@ function EnrollMfa({ next }: { next: string }) {
   return (
     <form onSubmit={submit} noValidate className="auth-fields">
       <p className="muted">
-        {t('Two-step verification is required for your role. Scan this QR code with your authenticator app, then enter the 6-digit code it shows.')}
+        {optional
+          ? t('Scan this QR code with your authenticator app, then enter the 6-digit code it shows.')
+          : t('Two-step verification is required for your role. Scan this QR code with your authenticator app, then enter the 6-digit code it shows.')}
       </p>
       <div className="mfa-setup">
         {qrSvg ? (

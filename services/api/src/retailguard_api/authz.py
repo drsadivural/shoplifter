@@ -15,6 +15,15 @@ from .errors import ApiError, conflict, forbidden, invalid
 ROLES = ("viewer", "responder", "investigator", "store_admin", "org_admin")
 MFA_REQUIRED_ROLES = ("org_admin", "store_admin", "investigator")
 
+
+def mfa_required(tx: Tx, org_id: Any, role: str) -> bool:
+    """Whether this role must use an authenticator app in this organization. Organization admins
+    can switch the requirement off (general settings); anything but an explicit false keeps it on."""
+    if role not in MFA_REQUIRED_ROLES:
+        return False
+    row = tx.one("SELECT settings FROM org_settings WHERE org_id=%s AND kind='general'", (org_id,))
+    return ((row or {}).get("settings") or {}).get("require_mfa_for_privileged_roles") is not False
+
 _VIEW = {"dashboard.read", "incident.read", "camera.read", "store.read", "report.read", "health.read",
          "support.create"}
 _RESPOND = _VIEW | {"incident.create", "incident.respond", "search.metadata", "profile.read", "photo.read"}

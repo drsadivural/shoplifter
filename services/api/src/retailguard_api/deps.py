@@ -7,7 +7,7 @@ from typing import Iterator
 
 from fastapi import Request
 
-from .authz import Actor, MFA_REQUIRED_ROLES, now
+from .authz import Actor, mfa_required, now
 from .db import Tx, transaction
 from .errors import ApiError
 from .security import constant_eq, token_hash
@@ -59,8 +59,9 @@ def load_actor(tx: Tx, request: Request, *, allow_partial: bool = False) -> Acto
             raise ApiError(403, "csrf_failed", "Security token missing or invalid. Reload the page.")
     if not allow_partial and s["state"] != "authenticated":
         raise ApiError(401, s["state"], "Additional verification is required")
-    if s["state"] == "authenticated" and u["role"] in MFA_REQUIRED_ROLES and not s["mfa_verified"]:
-        # Role changed to an MFA-required role after sign-in: force re-verification.
+    if s["state"] == "authenticated" and not s["mfa_verified"] and mfa_required(tx, u["org_id"], u["role"]):
+        # Role changed to an MFA-required role (or the organization turned the requirement on)
+        # after sign-in: force re-verification.
         tx.run("UPDATE sessions SET state=%s WHERE id=%s",
                ("mfa_required" if u["mfa_enabled"] else "mfa_enrollment_required", s["id"]))
         if not allow_partial:

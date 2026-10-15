@@ -13,6 +13,7 @@ export const APP_EN_D: Record<string, string> = {
   'audit|auth.login': 'Signed in',
   'audit|auth.logout': 'Signed out',
   'audit|auth.mfa_enabled': 'Two-step verification set up',
+  'audit|auth.mfa_disabled': 'Two-step verification turned off',
   'audit|auth.mfa_verified': 'Two-step verification passed',
   'audit|auth.password_reset_completed': 'Password reset completed',
   'audit|auth.password_reset_requested': 'Password reset requested',
@@ -94,6 +95,37 @@ export const APP_JA_D: Record<string, string> = {
   'Confirm new password': '新しいパスワード（確認）',
   'Your other signed-in browsers and devices are signed out when the password changes. This session stays signed in.': 'パスワードを変更すると、他のブラウザや端末のログインは解除されます。この画面のログインはそのまま維持されます。',
   'Change password': 'パスワードを変更',
+  'Cancel and go back': 'キャンセルして戻る',
+  'Scan this QR code with your authenticator app, then enter the 6-digit code it shows.':
+    '認証アプリでQRコードを読み取り、表示された6桁のコードを入力してください。',
+  'Two-step verification turned off.': '2段階認証をオフにしました。',
+  'The password is incorrect.': 'パスワードが正しくありません。',
+  'That recovery code is not valid.': 'このリカバリーコードは無効です。',
+  'Enter a recovery code.': 'リカバリーコードを入力してください。',
+  'Two-step verification': '2段階認証',
+  'Sign-in asks for a code from your authenticator app after your password.':
+    'サインイン時、パスワードの後に認証アプリのコードを入力します。',
+  'Sign-in asks only for your password. Turn this on to also require a code from an authenticator app.':
+    'サインイン時はパスワードのみを確認しています。オンにすると、認証アプリのコードも必要になります。',
+  'Your organization requires two-step verification for your role, so it cannot be turned off.':
+    '組織の設定により、あなたの権限では2段階認証が必須のため、オフにできません。',
+  'Evidence export requires two-step verification.': '証拠のエクスポートには2段階認証が必要です。',
+  'Turn on': 'オンにする',
+  'Turn off': 'オフにする',
+  'To turn off two-step verification, confirm your password and a current code from your authenticator app.':
+    '2段階認証をオフにするには、パスワードと認証アプリの現在のコードを入力してください。',
+  'Use a code from the authenticator app': '認証アプリのコードを使用する',
+  'Turn off two-step verification': '2段階認証をオフにする',
+  'Require two-step verification for admins and investigators': '管理者と調査担当者に2段階認証を必須にする',
+  'When on, organization admins, store admins and investigators must enter a code from an authenticator app at sign-in. When off, each person chooses in their own settings.':
+    'オンの場合、組織管理者・店舗管理者・調査担当者はサインイン時に認証アプリのコードの入力が必要です。オフの場合は、各自が個人設定で選択します。',
+  'Accounts with access to every store and to evidence will be protected by a password only, unless the person turns on two-step verification. Evidence export still requires it.':
+    '本人が2段階認証をオンにしない限り、全店舗や証拠にアクセスできるアカウントがパスワードのみで保護されます。証拠のエクスポートには引き続き2段階認証が必要です。',
+  'Two-step verification for admins and investigators': '管理者と調査担当者の2段階認証',
+  'Two-step verification is optional for every role in this organization. Each person can turn it on in Settings.':
+    'この組織では、すべての権限で2段階認証は任意です。各自が設定からオンにできます。',
+  'Required': '必須',
+  'Optional': '任意',
   'New password': '新しいパスワード',
   'Too many attempts. Wait a few minutes and try again.': '試行回数が多すぎます。数分待ってから再度お試しください。',
   'watchlist|Name': '氏名',
@@ -672,6 +704,7 @@ export const APP_JA_D: Record<string, string> = {
   'audit|auth.login': 'ログイン',
   'audit|auth.logout': 'ログアウト',
   'audit|auth.mfa_enabled': '2段階認証を設定',
+  'audit|auth.mfa_disabled': '2段階認証をオフに変更',
   'audit|auth.mfa_verified': '2段階認証を通過',
   'audit|auth.password_reset_completed': 'パスワード再設定を完了',
   'audit|auth.password_reset_requested': 'パスワード再設定を要求',

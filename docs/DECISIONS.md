@@ -66,3 +66,12 @@ root FS, no capabilities) + worker + PostgreSQL 17 (127.0.0.1:8716). This follow
 Human-readable references (`INC-2026-000042`, `CASE-2026-000003`) come from per-organization sequences;
 all APIs use opaque UUIDs. Every state transition is a compare-and-swap on `version` inside one
 transaction with the audit row and outbox message.
+
+## ADR-009 Organization-controlled two-step verification
+Two-step verification (TOTP) is required for org_admin, store_admin and investigator by default
+(`general.require_mfa_for_privileged_roles = true`). An organization admin may switch the requirement off;
+then every person chooses in Settings. The check fails closed: any stored value other than an explicit
+`false` keeps it required. Turning one's own authenticator off needs the password and a current or
+recovery code and is audited (`auth.mfa_disabled`). Evidence export still requires an MFA-verified
+session regardless of the setting. Turning the requirement back on sends unenrolled privileged users to
+enrollment on their next request.

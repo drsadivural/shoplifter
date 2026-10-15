@@ -27,6 +27,7 @@ export function makeMe(overrides: Partial<Me> = {}): Me {
       locale: null,
       theme: null,
       mfa_enabled: true,
+      mfa_required: true,
       notification_prefs: {
         behavior: true, watchlist: true, checkout: true, rfid: false, sound: true, private_preview: true, quiet_hours: null, store_ids: [],
       },

@@ -94,6 +94,8 @@ export const endpoints = {
     revokeSession: (id: Id, o?: Opts) => http.del<void>(`/v1/me/sessions/${enc(id)}`, o),
     changePassword: (body: { current_password: string; new_password: string }, o?: Opts) =>
       http.post<{ ok: true; other_sessions_revoked: number }>('/v1/me/password', body, o),
+    disableMfa: (body: { password?: string; code?: string; recovery_code?: string }, o?: Opts) =>
+      http.post<{ ok: true }>('/v1/me/mfa/disable', body, o),
   },
 
   org: {
