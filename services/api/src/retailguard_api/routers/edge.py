@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import re
 import time
 import uuid
 from datetime import date, datetime, timedelta, timezone
@@ -337,6 +338,9 @@ def ack_command(command_id: uuid.UUID, e: EdgeCtx = Depends(edge_ctx)) -> dict:
     return {"ok": True}
 
 
+USB_DEVICE = re.compile(r"^/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})$")
+
+
 def _apply_discovery(e: EdgeCtx, cmd: dict, status: str, result: dict, error: str | None) -> None:
     import ipaddress
     devices = []
@@ -349,12 +353,20 @@ def _apply_discovery(e: EdgeCtx, cmd: dict, status: str, result: dict, error: st
             ipaddress.ip_address(address)
         except ValueError:
             continue
-        devices.append({"endpoint": str(d["endpoint"])[:200], "address": address,
+        devices.append({"kind": "onvif", "endpoint": str(d["endpoint"])[:200], "address": address,
                         "xaddrs": [str(x)[:300] for x in d.get("xaddrs", [])][:8],
                         "scopes": [str(x)[:300] for x in d.get("scopes", [])][:32],
                         "vendor": (str(d["vendor"])[:100] if d.get("vendor") else None),
                         "model": (str(d["model"])[:100] if d.get("model") else None),
                         "already_added": address in known})
+    # USB (V4L2) cameras attached to the appliance; the device path is the camera's address.
+    for d in result.get("usb_devices", [])[:32] if isinstance(result.get("usb_devices"), list) else []:
+        if not isinstance(d, dict) or not isinstance(d.get("device"), str) or not USB_DEVICE.match(d["device"]):
+            continue
+        devices.append({"kind": "usb", "endpoint": "usb:" + d["device"], "address": d["device"],
+                        "xaddrs": [], "scopes": [], "vendor": None,
+                        "model": (str(d["name"])[:100] if d.get("name") else None),
+                        "already_added": d["device"] in known})
     e.tx.run("""UPDATE discovery_jobs SET status=%s, devices=%s, error=%s, completed_at=now() WHERE command_id=%s""",
              ("completed" if status == "succeeded" else "failed", J(devices), error, cmd["id"]))
 

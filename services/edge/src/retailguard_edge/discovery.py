@@ -8,6 +8,9 @@ are deduplicated by endpoint reference and filtered to the allowed subnets
 Multicast (239.255.255.250:3702) is link-local in practice: it does not cross
 routed VLANs unless IT provides a relay. Cameras on other segments must be
 added by address.
+
+Without an explicit interface the probe goes out of every private IPv4 interface of the
+appliance (one socket, one window), so operators do not need to know the appliance's address.
 """
 from __future__ import annotations
 
@@ -106,11 +109,35 @@ def filter_permitted(device: dict[str, Any], policy: SubnetPolicy, cidr: ipaddre
     return {**device, "xaddrs": kept, "xaddrs_rejected": rejected}
 
 
-def discover(interface: str, policy: SubnetPolicy, *, timeout: float = 5.0, cidr: str | None = None,
-             group: tuple[str, int] = GROUP) -> list[dict[str, Any]]:
-    ip = ipaddress.ip_address(interface)
-    if ip.version != 4 or ip.is_multicast or ip.is_unspecified:
-        raise ValueError("a local unicast IPv4 interface address is required")
+def local_ipv4_addresses() -> list[str]:
+    """Private, non-loopback IPv4 addresses of this host's interfaces (Linux SIOCGIFADDR)."""
+    import fcntl
+    import struct
+    found: list[str] = []
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        for _, name in socket.if_nameindex():
+            try:
+                packed = fcntl.ioctl(s.fileno(), 0x8915, struct.pack("256s", name.encode()[:15]))  # SIOCGIFADDR
+            except OSError:
+                continue  # interface without an IPv4 address
+            addr = socket.inet_ntoa(packed[20:24])
+            ip = ipaddress.ip_address(addr)
+            if ip.is_private and not (ip.is_loopback or ip.is_link_local) and addr not in found:
+                found.append(addr)
+    return found
+
+
+def discover(interface: str | None, policy: SubnetPolicy, *, timeout: float = 5.0, cidr: str | None = None,
+             group: tuple[str, int] = GROUP, interfaces: list[str] | None = None) -> list[dict[str, Any]]:
+    if interface:
+        ip = ipaddress.ip_address(interface)
+        if ip.version != 4 or ip.is_multicast or ip.is_unspecified:
+            raise ValueError("a local unicast IPv4 interface address is required")
+        senders = [interface]
+    else:
+        senders = interfaces if interfaces is not None else local_ipv4_addresses()
+        if not senders:
+            raise ValueError("no private IPv4 interface found on the appliance")
     if not 0 < timeout <= 30:
         raise ValueError("timeout must be in (0, 30] seconds")
     net = policy.check_cidr_within(cidr) if cidr else None
@@ -118,10 +145,19 @@ def discover(interface: str, policy: SubnetPolicy, *, timeout: float = 5.0, cidr
     results: dict[str, dict[str, Any]] = {}
     deadline = time.monotonic() + timeout
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
-        sock.bind((interface, 0))
-        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(interface))
+        sock.bind((interface or "0.0.0.0", 0))
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
-        sock.sendto(build_probe(message_id), group)
+        sent = 0
+        for addr in senders:
+            try:
+                sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(addr))
+                sock.sendto(build_probe(message_id), group)
+                sent += 1
+            except OSError:
+                if interface:
+                    raise
+        if not sent:
+            raise ValueError("the probe could not be sent from any interface")
         while True:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
@@ -148,4 +184,4 @@ def discover(interface: str, policy: SubnetPolicy, *, timeout: float = 5.0, cidr
     return sorted(results.values(), key=lambda d: (d["address"], d["endpoint"]))
 
 
-__all__ = ["discover", "parse_probe_matches", "filter_permitted", "build_probe", "find_local"]
+__all__ = ["discover", "local_ipv4_addresses", "parse_probe_matches", "filter_permitted", "build_probe", "find_local"]

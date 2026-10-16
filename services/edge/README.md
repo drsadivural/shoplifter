@@ -25,9 +25,10 @@ The wire contract is `docs/API_V1.md` → "Edge-authenticated API".
 | `redact.py` | URL/secret redaction and a logging filter |
 | `netpolicy.py` | Allowed-subnet enforcement for every camera/ONVIF/RTSP target |
 | `xmlsafe.py` | DTD/entity rejection, size and depth bounds for untrusted XML |
-| `discovery.py` | WS-Discovery Probe (port of `edge/discover.py`), dedupe, subnet filtering |
+| `discovery.py` | WS-Discovery Probe (port of `edge/discover.py`), dedupe, subnet filtering; without an interface the probe goes out of every private IPv4 interface |
+| `usb.py` | USB (V4L2) camera listing from sysfs, preferring stable `/dev/v4l/by-id/...` links |
 | `onvif.py` | ONVIF Device/Media/Media2 SOAP client, UsernameToken digest + HTTP digest fallback |
-| `stream.py` | ffprobe readiness probe, ffmpeg snapshot, privacy masks (Pillow) |
+| `stream.py` | ffprobe readiness probe (RTSP, USB/V4L2 or file), ffmpeg snapshot, privacy masks (Pillow) |
 | `watchdog.py` | Per-camera health state machine and ffmpeg liveness monitor |
 | `pipeline.py` | Channel adapter interface + availability registry |
 | `gate.py` | Evidence gate (port of `reference/domain.py`) with SQLite-persisted cooldown |
@@ -89,10 +90,22 @@ executes `discover`, `provision_camera`, `activate_camera`, `pause_camera`, `upd
 `model_rollout`, `gallery_update`, and acks each with `POST /v1/edge/commands/{id}/ack`.
 Processed command IDs are recorded, so a re-delivered command is re-acked, not re-executed.
 
+Camera sources (`provision_camera.source_type`):
+
+- `onvif` (default): ONVIF device service at the address; the stream URI comes from the Media service.
+- `rtsp`: a URL the operator entered (`rtsp_scheme`, `rtsp_port`, `rtsp_path`); no ONVIF negotiation.
+  The target is still checked against the allowed subnets; credentials arrive sealed.
+- `usb`: a V4L2 device on the appliance (`address` = `/dev/v4l/by-id/...` or `/dev/videoN`). ffmpeg reads
+  it with `-f v4l2`; MJPEG and raw YUV are accepted in addition to H.264/H.265. A USB camera can be
+  opened by one process at a time, so do not run other capture software on it. The systemd unit allows
+  only `char-video4linux` devices and adds the `video` group. `discover` lists USB cameras when the
+  API asks for them (`include_usb`).
+
 Other commands:
 
 ```bash
-retailguard-edge discover --interface 192.168.10.2 --timeout 5      # WS-Discovery, filtered to allowed subnets
+retailguard-edge discover --timeout 5                               # WS-Discovery from every private interface
+retailguard-edge discover --interface 192.168.10.2 --timeout 5      # ... or from one interface only
 retailguard-edge probe --source rtsp://192.168.10.21:554/Streaming/Channels/102 --username viewer
                                                                      # password from RETAILGUARD_EDGE_PROBE_PASSWORD or prompt
 retailguard-edge probe --source /path/to/sample.mp4                  # file diagnostics

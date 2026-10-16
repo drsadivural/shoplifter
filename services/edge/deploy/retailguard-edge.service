@@ -27,7 +27,11 @@ ProtectSystem=strict
 ReadWritePaths=/var/lib/retailguard-edge
 ProtectHome=yes
 PrivateTmp=yes
-PrivateDevices=yes
+# USB cameras: only V4L2 character devices (plus the standard pseudo devices) are reachable.
+PrivateDevices=no
+DevicePolicy=closed
+DeviceAllow=char-video4linux rw
+SupplementaryGroups=video
 ProtectProc=invisible
 ProtectKernelTunables=yes
 ProtectKernelModules=yes

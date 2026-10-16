@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import shutil
 import sqlite3
 import threading
@@ -24,8 +25,9 @@ from .netpolicy import TargetNotPermitted
 from .onvif import OnvifClient, OnvifError, address_host, device_service_url, probe_device
 from .outbox import Outbox
 from .pipeline import CHANNELS, ChannelRegistry
-from .stream import (ReadinessReport, StreamError, StreamSource, ZoneError, capture_masked_snapshot,
-                     probe_readiness, validate_zones)
+from .stream import (V4L2_DEVICE, V4L2_SCHEME, ReadinessReport, StreamError, StreamSource, ZoneError,
+                     capture_masked_snapshot, probe_readiness, validate_zones)
+from .usb import list_usb_cameras
 from .vault import CredentialVault, VaultError
 from .watchdog import CameraHealth, StreamMonitor
 
@@ -150,7 +152,9 @@ class Agent:
                  discover_fn: Callable[..., list[dict]] = ws_discover,
                  probe_fn: Callable[..., ReadinessReport] = probe_readiness,
                  snapshot_fn: Callable[..., bytes] = capture_masked_snapshot,
-                 onvif_factory: Callable[..., OnvifClient] = OnvifClient):
+                 onvif_factory: Callable[..., OnvifClient] = OnvifClient,
+                 usb_fn: Callable[[], list[dict]] = list_usb_cameras,
+                 device_exists: Callable[[str], bool] = os.path.exists):
         self.config, self.keys, self.pairing, self.client = config, keys, pairing, client
         self.policy = subnet_policy(pairing)
         sd = config.state_dir
@@ -162,6 +166,7 @@ class Agent:
         self.store = store or EdgeStore(sd / "edge.db")
         self.supervisor = supervisor or CameraSupervisor(config, self.vault)
         self._discover, self._probe, self._snapshot, self._onvif = discover_fn, probe_fn, snapshot_fn, onvif_factory
+        self._usb, self._device_exists = usb_fn, device_exists
         self.handlers: dict[str, Callable[[dict], dict]] = {
             "discover": self._cmd_discover,
             "provision_camera": self._cmd_provision,
@@ -221,9 +226,10 @@ class Agent:
         return len(items)
 
     def _cmd_discover(self, p: dict) -> dict:
-        interface = p.get("interface") or self.config.discovery_interface
-        if not isinstance(interface, str) or not interface:
-            raise CommandFailed("interface_required")
+        # No interface: probe from every private interface of the appliance.
+        interface = p.get("interface") or self.config.discovery_interface or None
+        if interface is not None and not isinstance(interface, str):
+            raise CommandFailed("invalid_payload", {"field": "interface"})
         timeout = p.get("timeout_s", 5)
         if not isinstance(timeout, (int, float)) or isinstance(timeout, bool) or not 1 <= timeout <= 30:
             raise CommandFailed("invalid_payload", {"field": "timeout_s"})
@@ -237,6 +243,11 @@ class Agent:
         except OSError as exc:
             raise CommandFailed("discovery_socket_error", {"detail": type(exc).__name__}) from None
         result: dict[str, Any] = {"devices": devices}
+        if p.get("include_usb"):
+            try:
+                result["usb_devices"] = self._usb()
+            except OSError as exc:
+                result["usb_devices"], result["usb_error"] = [], type(exc).__name__
         if isinstance(p.get("job_id"), str):
             result["job_id"] = p["job_id"]
         return result
@@ -244,6 +255,9 @@ class Agent:
     def _cmd_provision(self, p: dict) -> dict:
         camera_id = _req_str(p, "camera_id")
         address = _req_str(p, "address", 500)
+        source_type = p.get("source_type") or "onvif"
+        if source_type not in ("onvif", "rtsp", "usb"):
+            raise CommandFailed("invalid_payload", {"field": "source_type"})
         stream_profile = p.get("stream_profile") or "substream"
         if stream_profile not in ("substream", "mainstream"):
             raise CommandFailed("invalid_payload", {"field": "stream_profile"})
@@ -261,42 +275,78 @@ class Agent:
             return CommandFailed(code, {"readiness": "offline", "report": report})
 
         self.supervisor.stop(camera_id)  # re-provisioning replaces any running liveness monitor
-        device_url = device_service_url(address)
-        try:
-            self.policy.check_url(device_url, {"http", "https"})
-        except TargetNotPermitted as exc:
-            raise offline("target_not_permitted", exc.reason) from None
-        if p.get("credential_sealed"):
-            try:
-                self.vault.store_sealed(camera_id, p["credential_sealed"])
-            except VaultError as exc:
-                raise offline(exc.code) from None
-        creds = self.vault.get(camera_id)
-
+        device_url: str | None = None
         onvif_info: dict[str, Any] = {}
-        conformance = "unverified"
         stream_uri: str | None = None
-        try:
-            with self._onvif(device_url, self.policy, creds, timeout=self.config.request_timeout_s) as oc:
-                info = probe_device(oc, stream_profile)
-            stream_uri = info["stream_uri"]
-            conformance = info["conformance"]
-            onvif_info = {k: info.get(k) for k in ("device", "time", "media_service", "selected_profile",
-                                                    "auth_method", "snapshot_uri")}
-        except OnvifError as exc:
-            onvif_info = {"error": exc.code, "detail": exc.detail}
-            if exc.code in ("auth_failed", "clock_skew", "target_not_permitted") or not rtsp_path:
-                raise offline(exc.code, exc.detail) from None
+        if source_type == "usb":
+            # Local USB (V4L2) camera: no network target, no credentials.
+            if not V4L2_DEVICE.match(address):
+                raise offline("invalid_device")
+            if not self._device_exists(address):
+                raise offline("device_not_found")
+            creds = None
+            stream_uri = V4L2_SCHEME + address
+            conformance = "usb_v4l2"
+        elif source_type == "rtsp":
+            # RTSP URL entered by the operator: no ONVIF negotiation.
+            scheme = p.get("rtsp_scheme") or "rtsp"
+            port = p.get("rtsp_port") or (322 if scheme == "rtsps" else 554)
+            if scheme not in RTSP_SCHEMES:
+                raise CommandFailed("invalid_payload", {"field": "rtsp_scheme"})
+            if not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535:
+                raise CommandFailed("invalid_payload", {"field": "rtsp_port"})
             host = address_host(address)
             if ":" in host:
                 host = f"[{host}]"
-            path = rtsp_path if rtsp_path.startswith("/") else "/" + rtsp_path
-            stream_uri = f"rtsp://{host}:554{path}"
-            conformance = "unverified_generic_rtsp"
-        try:
-            self.policy.check_url(stream_uri, RTSP_SCHEMES)
-        except TargetNotPermitted as exc:
-            raise offline("target_not_permitted", exc.reason) from None
+            path = rtsp_path or "/"
+            path = path if path.startswith("/") else "/" + path
+            stream_uri = f"{scheme}://{host}:{port}{path}"
+            try:
+                self.policy.check_url(stream_uri, RTSP_SCHEMES)
+            except TargetNotPermitted as exc:
+                raise offline("target_not_permitted", exc.reason) from None
+            if p.get("credential_sealed"):
+                try:
+                    self.vault.store_sealed(camera_id, p["credential_sealed"])
+                except VaultError as exc:
+                    raise offline(exc.code) from None
+            creds = self.vault.get(camera_id)
+            conformance = "generic_rtsp"
+        else:
+            device_url = device_service_url(address)
+            try:
+                self.policy.check_url(device_url, {"http", "https"})
+            except TargetNotPermitted as exc:
+                raise offline("target_not_permitted", exc.reason) from None
+            if p.get("credential_sealed"):
+                try:
+                    self.vault.store_sealed(camera_id, p["credential_sealed"])
+                except VaultError as exc:
+                    raise offline(exc.code) from None
+            creds = self.vault.get(camera_id)
+
+            conformance = "unverified"
+            try:
+                with self._onvif(device_url, self.policy, creds, timeout=self.config.request_timeout_s) as oc:
+                    info = probe_device(oc, stream_profile)
+                stream_uri = info["stream_uri"]
+                conformance = info["conformance"]
+                onvif_info = {k: info.get(k) for k in ("device", "time", "media_service", "selected_profile",
+                                                        "auth_method", "snapshot_uri")}
+            except OnvifError as exc:
+                onvif_info = {"error": exc.code, "detail": exc.detail}
+                if exc.code in ("auth_failed", "clock_skew", "target_not_permitted") or not rtsp_path:
+                    raise offline(exc.code, exc.detail) from None
+                host = address_host(address)
+                if ":" in host:
+                    host = f"[{host}]"
+                path = rtsp_path if rtsp_path.startswith("/") else "/" + rtsp_path
+                stream_uri = f"rtsp://{host}:554{path}"
+                conformance = "unverified_generic_rtsp"
+            try:
+                self.policy.check_url(stream_uri, RTSP_SCHEMES)
+            except TargetNotPermitted as exc:
+                raise offline("target_not_permitted", exc.reason) from None
 
         source = StreamSource(stream_uri, creds)
         report = self._probe(source, sample_seconds=self.config.sample_seconds,

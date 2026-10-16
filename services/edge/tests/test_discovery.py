@@ -1,10 +1,12 @@
+import ipaddress
 import re
 import socket
 import threading
 
 import pytest
 
-from retailguard_edge.discovery import build_probe, discover, filter_permitted, parse_probe_matches
+from retailguard_edge.discovery import (build_probe, discover, filter_permitted, local_ipv4_addresses,
+                                        parse_probe_matches)
 from retailguard_edge.netpolicy import SubnetPolicy
 from retailguard_edge.xmlsafe import UnsafeXML
 
@@ -85,3 +87,28 @@ def test_input_validation():
     with pytest.raises(ValueError):
         discover("192.168.1.2", policy, timeout=60)
     assert b"<d:Probe>" in build_probe("urn:uuid:x")
+
+
+def test_probe_without_interface_uses_every_given_interface(private_ip):
+    """No interface chosen by the operator: one socket bound to all addresses sends the probe from each
+    private interface and collects answers in one window."""
+    responder = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    responder.bind((private_ip, 0))
+    responder.settimeout(5)
+    port = responder.getsockname()[1]
+
+    def respond():
+        data, addr = responder.recvfrom(65535)
+        mid = re.search(rb"<a:MessageID>([^<]+)</a:MessageID>", data).group(1).decode()
+        responder.sendto(probe_match(mid, "urn:uuid:cam-9", f"http://{private_ip}/onvif/device_service"), addr)
+
+    t = threading.Thread(target=respond)
+    t.start()
+    policy = SubnetPolicy.from_cidrs([f"{private_ip}/32"])
+    devices = discover(None, policy, timeout=1.5, group=(private_ip, port), interfaces=[private_ip])
+    t.join()
+    responder.close()
+    assert [d["endpoint"] for d in devices] == ["urn:uuid:cam-9"]
+    with pytest.raises(ValueError):
+        discover(None, policy, interfaces=[])
+    assert all(ipaddress.ip_address(a).is_private for a in local_ipv4_addresses())

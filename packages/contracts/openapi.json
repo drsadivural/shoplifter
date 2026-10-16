@@ -1953,6 +1953,50 @@
         }
       }
     },
+    "/v1/cameras/rtsp": {
+      "post": {
+        "tags": [
+          "cameras"
+        ],
+        "summary": "Add Rtsp Camera",
+        "description": "Add a camera by its RTSP URL when ONVIF discovery does not find it. The edge reads the stream\ndirectly; readiness still requires >= 10 s of decoded frames.",
+        "operationId": "add_rtsp_camera_v1_cameras_rtsp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RtspCameraIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Add Rtsp Camera V1 Cameras Rtsp Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/cameras/import": {
       "post": {
         "tags": [
@@ -5808,9 +5852,21 @@
             "title": "Store Id"
           },
           "interface": {
-            "type": "string",
-            "maxLength": 64,
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Interface"
+          },
+          "include_usb": {
+            "type": "boolean",
+            "title": "Include Usb",
+            "default": true
           },
           "timeout_s": {
             "type": "integer",
@@ -5834,8 +5890,7 @@
         },
         "type": "object",
         "required": [
-          "store_id",
-          "interface"
+          "store_id"
         ],
         "title": "DiscoveryIn"
       },
@@ -7055,6 +7110,64 @@
           "reason"
         ],
         "title": "RevokeIn"
+      },
+      "RtspCameraIn": {
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Store Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Location",
+            "default": ""
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 600,
+            "minLength": 8,
+            "title": "Url"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "store_id",
+          "name",
+          "url"
+        ],
+        "title": "RtspCameraIn"
       },
       "SettingsPut": {
         "properties": {

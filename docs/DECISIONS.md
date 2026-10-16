@@ -75,3 +75,16 @@ then every person chooses in Settings. The check fails closed: any stored value 
 recovery code and is audited (`auth.mfa_disabled`). Evidence export still requires an MFA-verified
 session regardless of the setting. Turning the requirement back on sends unenrolled privileged users to
 enrollment on their next request.
+
+## ADR-010 Camera sources: ONVIF, RTSP URL, USB
+Cameras record `source_type`. `onvif` (existing rows) negotiates the stream through the ONVIF Media
+service. `rtsp` takes an operator-entered URL when WS-Discovery cannot see the camera (other VLAN, no
+ONVIF): the host must still be a private IP inside the allowed subnets, credentials in the URL are split
+off and sealed to the edge, and uniqueness is per address+port+path so NVR channels are separate cameras.
+`usb` is a V4L2 device on the edge appliance, found by the same discovery job (`include_usb`); the edge
+accepts only `/dev/v4l/by-(id|path)/…` or `/dev/videoN`, reads it with `-f v4l2`, and the systemd unit
+allows only `char-video4linux` devices. All sources use the same readiness rule (>= 10 s of decoded
+frames); USB adds MJPEG/raw YUV to the accepted codecs. Discovery no longer asks for the appliance's
+network interface (user request): without one the edge probes from every private IPv4 interface.
+The design contract for web-11 listed "Network interface" and "Scan timeout"; both were removed at the
+user's request (timeout fixed at 5 s).

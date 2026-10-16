@@ -26,7 +26,7 @@ unavailable state rather than data (face SDK, behavior model, re-identification,
 | web-08 | Connect edge appliance / エッジ端末を接続 | `/web/edge-pair` | `pages/edge-pair.tsx` | `edges`, `stores` | smoke | Implemented · verified in browser |
 | web-09 | Loss prevention overview / ロス防止ダッシュボード | `/web/dashboard` | `pages/dashboard.tsx` | `cameras` | dashboard.test.tsx, smoke | Implemented · verified in browser |
 | web-10 | Live camera wall / ライブカメラ | `/web/live` | `pages/live.tsx` | `cameras` | smoke | Implemented · verified in browser |
-| web-11 | Discover ONVIF cameras / ONVIFカメラを検索 | `/web/camera-discovery` | `pages/camera-discovery.tsx` | `discovery` | smoke | Implemented · verified in browser |
+| web-11 | Discover ONVIF cameras / ONVIFカメラを検索 | `/web/camera-discovery` | `pages/camera-discovery.tsx` | `discovery` | smoke + `camera-discovery.test.tsx` | Implemented · ONVIF (all interfaces), USB cameras on the edge, manual RTSP URL (ADR-010) |
 | web-12 | Add camera manually / カメラを手動追加 | `/web/camera-add` | `pages/camera-add.tsx` | `cameras` | smoke | Implemented · verified in browser |
 | web-13 | Bulk camera import / カメラを一括登録 | `/web/camera-import` | `pages/camera-import.tsx` | `cameras` | smoke | Implemented · verified in browser |
 | web-14 | Camera inventory / カメラ一覧 | `/web/cameras` | `pages/cameras.tsx` | `cameras` | smoke | Implemented · verified in browser |

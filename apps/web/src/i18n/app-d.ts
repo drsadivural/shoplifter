@@ -124,6 +124,45 @@ export const APP_JA_D: Record<string, string> = {
   'Two-step verification for admins and investigators': '管理者と調査担当者の2段階認証',
   'Two-step verification is optional for every role in this organization. Each person can turn it on in Settings.':
     'この組織では、すべての権限で2段階認証は任意です。各自が設定からオンにできます。',
+  'Add a store first': '先に店舗を追加してください',
+  'Cameras belong to a store, and the search runs on that store’s edge appliance. Create the store, pair its edge appliance, then come back to add cameras.':
+    'カメラは店舗に属し、検索はその店舗のエッジ端末で実行されます。店舗を作成し、エッジ端末を接続してから、カメラを追加してください。',
+  'Add store': '店舗を追加',
+  'Find cameras on the store network and USB cameras connected to the edge appliance.':
+    '店舗ネットワーク上のカメラと、エッジ端末に接続されたUSBカメラを検索します。',
+  'Scan the store network': '店舗ネットワークを検索',
+  'The edge appliance of this store searches its own network.': 'この店舗のエッジ端末が、接続されているネットワークを検索します。',
+  'The edge appliance searches from all of its network connections and also lists USB cameras plugged into it.':
+    'エッジ端末はすべてのネットワーク接続から検索し、端末に接続されたUSBカメラも一覧に表示します。',
+  'WS-Discovery uses multicast, which usually does not cross VLANs or routers: cameras on another network segment will not answer. Add those with their RTSP URL below.':
+    'WS-Discoveryはマルチキャストを使用するため、通常はVLANやルーターを越えません。別のネットワークセグメントにあるカメラは応答しないため、下のRTSP URLから追加してください。',
+  'Search to list the network cameras that answer and the USB cameras connected to the edge appliance.':
+    '検索すると、応答したネットワークカメラと、エッジ端末に接続されたUSBカメラが表示されます。',
+  'Enter a URL that starts with rtsp:// or rtsps://, for example rtsp://192.168.1.20:554/stream1.':
+    'rtsp:// または rtsps:// で始まるURLを入力してください（例：rtsp://192.168.1.20:554/stream1）。',
+  'Use the camera’s IP address in the URL, not a host name.': 'URLにはホスト名ではなく、カメラのIPアドレスを使用してください。',
+  'This address is outside the camera networks allowed for the store.': 'このアドレスは、店舗で許可されたカメラネットワークの範囲外です。',
+  'The path after the address contains characters that are not allowed.': 'アドレスの後のパスに使用できない文字が含まれています。',
+  'A camera with this RTSP URL already exists in the store.': 'このRTSP URLのカメラは、すでにこの店舗に登録されています。',
+  'Enter the username for this password.': 'このパスワードのユーザー名を入力してください。',
+  'Add by RTSP URL (manual)': 'RTSP URLで追加（手動）',
+  'Use this when the search does not find a camera. The edge appliance connects to the stream directly; ONVIF is not needed.':
+    '検索でカメラが見つからない場合に使用します。エッジ端末が映像ストリームに直接接続するため、ONVIFは不要です。',
+  'RTSP URL': 'RTSP URL',
+  'Copy it from the camera or recorder manual. A user:password@ part is encrypted to the edge appliance and is not stored with the URL.':
+    'カメラまたはレコーダーの説明書から確認してください。URL内の「ユーザー名:パスワード@」はエッジ端末向けに暗号化され、URLと一緒には保存されません。',
+  'Optional. Used when the URL has no user name.': '任意。URLにユーザー名が含まれない場合に使用します。',
+  'Optional. Used when the URL has no password.': '任意。URLにパスワードが含まれない場合に使用します。',
+  '{name} was added': '{name}を追加しました',
+  'No cameras found': 'カメラが見つかりません',
+  'No network camera answered and no USB camera is connected to the edge appliance. Check that ONVIF discovery is enabled on the cameras and that they are on the same network as the appliance, or add the camera with its RTSP URL.':
+    '応答したネットワークカメラはなく、エッジ端末に接続されたUSBカメラもありません。カメラでONVIF検出が有効で、エッジ端末と同じネットワークにあるか確認するか、RTSP URLでカメラを追加してください。',
+  'USB camera': 'USBカメラ',
+  'USB': 'USB',
+  'Connected to the edge appliance': 'エッジ端末に接続',
+  'Add USB camera': 'USBカメラを追加',
+  'The edge appliance reads this camera directly over USB. No user name or password is needed.':
+    'エッジ端末がUSB経由でこのカメラを直接読み取ります。ユーザー名とパスワードは不要です。',
   'Required': '必須',
   'Optional': '任意',
   'New password': '新しいパスワード',

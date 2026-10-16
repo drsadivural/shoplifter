@@ -16,6 +16,7 @@ import io
 import json
 import logging
 import math
+import re
 import subprocess
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -30,6 +31,11 @@ from .vault import Credentials
 log = logging.getLogger(__name__)
 
 SUPPORTED_CODECS = {"h264", "hevc"}
+# USB (V4L2) cameras usually deliver MJPEG or raw YUV; the edge decodes them locally.
+V4L2_CODECS = SUPPORTED_CODECS | {"mjpeg", "rawvideo"}
+V4L2_SCHEME = "v4l2:"
+# Stable udev links or a numbered node; nothing else on the filesystem is accepted as a camera.
+V4L2_DEVICE = re.compile(r"^/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})$")
 KEYFRAME_GRACE_S = 4.0
 RTSP_IO_TIMEOUT_US = 5_000_000
 MAX_SNAPSHOT_BYTES = 8 * 1024 * 1024
@@ -44,13 +50,28 @@ class StreamError(Exception):
 
 @dataclass(frozen=True)
 class StreamSource:
-    """Either a local file (diagnostics/tests) or an RTSP URL without userinfo."""
+    """A local file (diagnostics/tests), an RTSP URL without userinfo, or a USB camera
+    ("v4l2:/dev/v4l/by-id/...")."""
     url: str
     credentials: Credentials | None = field(default=None, repr=False)
 
     @property
     def is_rtsp(self) -> bool:
         return urlsplit(self.url).scheme.lower() in ("rtsp", "rtsps")
+
+    @property
+    def is_v4l2(self) -> bool:
+        return self.url.startswith(V4L2_SCHEME)
+
+    @property
+    def kind(self) -> str:
+        return "rtsp" if self.is_rtsp else "v4l2" if self.is_v4l2 else "file"
+
+    def v4l2_device(self) -> str:
+        path = self.url[len(V4L2_SCHEME):]
+        if not V4L2_DEVICE.match(path):
+            raise StreamError("invalid_device", "not a V4L2 device path")
+        return path
 
     def argv_url(self) -> str:
         """URL for the child process argv only (credentials injected, percent-encoded)."""
@@ -75,6 +96,8 @@ def input_args(source: StreamSource) -> list[str]:
     if source.is_rtsp:
         return ["-rtsp_transport", "tcp", "-timeout", str(RTSP_IO_TIMEOUT_US),
                 "-protocol_whitelist", "rtsp,rtsps,tcp,tls,udp,rtp,srtp", "-i", source.argv_url()]
+    if source.is_v4l2:
+        return ["-f", "v4l2", "-i", source.v4l2_device()]
     return ["-protocol_whitelist", "file", "-i", source.url]
 
 
@@ -84,6 +107,10 @@ def classify_ffmpeg_error(stderr: str) -> str:
         return "auth_failed"
     if "404 not found" in s or "no such file" in s:
         return "stream_not_found"
+    if "device or resource busy" in s:
+        return "device_busy"
+    if "permission denied" in s:
+        return "device_permission_denied"
     if "connection refused" in s:
         return "unreachable"
     if "timed out" in s or "timeout" in s:
@@ -128,8 +155,8 @@ class ReadinessReport:
         return asdict(self)
 
 
-def evaluate_frames(stream_info: dict[str, Any], frames: list[dict[str, Any]], required_seconds: float
-                    ) -> tuple[dict[str, Any], list[str]]:
+def evaluate_frames(stream_info: dict[str, Any], frames: list[dict[str, Any]], required_seconds: float,
+                    supported_codecs: set[str] = SUPPORTED_CODECS) -> tuple[dict[str, Any], list[str]]:
     errors: list[str] = []
     times: list[float] = []
     missing = 0
@@ -169,7 +196,7 @@ def evaluate_frames(stream_info: dict[str, Any], frames: list[dict[str, Any]], r
             errors.append("non_monotonic_timestamps")
         if decoded + 1e-6 < required_seconds:
             errors.append("insufficient_decoded_seconds")
-        if codec not in SUPPORTED_CODECS:
+        if codec not in supported_codecs:
             errors.append("unsupported_codec")
         if not width or not height:
             errors.append("unknown_resolution")
@@ -197,11 +224,17 @@ def probe_readiness(source: StreamSource, *, sample_seconds: float = 10.0, requi
             "-select_streams", "v:0", "-read_intervals", f"%+{window:g}",
             "-show_entries",
             "stream=codec_name,width,height,avg_frame_rate,r_frame_rate:frame=best_effort_timestamp_time,pts_time",
-            "-of", "json", *input_args(source)]
+            "-of", "json"]
     timeout = timeout_s if timeout_s is not None else window * 2 + 20
     secrets = source.secrets()
     report = ReadinessReport(readiness="offline", checked_at=checked_at,
-                             source="rtsp" if source.is_rtsp else "file")
+                             source=source.kind)
+    try:
+        inputs = input_args(source)
+    except StreamError as exc:
+        report.errors.append(exc.code)
+        return report
+    argv += inputs
     try:
         proc = subprocess.run(argv, capture_output=True, timeout=timeout, check=False, stdin=subprocess.DEVNULL)
     except FileNotFoundError:
@@ -225,7 +258,8 @@ def probe_readiness(source: StreamSource, *, sample_seconds: float = 10.0, requi
         report.errors.append("no_video_stream")
         report.detail = stderr.strip()[-500:] or None
         return report
-    metrics, errors = evaluate_frames(streams[0], frames, required_seconds)
+    metrics, errors = evaluate_frames(streams[0], frames, required_seconds,
+                                      V4L2_CODECS if source.is_v4l2 else SUPPORTED_CODECS)
     for k, v in metrics.items():
         setattr(report, k, v)
     report.errors = errors
