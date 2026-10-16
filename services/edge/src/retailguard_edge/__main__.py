@@ -2,7 +2,7 @@
 
   retailguard-edge pair --api URL --code CODE --name NAME
   retailguard-edge run
-  retailguard-edge discover --interface IP [--timeout S] [--cidr CIDR]
+  retailguard-edge discover [--interface IP] [--timeout S] [--cidr CIDR]
   retailguard-edge status
   retailguard-edge probe --source URL_OR_FILE [--username U]   (password from RETAILGUARD_EDGE_PROBE_PASSWORD or prompt)
 """
@@ -95,10 +95,7 @@ def cmd_discover(args: argparse.Namespace) -> int:
     else:
         print("not paired: pass --cidr <private camera subnet> to bound results", file=sys.stderr)
         return 2
-    interface = args.interface or cfg.discovery_interface
-    if not interface:
-        print("--interface is required", file=sys.stderr)
-        return 2
+    interface = args.interface or cfg.discovery_interface or None  # None: every private interface
     try:
         devices = discover(interface, policy, timeout=args.timeout, cidr=args.cidr)
     except (OSError, ValueError) as exc:
@@ -172,7 +169,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_pair)
     r = sub.add_parser("run", help="run the edge agent loop")
     r.set_defaults(func=cmd_run)
-    d = sub.add_parser("discover", help="WS-Discovery probe from a local interface")
+    d = sub.add_parser("discover", help="WS-Discovery probe (all private interfaces unless --interface)")
     d.add_argument("--interface")
     d.add_argument("--timeout", type=float, default=5.0)
     d.add_argument("--cidr")

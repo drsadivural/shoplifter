@@ -3,6 +3,11 @@
 .gb-form-layout {
   align-items: start;
 }
+.gb-stack {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
 .gb-label {
   display: block;
   font-weight: 700;

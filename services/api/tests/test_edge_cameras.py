@@ -14,7 +14,10 @@ from conftest import Client
 class Edge:
     def __init__(self, app):
         from fastapi.testclient import TestClient
-        self.c = TestClient(app, base_url="https://retailguard.test", raise_server_exceptions=False)
+        # Each appliance has its own source address, so pairing rate limits do not leak between tests.
+        host = f"10.250.{secrets.randbelow(250)}.{secrets.randbelow(250) + 1}"
+        self.c = TestClient(app, base_url="https://retailguard.test", raise_server_exceptions=False,
+                            client=(host, 50000))
         self.sign = SigningKey.generate()
         self.box = PrivateKey.generate()
         self.id = None
@@ -204,3 +207,64 @@ def test_webhook_signature_and_replay(org):
     h2 = dict(h, **{"X-RG-Nonce": secrets.token_hex(16)})
     assert anon.c.post(url, content=body, headers=h2).status_code == 401
     assert admin.get("/v1/integrations").json()["items"][0]["status"] == "receiving"
+
+
+def test_discovery_without_interface_lists_usb_cameras_and_adds_them(org):
+    admin, store = org["admin"], org["store"]
+    edge = paired_edge(org)
+    r = admin.post("/v1/discovery-jobs", json={"store_id": store["id"]})
+    assert r.status_code == 202, r.text
+    job = r.json()
+    cmd = next(c for c in edge.req("GET", "/v1/edge/commands").json()["items"] if c["kind"] == "discover")
+    assert cmd["payload"]["interface"] is None and cmd["payload"]["include_usb"] is True
+    usb = "/dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_ABC123-video-index0"
+    edge.req("POST", f"/v1/edge/commands/{cmd['id']}/ack", {"status": "succeeded", "result": {
+        "devices": [], "usb_devices": [{"device": usb, "node": "/dev/video0", "name": "HD Pro Webcam C920"},
+                                       {"device": "/etc/passwd", "name": "bad"}]}})
+    job = admin.get(f"/v1/discovery-jobs/{job['id']}").json()
+    assert [(d["kind"], d["address"], d["model"]) for d in job["devices"]] == [("usb", usb, "HD Pro Webcam C920")]
+    r = admin.post(f"/v1/discovery-jobs/{job['id']}/add", json={"endpoint": "usb:" + usb, "name": "Register 1"})
+    assert r.status_code == 201, r.text
+    cam = r.json()
+    assert cam["source_type"] == "usb" and cam["address"] == usb and cam["readiness"] == "pending"
+    prov = next(c for c in edge.req("GET", "/v1/edge/commands").json()["items"] if c["kind"] == "provision_camera")
+    assert prov["payload"]["source_type"] == "usb" and prov["payload"]["address"] == usb
+    assert prov["payload"]["credential_sealed"] is None
+    # listed as already added on the next scan
+    job2 = admin.post("/v1/discovery-jobs", json={"store_id": store["id"]}).json()
+    cmd2 = next(c for c in edge.req("GET", "/v1/edge/commands").json()["items"] if c["kind"] == "discover")
+    edge.req("POST", f"/v1/edge/commands/{cmd2['id']}/ack", {"status": "succeeded", "result": {
+        "devices": [], "usb_devices": [{"device": usb, "name": "HD Pro Webcam C920"}]}})
+    assert admin.get(f"/v1/discovery-jobs/{job2['id']}").json()["devices"][0]["already_added"] is True
+
+
+def test_add_camera_by_rtsp_url_seals_credentials_and_allows_nvr_channels(org):
+    admin, store = org["admin"], org["store"]
+    url = "rtsp://viewer:p%40ss%3Aword@10.20.1.60:8554/cam/realmonitor?channel=1&subtype=1"
+    r = admin.post("/v1/cameras/rtsp", json={"store_id": store["id"], "name": "NVR ch1", "url": url})
+    assert r.status_code == 409 and r.json()["code"] == "edge_required"
+    edge = paired_edge(org)
+    for bad, code in (("http://10.20.1.60/stream", "rtsp_url_required"), ("rtsp://169.254.169.254/x", "address_not_permitted"),
+                      ("rtsp://camera.local/x", "ip_address_required"), ("rtsp://10.20.1.60:99999/x", "rtsp_url_required"),
+                      ("rtsp://10.20.1.60/a b", "invalid_rtsp_path")):
+        r = admin.post("/v1/cameras/rtsp", json={"store_id": store["id"], "name": "x", "url": bad})
+        assert r.status_code == 422 and r.json()["field_errors"] == {"url": code}, bad
+    r = admin.post("/v1/cameras/rtsp", json={"store_id": store["id"], "name": "NVR ch1", "location": "Back office", "url": url})
+    assert r.status_code == 201, r.text
+    cam = r.json()
+    assert "p@ss" not in r.text and "word" not in r.text and cam["has_credentials"] is True
+    assert (cam["source_type"], cam["address"], cam["rtsp_port"], cam["rtsp_scheme"], cam["rtsp_path"]) == (
+        "rtsp", "10.20.1.60", 8554, "rtsp", "/cam/realmonitor?channel=1&subtype=1")
+    prov = next(c for c in edge.req("GET", "/v1/edge/commands").json()["items"] if c["kind"] == "provision_camera")
+    p = prov["payload"]
+    assert (p["source_type"], p["rtsp_port"], p["rtsp_path"]) == ("rtsp", 8554, "/cam/realmonitor?channel=1&subtype=1")
+    assert json.loads(SealedBox(edge.box).decrypt(base64.b64decode(p["credential_sealed"]))) == {
+        "username": "viewer", "password": "p@ss:word"}
+    # same URL again is a duplicate; another channel of the same NVR is a different camera
+    r = admin.post("/v1/cameras/rtsp", json={"store_id": store["id"], "name": "dup", "url": url})
+    assert r.status_code == 422 and r.json()["field_errors"] == {"url": "duplicate"}
+    r = admin.post("/v1/cameras/rtsp", json={"store_id": store["id"], "name": "NVR ch2", "username": "viewer",
+                                             "password": "pw2", "url": "rtsp://10.20.1.60:8554/cam/realmonitor?channel=2&subtype=1"})
+    assert r.status_code == 201 and r.json()["has_credentials"] is True
+    audit = admin.get("/v1/audit?action=camera.created_pending").json()["items"]
+    assert "p@ss" not in json.dumps(audit) and "pw2" not in json.dumps(audit)

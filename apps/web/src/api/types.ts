@@ -262,6 +262,8 @@ export interface ChannelState {
   reason?: string;
 }
 
+export type CameraSourceType = 'onvif' | 'rtsp' | 'usb';
+
 export interface Camera {
   id: Id;
   store_id: Id;
@@ -269,6 +271,11 @@ export interface Camera {
   name: string;
   location: string;
   address: string;
+  /** onvif (default), rtsp (URL entered manually) or usb (camera attached to the edge appliance). */
+  source_type?: CameraSourceType;
+  rtsp_port?: number | null;
+  rtsp_scheme?: 'rtsp' | 'rtsps' | null;
+  rtsp_path?: string | null;
   vendor: string | null;
   model: string | null;
   stream_profile: 'substream' | 'mainstream';
@@ -315,6 +322,8 @@ export interface DiscoveryJob {
   id: Id;
   status: 'queued' | 'running' | 'completed' | 'failed';
   devices: {
+    /** "usb": a USB camera attached to the edge appliance (address is its device path). Older jobs omit it. */
+    kind?: 'onvif' | 'usb';
     endpoint: string;
     address: string;
     xaddrs: string[];

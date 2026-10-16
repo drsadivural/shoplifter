@@ -1,5 +1,6 @@
-"""Cameras: manual add, CSV import, ONVIF discovery jobs (run on the store edge), provisioning,
-activation, zones. A camera record alone never means analysis is running."""
+"""Cameras: manual add, RTSP URL add, CSV import, discovery jobs (ONVIF devices on the store network and
+USB cameras attached to the store edge), provisioning, activation, zones. A camera record alone never
+means analysis is running."""
 from __future__ import annotations
 
 import base64
@@ -9,6 +10,7 @@ import ipaddress
 import json
 import re
 import uuid
+from urllib.parse import unquote, urlsplit
 
 from fastapi import APIRouter, Depends
 from nacl.public import PublicKey, SealedBox
@@ -27,6 +29,9 @@ router = APIRouter(prefix="/v1", tags=["cameras"])
 CHANNELS = ("behavior", "watchlist", "checkout")
 ZONE_TYPES = ("shelf", "checkout", "exit_line", "privacy_mask")
 RTSP_PATH = re.compile(r"^/[A-Za-z0-9._~!$&'()*+,;=:@/%-]{0,200}$")
+# Path and query of an operator-entered RTSP URL (no userinfo, no spaces).
+RTSP_TARGET = re.compile(r"^/[A-Za-z0-9._~!$&'()*+,;=:/%?-]{0,300}$")
+USB_DEVICE = re.compile(r"^/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})$")
 
 
 class CameraIn(BaseModel):
@@ -38,6 +43,16 @@ class CameraIn(BaseModel):
     password: str | None = Field(default=None, max_length=256)
     stream_profile: str = "substream"
     rtsp_path: str | None = Field(default=None, max_length=200)
+
+
+class RtspCameraIn(BaseModel):
+    store_id: uuid.UUID
+    name: str = Field(min_length=1, max_length=120)
+    location: str = Field(default="", max_length=120)
+    url: str = Field(min_length=8, max_length=600)
+    # Used when the URL carries no user:password@ part.
+    username: str | None = Field(default=None, max_length=120)
+    password: str | None = Field(default=None, max_length=256)
 
 
 class ImportIn(BaseModel):
@@ -78,7 +93,9 @@ class ZonesIn(BaseModel):
 
 class DiscoveryIn(BaseModel):
     store_id: uuid.UUID
-    interface: str = Field(max_length=64)
+    # Omitted: the edge probes from every private interface it has.
+    interface: str | None = Field(default=None, max_length=64)
+    include_usb: bool = True
     timeout_s: int = Field(default=5, ge=1, le=30)
     cidr: str | None = Field(default=None, max_length=64)
 
@@ -133,24 +150,31 @@ def camera_out(r: dict) -> dict:
 
 
 def _create_camera(c: Ctx, store_id, name, location, address, username, password, profile, rtsp_path,
-                   endpoint=None, vendor=None, model=None, source="manual") -> dict:
+                   endpoint=None, vendor=None, model=None, source="manual", source_type="onvif",
+                   rtsp_port=None, rtsp_scheme=None, duplicate_field="address") -> dict:
     if profile not in ("substream", "mainstream"):
         raise invalid("stream_profile")
-    if rtsp_path and not RTSP_PATH.match(rtsp_path):
-        raise invalid("rtsp_path")
-    address = validate_address(address)
-    if c.tx.one("SELECT 1 FROM cameras WHERE store_id=%s AND address=%s", (store_id, address)):
+    if source_type == "usb":
+        if not USB_DEVICE.match(address):
+            raise invalid("address", "usb_device_required")
+    else:
+        if rtsp_path and not (RTSP_TARGET if source_type == "rtsp" else RTSP_PATH).match(rtsp_path):
+            raise invalid("rtsp_path")
+        address = validate_address(address)
+    if c.tx.one("""SELECT 1 FROM cameras WHERE store_id=%s AND address=%s AND COALESCE(rtsp_port, 0)=%s
+                   AND COALESCE(rtsp_path, '')=%s""", (store_id, address, rtsp_port or 0, rtsp_path or "")):
         raise ApiError(422, "validation_failed", "A camera with this address exists in the store",
-                       field_errors={"address": "duplicate"})
+                       field_errors={duplicate_field: "duplicate"})
     edge = online_edge(c.tx, store_id)
     sealed = seal_credentials(edge, username, password)
     cid = uuid.uuid4()
     c.tx.run("""INSERT INTO cameras (id, org_id, store_id, edge_id, name, location, address, rtsp_path, endpoint_uuid,
-                vendor, model, credential_sealed, stream_profile) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                vendor, model, credential_sealed, stream_profile, source_type, rtsp_port, rtsp_scheme)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
              (cid, c.actor.org_id, store_id, edge["id"] if edge else None, name.strip(), location.strip(), address,
-              rtsp_path, endpoint, vendor, model, sealed, profile))
+              rtsp_path, endpoint, vendor, model, sealed, profile, source_type, rtsp_port, rtsp_scheme))
     audit(c.tx, c.actor.org_id, "camera.created_pending", "camera", cid, actor=c.actor, store_id=store_id,
-          detail={"source": source, "address": address, "credentials": bool(sealed)})
+          detail={"source": source, "source_type": source_type, "address": address, "credentials": bool(sealed)})
     if edge:
         _queue_provision(c, c.tx.one("SELECT * FROM cameras WHERE id=%s", (cid,)), edge)
     return c.tx.one("SELECT * FROM cameras WHERE id=%s", (cid,))
@@ -159,6 +183,8 @@ def _create_camera(c: Ctx, store_id, name, location, address, username, password
 def _queue_provision(c: Ctx, cam: dict, edge: dict) -> dict:
     return queue_command(c.tx, c.actor.org_id, cam["store_id"], edge["id"], "provision_camera",
                          {"camera_id": str(cam["id"]), "address": cam["address"], "rtsp_path": cam["rtsp_path"],
+                          "source_type": cam["source_type"], "rtsp_port": cam["rtsp_port"],
+                          "rtsp_scheme": cam["rtsp_scheme"],
                           "stream_profile": cam["stream_profile"], "credential_sealed": cam["credential_sealed"]},
                          c.actor.user_id)
 
@@ -176,6 +202,43 @@ def add_camera(body: CameraIn, c: Ctx = Depends(ctx)) -> dict:
     c.actor.require("camera.manage", str(body.store_id))
     return camera_out(_create_camera(c, body.store_id, body.name, body.location, body.address, body.username,
                                      body.password, body.stream_profile, body.rtsp_path))
+
+
+def parse_rtsp_url(url: str) -> dict:
+    """Split an operator-entered RTSP URL. The host must be a literal private address inside the store
+    subnets; any user:password@ part is returned separately so it can be sealed to the edge and is
+    never stored or logged with the URL."""
+    try:
+        p = urlsplit(url.strip())
+        port = p.port
+    except ValueError:
+        raise invalid("url", "rtsp_url_required")
+    scheme = p.scheme.lower()
+    if scheme not in ("rtsp", "rtsps") or not p.hostname or p.fragment:
+        raise invalid("url", "rtsp_url_required")
+    try:
+        address = validate_address(p.hostname)
+    except ApiError as exc:
+        raise invalid("url", (exc.field_errors or {}).get("address", "address_not_permitted"))
+    target = (p.path or "/") + (f"?{p.query}" if p.query else "")
+    if not RTSP_TARGET.match(target):
+        raise invalid("url", "invalid_rtsp_path")
+    return {"scheme": scheme, "address": address, "port": port or (322 if scheme == "rtsps" else 554),
+            "path": target, "username": unquote(p.username) if p.username is not None else None,
+            "password": unquote(p.password) if p.password is not None else None}
+
+
+@router.post("/cameras/rtsp", status_code=201)
+def add_rtsp_camera(body: RtspCameraIn, c: Ctx = Depends(ctx)) -> dict:
+    """Add a camera by its RTSP URL when ONVIF discovery does not find it. The edge reads the stream
+    directly; readiness still requires >= 10 s of decoded frames."""
+    c.actor.require("camera.manage", str(body.store_id))
+    t = parse_rtsp_url(body.url)
+    username = t["username"] if t["username"] is not None else body.username
+    password = t["password"] if t["password"] is not None else body.password
+    return camera_out(_create_camera(c, body.store_id, body.name, body.location, t["address"], username, password,
+                                     "substream", t["path"], source="rtsp_url", source_type="rtsp",
+                                     rtsp_port=t["port"], rtsp_scheme=t["scheme"], duplicate_field="url"))
 
 
 @router.post("/cameras/import")
@@ -375,12 +438,13 @@ def job_out(r: dict) -> dict:
 @router.post("/discovery-jobs", status_code=202)
 def start_discovery(body: DiscoveryIn, c: Ctx = Depends(ctx)) -> dict:
     c.actor.require("camera.manage", str(body.store_id))
-    try:
-        iface = ipaddress.ip_address(body.interface)
-        if iface.version != 4 or not iface.is_private:
-            raise ValueError
-    except ValueError:
-        raise invalid("interface", "private_ipv4_required")
+    if body.interface:
+        try:
+            iface = ipaddress.ip_address(body.interface)
+            if iface.version != 4 or not iface.is_private:
+                raise ValueError
+        except ValueError:
+            raise invalid("interface", "private_ipv4_required")
     if body.cidr:
         try:
             net = ipaddress.ip_network(body.cidr, strict=False)
@@ -394,14 +458,15 @@ def start_discovery(body: DiscoveryIn, c: Ctx = Depends(ctx)) -> dict:
                           "Discovery runs on the store edge appliance. Pair an appliance and make sure it is online.")
     jid = uuid.uuid4()
     cmd = queue_command(c.tx, c.actor.org_id, body.store_id, edge["id"], "discover",
-                        {"job_id": str(jid), "interface": body.interface, "timeout_s": body.timeout_s, "cidr": body.cidr},
+                        {"job_id": str(jid), "interface": body.interface or None, "timeout_s": body.timeout_s,
+                         "cidr": body.cidr, "include_usb": body.include_usb},
                         c.actor.user_id)
     c.tx.run("""INSERT INTO discovery_jobs (id, org_id, store_id, edge_id, command_id, interface, timeout_s, cidr, created_by)
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-             (jid, c.actor.org_id, body.store_id, edge["id"], cmd["id"], body.interface, body.timeout_s, body.cidr,
+             (jid, c.actor.org_id, body.store_id, edge["id"], cmd["id"], body.interface or None, body.timeout_s, body.cidr,
               c.actor.user_id))
     audit(c.tx, c.actor.org_id, "camera.discovery_started", "discovery_job", jid, actor=c.actor, store_id=body.store_id,
-          detail={"interface": body.interface, "timeout_s": body.timeout_s})
+          detail={"interface": body.interface or "all", "timeout_s": body.timeout_s, "include_usb": body.include_usb})
     return job_out(c.tx.one("SELECT * FROM discovery_jobs WHERE id=%s", (jid,)))
 
 
@@ -423,6 +488,10 @@ def add_discovered(job_id: uuid.UUID, body: DiscoveryAddIn, c: Ctx = Depends(ctx
     device = next((d for d in job["devices"] if d["endpoint"] == body.endpoint), None)
     if not device:
         raise invalid("endpoint", "not_in_discovery_results")
+    if device.get("kind") == "usb":
+        return camera_out(_create_camera(c, job["store_id"], body.name, body.location, device["address"], None, None,
+                                         "substream", None, model=device.get("model"), source="usb_discovery",
+                                         source_type="usb"))
     return camera_out(_create_camera(c, job["store_id"], body.name, body.location, device["address"], body.username,
                                      body.password, body.stream_profile, None, endpoint=device["endpoint"],
                                      vendor=device.get("vendor"), model=device.get("model"), source="onvif_discovery"))

@@ -162,6 +162,11 @@ export const endpoints = {
       },
       o?: Opts,
     ) => http.post<Camera>('/v1/cameras', body, o),
+    /** Manual add by RTSP URL. A user:password@ part in the URL is sealed to the edge and never stored. */
+    createRtsp: (
+      body: { store_id: Id; name: string; location: string; url: string; username?: string; password?: string },
+      o?: Opts,
+    ) => http.post<Camera>('/v1/cameras/rtsp', body, o),
     import: (body: { store_id: Id; csv: string; username?: string; password?: string; dry_run: boolean }, o?: Opts) =>
       http.post<CameraImportResult>('/v1/cameras/import', body, o),
     get: (id: Id, o?: Opts) => http.get<Camera>(`/v1/cameras/${enc(id)}`, undefined, o),
@@ -177,7 +182,8 @@ export const endpoints = {
   },
 
   discovery: {
-    start: (body: { store_id: Id; interface: string; timeout_s: number; cidr?: string }, o?: Opts) =>
+    /** Without `interface` the edge probes from all of its private interfaces; USB cameras are listed too. */
+    start: (body: { store_id: Id; interface?: string; timeout_s: number; cidr?: string; include_usb?: boolean }, o?: Opts) =>
       http.post<DiscoveryJob>('/v1/discovery-jobs', body, o),
     get: (id: Id, o?: Opts) => http.get<DiscoveryJob>(`/v1/discovery-jobs/${enc(id)}`, undefined, o),
     add: (

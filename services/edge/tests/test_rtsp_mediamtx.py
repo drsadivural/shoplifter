@@ -92,7 +92,7 @@ def rtsp_server(tmp_path_factory, video_12s, private_ip):
              f"rtsp://publisher:pubsecret@127.0.0.1:{PORT}/test"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         # wait until the path is readable
-        deadline = time.time() + 20
+        deadline = time.time() + 45  # first start of the container can be slow
         while time.time() < deadline:
             r = subprocess.run(["ffprobe", "-v", "error", "-rtsp_transport", "tcp", "-show_entries",
                                 "stream=codec_name", "-of", "json",
@@ -181,3 +181,28 @@ def test_agent_provision_end_to_end_onvif_plus_real_rtsp(rtsp_server, private_ip
     st, res, _ = agent.execute("activate_camera", {"camera_id": "cam-rtsp", "channels": ["behavior"]})
     assert st == "succeeded" and res["channels"]["behavior"] == {"state": "unavailable",
                                                                   "reason": "model_not_installed"}
+
+
+def test_agent_provision_direct_rtsp_url_without_onvif(rtsp_server, private_ip, state_dir):
+    """Manual RTSP entry: no ONVIF service on the target; the edge goes straight to the stream."""
+    from test_agent import make_agent
+
+    def no_onvif(*a, **k):
+        raise AssertionError("ONVIF must not be contacted for a direct RTSP camera")
+
+    agent, api, keys = make_agent(state_dir, [f"{private_ip}/32"], onvif_factory=no_onvif)
+    sealed = base64.b64encode(SealedBox(keys.box_key.public_key).encrypt(
+        json.dumps({"username": VIEWER.username, "password": VIEWER.password}).encode())).decode()
+    status, result, error = agent.execute("provision_camera", {
+        "camera_id": "cam-direct", "address": private_ip, "source_type": "rtsp", "rtsp_port": PORT,
+        "rtsp_path": "/test", "stream_profile": "substream", "credential_sealed": sealed})
+    assert (status, error) == ("succeeded", None), json.dumps(result)
+    rep = result["report"]
+    assert rep["source"] == "rtsp" and rep["conformance"] == "generic_rtsp" and rep["decoded_seconds"] >= 10
+    assert rep["snapshot"] == "uploaded"
+    assert VIEWER.password not in json.dumps(result)
+    # wrong port: offline, not ready
+    status, result, error = agent.execute("provision_camera", {
+        "camera_id": "cam-direct-2", "address": private_ip, "source_type": "rtsp", "rtsp_port": PORT + 1,
+        "rtsp_path": "/test", "credential_sealed": sealed})
+    assert status == "failed" and result["readiness"] == "offline"
