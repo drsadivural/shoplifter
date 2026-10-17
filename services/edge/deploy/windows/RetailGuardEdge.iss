@@ -419,6 +419,47 @@ begin
   if not Result then Log('could not start: ' + SysErrorMessage(Code));
 end;
 
+procedure StopStaleSetup;
+var
+  Script: String;
+  Code: Integer;
+  Output: AnsiString;
+begin
+  Script := ExpandConstant('{tmp}\stop-stale.ps1');
+  SaveStringToFile(Script,
+    '$me = $PID' + #13#10 +
+    '$parent = (Get-CimInstance Win32_Process -Filter "ProcessId=$me").ParentProcessId' + #13#10 +
+    'Get-CimInstance Win32_Process | Where-Object {' + #13#10 +
+    '  $_.ProcessId -ne $me -and $_.ProcessId -ne $parent -and $_.CommandLine -and' + #13#10 +
+    '  ($_.CommandLine -like "*install-windows.ps1*" -or $_.CommandLine -like "*retailguard-ffmpeg*" -or' + #13#10 +
+    '   $_.CommandLine -like "*codexffmpeg*" -or $_.CommandLine -like "*RetailGuard\Edge\logs\setup*")' + #13#10 +
+    '} | ForEach-Object {' + #13#10 +
+    '  Write-Output "stopping $($_.ProcessId) $($_.Name)"' + #13#10 +
+    '  & taskkill.exe /F /T /PID $_.ProcessId 2>&1 | Out-Null  # with its children (uv, curl, ffmpeg)' + #13#10 +
+    '  Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue' + #13#10 +
+    '}' + #13#10,
+    False);
+  RunHidden('set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
+    ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(Script) + ' > ' + Quoted(Script + '.log') + ' 2>&1', Code);
+  if LoadStringFromFile(Script + '.log', Output) then Log('stale setup cleanup: ' + Trim(String(Output)));
+  Log('stale setup cleanup exit ' + IntToStr(Code));
+end;
+
+{ Cancel while the installation steps run (after the files are copied Inno's own cancel no longer
+  applies, so the button gets this handler directly). }
+procedure StepsCancelClick(Sender: TObject);
+begin
+  if (not InSteps) or CancelRequested then Exit;
+  if SuppressibleMsgBox(FmtMessage(CustomMessage('CancelStepAsk'), [CurrentStep]), mbConfirmation,
+     MB_YESNO or MB_DEFBUTTON2, IDNO) = IDYES then
+  begin
+    CancelRequested := True;
+    WizardForm.CancelButton.Enabled := False;
+    Log('Cancel during the steps: stopping ' + CurrentStep);
+    StopStaleSetup;  { ends the running step and everything it started }
+  end;
+end;
+
 function RunPhase(const Phase, MsgName, Extra: String; Index, Count: Integer): Boolean;
 var
   Code: Integer;
@@ -427,8 +468,9 @@ begin
   WizardForm.StatusLabel.Caption := CustomMessage(MsgName);
   WizardForm.FilenameLabel.Caption := FmtMessage(CustomMessage('StepOf'), [IntToStr(Index), IntToStr(Count)]);
   CurrentStep := CustomMessage(MsgName);
+  WizardForm.CancelButton.OnClick := @StepsCancelClick;
   WizardForm.CancelButton.Visible := True;
-  WizardForm.CancelButton.Enabled := True;
+  WizardForm.CancelButton.Enabled := not CancelRequested;
   { Windows PowerShell 5.1 must not inherit a PowerShell 7 module path (setup started from pwsh). }
   Line := 'set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
     ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(ExpandConstant('{app}\deploy\install-windows.ps1')) +
@@ -461,31 +503,6 @@ end;
 
 { Ends processes left over from an interrupted earlier setup (its PowerShell steps and downloads),
   which would otherwise hold files under the install and data folders open. }
-procedure StopStaleSetup;
-var
-  Script: String;
-  Code: Integer;
-  Output: AnsiString;
-begin
-  Script := ExpandConstant('{tmp}\stop-stale.ps1');
-  SaveStringToFile(Script,
-    '$me = $PID' + #13#10 +
-    '$parent = (Get-CimInstance Win32_Process -Filter "ProcessId=$me").ParentProcessId' + #13#10 +
-    'Get-CimInstance Win32_Process | Where-Object {' + #13#10 +
-    '  $_.ProcessId -ne $me -and $_.ProcessId -ne $parent -and $_.CommandLine -and' + #13#10 +
-    '  ($_.CommandLine -like "*install-windows.ps1*" -or $_.CommandLine -like "*retailguard-ffmpeg*" -or' + #13#10 +
-    '   $_.CommandLine -like "*codexffmpeg*" -or $_.CommandLine -like "*RetailGuard\Edge\logs\setup*")' + #13#10 +
-    '} | ForEach-Object {' + #13#10 +
-    '  Write-Output "stopping $($_.ProcessId) $($_.Name)"' + #13#10 +
-    '  & taskkill.exe /F /T /PID $_.ProcessId 2>&1 | Out-Null  # with its children (uv, curl, ffmpeg)' + #13#10 +
-    '  Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue' + #13#10 +
-    '}' + #13#10,
-    False);
-  RunHidden('set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
-    ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(Script) + ' > ' + Quoted(Script + '.log') + ' 2>&1', Code);
-  if LoadStringFromFile(Script + '.log', Output) then Log('stale setup cleanup: ' + Trim(String(Output)));
-  Log('stale setup cleanup exit ' + IntToStr(Code));
-end;
 
 procedure StopAgent;
 var
@@ -650,32 +667,33 @@ begin
   end;
 end;
 
+
+{ Cancel on "Connect this PC to a store": finish without connecting. }
+procedure ConnectCancelClick(Sender: TObject);
+begin
+  if SuppressibleMsgBox(CustomMessage('SkipConnectAsk'), mbConfirmation, MB_YESNO, IDNO) = IDYES then
+  begin
+    Log('Cancel on the connect page: finish without connecting');
+    PairLaterBox.Checked := True;
+    PairLaterClick(PairLaterBox);
+    WizardForm.NextButton.OnClick(WizardForm.NextButton);
+  end;
+end;
+
+{ The window's close button (X) behaves like Cancel on those pages too. }
 procedure CancelButtonClick(CurPageID: Integer; var Cancel, Confirm: Boolean);
 begin
   if (CurPageID = wpInstalling) and InSteps then
   begin
     Cancel := False;
     Confirm := False;
-    if CancelRequested then Exit;
-    if SuppressibleMsgBox(FmtMessage(CustomMessage('CancelStepAsk'), [CurrentStep]), mbConfirmation,
-       MB_YESNO or MB_DEFBUTTON2, IDNO) = IDYES then
-    begin
-      CancelRequested := True;
-      WizardForm.CancelButton.Enabled := False;
-      StopStaleSetup;  { ends the running step and everything it started }
-    end;
+    StepsCancelClick(nil);
   end
   else if CurPageID = ConnectPage.ID then
   begin
     Cancel := False;
     Confirm := False;
-    if SuppressibleMsgBox(CustomMessage('SkipConnectAsk'), mbConfirmation, MB_YESNO, IDNO) = IDYES then
-    begin
-      Log('Cancel on the connect page: finish without connecting');
-      PairLaterBox.Checked := True;
-      PairLaterClick(PairLaterBox);
-      WizardForm.NextButton.OnClick(WizardForm.NextButton);
-    end;
+    ConnectCancelClick(nil);
   end;
 end;
 
@@ -697,6 +715,7 @@ begin
   if CurPageID = ConnectPage.ID then
   begin
     { After installation Inno hides Cancel; here it means "finish without connecting". }
+    WizardForm.CancelButton.OnClick := @ConnectCancelClick;
     WizardForm.CancelButton.Visible := True;
     WizardForm.CancelButton.Enabled := True;
   end;
