@@ -70,9 +70,9 @@ try {
         Start-Sleep -Seconds 6; Shot "4-connect"
         Keys "AAAA-BBBB-CCCC"; Keys "{ENTER}"            # a code the server rejects
         Start-Sleep -Seconds 6; Shot "5-pair-error"
-        Keys "{ENTER}"; Start-Sleep -Seconds 1           # dismiss the message
+        [System.Windows.Forms.SendKeys]::SendWait("{ENTER}"); Start-Sleep -Seconds 1   # the message box has focus
         Keys "%p"; Keys "{ENTER}"                        # Pair later > Finished
-        Shot "6-finished"
+        Start-Sleep -Seconds 2; Shot "6-finished"
     }
 } finally {
     Get-Process | Where-Object { $_.MainWindowTitle -like "*RetailGuard Edge*" -or $_.Path -like "*\is-*.tmp\*" } |
