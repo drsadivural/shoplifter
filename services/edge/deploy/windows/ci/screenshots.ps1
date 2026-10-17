@@ -101,6 +101,31 @@ function Click([string[]]$names, [int]$waitS = 15) {
 }
 $OK = @("OK"); $YES = @("Yes", "はい"); $CANCEL = @("Cancel", "キャンセル")
 
+# Diagnostics when a click fails: the setup process's windows (Win32) and the buttons UI Automation sees.
+function Dump {
+    $p = Wizard
+    Write-Host "wizard pid $($p.Id) main '$($p.MainWindowTitle)'"
+    $all = Get-Process | Where-Object { $_.Path -like "*\is-*.tmp\*" -or $_.MainWindowTitle -like "*RetailGuard*" }
+    $all | ForEach-Object { Write-Host "process $($_.Id) $($_.ProcessName) '$($_.MainWindowTitle)'" }
+    [W]::EnumWindows({ param($h, $l)
+        $wp = [uint32]0; [W]::GetWindowThreadProcessId($h, [ref]$wp) | Out-Null
+        if ($all.Id -contains [int]$wp -and [W]::IsWindowVisible($h)) {
+            $sb = New-Object System.Text.StringBuilder 64; [W]::GetClassName($h, $sb, 64) | Out-Null
+            Write-Host "  window $h pid $wp class $($sb.ToString())"
+        }
+        return $true }, [IntPtr]::Zero) | Out-Null
+    $A = [System.Windows.Automation.AutomationElement]
+    foreach ($w in $A::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children, [System.Windows.Automation.Condition]::TrueCondition)) {
+        if ($all.Id -notcontains $w.Current.ProcessId) { continue }
+        Write-Host "  uia window '$($w.Current.Name)' pid $($w.Current.ProcessId) class $($w.Current.ClassName)"
+        foreach ($b in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) {
+            if ($b.Current.ControlType.ProgrammaticName -like "*Button*") {
+                Write-Host "    $($b.Current.ControlType.ProgrammaticName) '$($b.Current.Name)' enabled=$($b.Current.IsEnabled)"
+            }
+        }
+    }
+}
+
 function WaitForLog([datetime]$started, [string]$pattern, [int]$timeoutS = 300) {
     for ($i = 0; $i -lt $timeoutS * 4; $i++) {
         Start-Sleep -Milliseconds 250
@@ -133,10 +158,10 @@ try {
         Start-Sleep -Seconds 6; Shot "4-connect"
         Keys "AAAA-BBBB-CCCC"; Keys "{ENTER}"            # a code the server rejects
         Start-Sleep -Seconds 6; Shot "5-pair-error"
-        if (-not (Click $OK)) { throw "pairing error message not shown" }
-        if (-not (Click $CANCEL)) { throw "no Cancel button on the connect page" }
+        if (-not (Click $OK)) { Dump; throw "pairing error message not shown" }
+        if (-not (Click $CANCEL)) { Dump; throw "no Cancel button on the connect page" }
         Start-Sleep -Seconds 1; ShotScreen "6-skip-connect-question"
-        if (-not (Click $YES)) { throw "Cancel on the connect page did not ask to finish without connecting" }
+        if (-not (Click $YES)) { Dump; throw "Cancel on the connect page did not ask to finish without connecting" }
         Start-Sleep -Seconds 2; Shot "7-finished"
     } elseif ($Mode -eq "cancel") {
         Keys "{ENTER}"
