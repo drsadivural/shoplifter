@@ -20,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LICENSE = ROOT.parent.parent / "LICENSE"
 SKIP_DIRS = {".venv", "tests", "__pycache__", ".pytest_cache", "dist", ".ruff_cache", ".mypy_cache"}
+SKIP_PREFIXES = ("deploy/windows/",)  # setup wizard sources and artwork: built into RetailGuardEdgeSetup.exe
 SKIP_FILES = {".gitignore", "deploy/package.py"}
 # Left out of the other platform's package (each package gets its own guide as INSTALL.txt).
 WINDOWS_FILES = {"deploy/install-windows.ps1", "deploy/uninstall-windows.ps1", "deploy/INSTALL-windows.txt"}
@@ -31,7 +32,7 @@ def files() -> list[str]:
     for p in sorted(ROOT.rglob("*")):
         rel = p.relative_to(ROOT)
         if (p.is_dir() or any(part in SKIP_DIRS for part in rel.parts) or p.suffix == ".pyc"
-                or rel.as_posix() in SKIP_FILES):
+                or rel.as_posix() in SKIP_FILES or rel.as_posix().startswith(SKIP_PREFIXES)):
             continue
         out.append(rel.as_posix())
     return out

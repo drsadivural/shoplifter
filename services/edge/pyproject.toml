@@ -1,6 +1,6 @@
 [project]
 name = "retailguard-edge"
-version = "0.2.0"
+version = "0.3.0"
 description = "Ayonix RetailGuard store-local edge appliance service"
 requires-python = ">=3.12,<3.13"
 dependencies = [

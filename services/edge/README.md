@@ -61,6 +61,19 @@ cameras) and `/var/lib/retailguard-edge` (`0700`), writes `/etc/retailguard-edge
 
 ### Windows
 
+**Setup wizard (recommended):** `RetailGuardEdgeSetup-<version>.exe`, built in CI from
+`deploy/windows/RetailGuardEdge.iss` (Inno Setup 6.3+; artwork from `deploy/windows/make_art.py`).
+English/Japanese by the Windows display language. Pages: Welcome, License, Server, install progress
+(six steps), "Connect this PC to a store" (pairing code + appliance name, retried in place when the
+server rejects a code), Finished. Running a newer (or the same) setup again is an update: the input
+pages are skipped when the PC is already paired and the data in `%ProgramData%\RetailGuard\Edge` is
+kept. Silent: `/VERYSILENT /SUPPRESSMSGBOXES [/SERVER=https://...] [/CODE=...] [/NAME=...]`. Uninstall
+from Windows Settings > Apps; it asks whether to delete the store connection and camera passwords
+(default: keep). The installer is not code-signed, so SmartScreen shows "Windows protected your PC"
+(More info > Run anyway) until a code-signing certificate is used.
+
+**Zip + PowerShell:**
+
 Customer packages are built with `python3 deploy/package.py` (`dist/retailguard-edge-<version>-linux.tar.gz`
 and `-windows.zip`, each with a bilingual `INSTALL.txt`). On Windows 10/11 or Server 2019+ (x64), in an
 elevated PowerShell inside the extracted zip:

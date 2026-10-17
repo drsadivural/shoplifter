@@ -7,6 +7,9 @@ Requirements
 - Outbound HTTPS to your RetailGuard server and to the internet during installation
   (uv, Python and ffmpeg are downloaded)
 
+Easier: use RetailGuardEdgeSetup-VERSION.exe (setup wizard) from the same download page instead of
+this zip. This zip is for scripted installs.
+
 1. Extract the zip, e.g. to C:\retailguard-edge-VERSION
 
 2. Open PowerShell as administrator (right-click > Run as administrator) and run:
@@ -47,6 +50,9 @@ Ayonix RetailGuard エッジ端末 — Windows パッケージ
 - PC が店舗のカメラネットワークに接続されていること
 - RetailGuard サーバーへの HTTPS 通信、およびインストール時のインターネット接続
   （uv、Python、ffmpeg をダウンロードします）
+
+より簡単な方法: 同じダウンロードページの RetailGuardEdgeSetup-VERSION.exe（セットアップウィザード）を
+使用してください。この zip はスクリプトによるインストール用です。
 
 1. zip を展開します（例: C:\retailguard-edge-VERSION）
 
