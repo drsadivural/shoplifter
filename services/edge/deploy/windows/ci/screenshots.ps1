@@ -5,7 +5,7 @@
 #   cancel: Cancel while the installation steps run -> confirm -> finished page says where it stopped
 param([string]$Setup, [string]$Out, [string]$Lang = "en", [string]$Mode = "fresh", [string]$Log = "")
 $ErrorActionPreference = "Stop"
-Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+Add-Type -AssemblyName System.Windows.Forms, System.Drawing, UIAutomationClient, UIAutomationTypes
 Add-Type @"
 using System; using System.Text; using System.Runtime.InteropServices;
 public struct RECT { public int Left, Top, Right, Bottom; }
@@ -35,7 +35,6 @@ public static class W {
 "@
 [W]::SetProcessDPIAware() | Out-Null
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
-$IDOK = 1; $IDYES = 6; $WM_COMMAND = 0x0111
 
 function Wizard {
     for ($i = 0; $i -lt 60; $i++) {
@@ -78,20 +77,29 @@ function Keys([string]$k) {
     [System.Windows.Forms.SendKeys]::SendWait($k)
 }
 
-# Answers the wizard's message box with a button id (IDYES/IDOK); returns false when none appeared.
-function Answer([int]$id, [int]$waitS = 15) {
-    $p = Wizard
-    for ($i = 0; $i -lt $waitS * 4; $i++) {
-        $d = [W]::Dialog([uint32]$p.Id)
-        if ($d -ne [IntPtr]::Zero) {
-            [W]::PostMessage($d, $WM_COMMAND, [IntPtr]$id, [IntPtr]::Zero) | Out-Null
-            Start-Sleep -Milliseconds 500
-            return $true
+# Clicks a button of the setup process by its label (UI Automation: independent of keyboard focus).
+function Click([string[]]$names, [int]$waitS = 15) {
+    $A = [System.Windows.Automation.AutomationElement]
+    $button = New-Object System.Windows.Automation.PropertyCondition($A::ControlTypeProperty,
+        [System.Windows.Automation.ControlType]::Button)
+    for ($i = 0; $i -lt $waitS * 2; $i++) {
+        $p = Wizard
+        $proc = New-Object System.Windows.Automation.PropertyCondition($A::ProcessIdProperty, [int]$p.Id)
+        foreach ($w in $A::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children, $proc)) {
+            foreach ($b in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants, $button)) {
+                $label = ($b.Current.Name -replace '&', '' -replace '\(.\)$', '').Trim()
+                if ($names -contains $label -and $b.Current.IsEnabled) {
+                    $b.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+                    Start-Sleep -Milliseconds 700
+                    return $true
+                }
+            }
         }
-        Start-Sleep -Milliseconds 250
+        Start-Sleep -Milliseconds 500
     }
     return $false
 }
+$OK = @("OK"); $YES = @("Yes", "はい"); $CANCEL = @("Cancel", "キャンセル")
 
 function WaitForLog([datetime]$started, [string]$pattern, [int]$timeoutS = 300) {
     for ($i = 0; $i -lt $timeoutS * 4; $i++) {
@@ -125,19 +133,19 @@ try {
         Start-Sleep -Seconds 6; Shot "4-connect"
         Keys "AAAA-BBBB-CCCC"; Keys "{ENTER}"            # a code the server rejects
         Start-Sleep -Seconds 6; Shot "5-pair-error"
-        if (-not (Answer $IDOK)) { throw "pairing error message not shown" }
-        Keys "{ESC}"                                     # Cancel on the connect page
+        if (-not (Click $OK)) { throw "pairing error message not shown" }
+        if (-not (Click $CANCEL)) { throw "no Cancel button on the connect page" }
         Start-Sleep -Seconds 1; ShotScreen "6-skip-connect-question"
-        if (-not (Answer $IDYES)) { throw "Cancel on the connect page did not ask to finish without connecting" }
+        if (-not (Click $YES)) { throw "Cancel on the connect page did not ask to finish without connecting" }
         Start-Sleep -Seconds 2; Shot "7-finished"
     } elseif ($Mode -eq "cancel") {
         Keys "{ENTER}"
         $started = Get-Date
         Keys "{ENTER}"                                   # install (update) starts
         WaitForLog $started "==> Folders" 60             # a step is running
-        Keys "{ESC}"                                     # Cancel while the steps run
+        if (-not (Click $CANCEL 20)) { throw "Cancel is not available while the steps run" }
         Start-Sleep -Seconds 1; ShotScreen "2-cancel-question"
-        if (-not (Answer $IDYES)) { throw "Cancel during the steps did not ask for confirmation" }
+        if (-not (Click $YES)) { throw "Cancel during the steps did not ask for confirmation" }
         Start-Sleep -Seconds 8; Shot "3-finished"
     }
 } finally {
