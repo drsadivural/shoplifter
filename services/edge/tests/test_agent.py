@@ -283,3 +283,35 @@ def test_run_loop_heartbeats_executes_commands_and_flushes_outbox(state_dir):
     assert len(api.heartbeats) >= 2
     assert api.acks[0][0] == "cmd-loop" and api.acks[0][1]["error"] == "face_sdk_unavailable"
     assert events == [eid] and agent.outbox.pending_count() == 0
+
+
+def test_heartbeat_applies_allowed_subnets_from_api(state_dir):
+    agent, api, _ = make_agent(state_dir, [])
+    from retailguard_edge.identity import load_pairing
+    from retailguard_edge.netpolicy import TargetNotPermitted
+    with pytest.raises(TargetNotPermitted):
+        agent.policy.check_url("rtsp://192.168.1.20/s", {"rtsp"})
+    orig = api.__call__
+
+    def with_subnets(req):
+        resp = orig(req)
+        if req.url.path == "/v1/edge/heartbeat":
+            return httpx.Response(200, json={"ok": True, "allowed_subnets": ["192.168.0.0/16"]}, headers=resp.headers)
+        return resp
+    agent.client = EdgeClient("https://api.test", "edge-1", agent.keys.signing_key, transport=httpx.MockTransport(with_subnets),
+                              sleep=lambda s: None)
+    agent.heartbeat()
+    assert agent.policy.check_url("rtsp://192.168.1.20/s", {"rtsp"})
+    assert load_pairing(state_dir).allowed_subnets == ["192.168.0.0/16"]
+
+    def public_subnets(req):
+        resp = orig(req)
+        if req.url.path == "/v1/edge/heartbeat":
+            return httpx.Response(200, json={"ok": True, "allowed_subnets": ["8.8.8.0/24"]}, headers=resp.headers)
+        return resp
+    agent.client = EdgeClient("https://api.test", "edge-1", agent.keys.signing_key, transport=httpx.MockTransport(public_subnets),
+                              sleep=lambda s: None)
+    agent.heartbeat()  # a public range is refused; the previous policy stays
+    assert load_pairing(state_dir).allowed_subnets == ["192.168.0.0/16"]
+    with pytest.raises(TargetNotPermitted):
+        agent.policy.check_url("rtsp://8.8.8.8/s", {"rtsp"})

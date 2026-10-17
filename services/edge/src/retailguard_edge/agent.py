@@ -20,7 +20,7 @@ from . import __version__
 from .client import EdgeAPIError, EdgeClient
 from .config import EdgeConfig, write_private_file
 from .discovery import discover as ws_discover
-from .identity import EdgeKeys, PairingState, subnet_policy
+from .identity import EdgeKeys, PairingState, subnet_policy, update_allowed_subnets
 from .netpolicy import TargetNotPermitted
 from .onvif import OnvifClient, OnvifError, address_host, device_service_url, probe_device
 from .outbox import Outbox
@@ -513,6 +513,15 @@ class Agent:
     def heartbeat(self) -> dict[str, Any]:
         body = self.heartbeat_body()
         resp = self.client.heartbeat(body)
+        subnets = resp.get("allowed_subnets") if isinstance(resp, dict) else None
+        if isinstance(subnets, list) and subnets != self.pairing.allowed_subnets:
+            # Camera subnets are managed by the API; changes apply without re-pairing.
+            try:
+                self.pairing = update_allowed_subnets(self.config.state_dir, self.pairing, subnets)
+                self.policy = subnet_policy(self.pairing)
+                log.info("allowed camera subnets updated: %s", ", ".join(subnets) or "none")
+            except (ValueError, TypeError) as exc:
+                log.warning("ignored invalid allowed_subnets from API: %s", exc)
         status = {"at": time.time(), "heartbeat": body, "response": resp,
                   "outbox": {"pending": self.outbox.pending_count(), "dead": self.outbox.dead_count(),
                              "disk_pressure": self.outbox.disk_pressure}}
