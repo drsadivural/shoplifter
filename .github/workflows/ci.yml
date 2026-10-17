@@ -99,6 +99,8 @@ jobs:
         shell: pwsh
         run: |
           $dir = (Get-ChildItem C:\pkg | Select-Object -First 1).FullName
+          Get-ScheduledTask -TaskName "RetailGuard Edge" | Format-List TaskName, State
+          Get-Process | Where-Object { $_.Path -like "*RetailGuard*" } | Format-Table Id, Path
           & "$dir\deploy\uninstall-windows.ps1" -RemoveData
           if (Test-Path "$env:ProgramFiles\RetailGuard\Edge") { throw "not removed" }
       - uses: actions/upload-artifact@v4
