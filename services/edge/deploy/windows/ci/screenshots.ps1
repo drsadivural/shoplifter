@@ -56,16 +56,19 @@ try {
         Keys "{ENTER}"; Shot "4-ready"
     } else {
         Keys "{ENTER}"; Shot "2-ready"
-        $log = "$env:ProgramData\RetailGuard\Edge\logs\setup.log"
-        $offset = (Get-Item $log).Length
+        $started = Get-Date
         Keys "{ENTER}"                                   # install (update) starts
         Start-Sleep -Milliseconds 300; Shot "3-installing"
-        # wait until this run's last phase has written to the log: the "Connect" page follows
+        # wait until this run's log (one file per run) shows the last phase: the "Connect" page follows
         for ($i = 0; $i -lt 150; $i++) {
             Start-Sleep -Seconds 2
-            $fs = [IO.File]::Open($log, "Open", "Read", "ReadWrite")
-            try { $fs.Seek($offset, "Begin") | Out-Null; $new = (New-Object IO.StreamReader($fs)).ReadToEnd() } finally { $fs.Dispose() }
-            if ($new -match "Scheduled task") { break }
+            $log = Get-ChildItem "$env:ProgramData\RetailGuard\Edge\logs\setup-*.log" -ErrorAction SilentlyContinue |
+                Where-Object { $_.LastWriteTime -ge $started } | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($log) {
+                $fs = [IO.File]::Open($log.FullName, "Open", "Read", "ReadWrite")
+                try { $new = (New-Object IO.StreamReader($fs)).ReadToEnd() } finally { $fs.Dispose() }
+                if ($new -match "Scheduled task") { break }
+            }
         }
         Start-Sleep -Seconds 6; Shot "4-connect"
         Keys "AAAA-BBBB-CCCC"; Keys "{ENTER}"            # a code the server rejects
