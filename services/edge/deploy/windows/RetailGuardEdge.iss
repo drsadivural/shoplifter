@@ -91,7 +91,7 @@ en.DownloadSubtitle=ffmpeg reads the camera video. About 110 MB is downloaded on
 en.DownloadFailed=ffmpeg could not be downloaded:%n%n%1%n%nCheck the internet connection (github.com must be reachable) and click Install again.
 en.StepConfigure=Writing the configuration…
 en.StepService=Starting the background service…
-en.PhaseFailed=Setup could not finish this step:%n%n%1%n%nDetails are in %2.
+en.PhaseFailed=Setup could not finish this step:%n%n%1%n%nLast lines of the log (%2):%n%n%3
 en.DoneConnected=RetailGuard Edge %1 is installed and running on this PC, connected to your store.%n%nAdd cameras in the RetailGuard console: Cameras > Discover. Network cameras and USB cameras connected to this PC are found automatically.
 en.DoneNotPaired=RetailGuard Edge %1 is installed but not yet connected to a store.%n%nCreate a pairing code in the console (store > Connect edge appliance) and run this setup again to connect.
 en.DoneFailed=Setup did not finish: %1%n%nDetails: %2%nRun this setup again after fixing the problem; it continues where it stopped.
@@ -133,7 +133,7 @@ ja.DownloadSubtitle=ffmpeg はカメラ映像の読み取りに使用します�
 ja.DownloadFailed=ffmpeg をダウンロードできませんでした:%n%n%1%n%nインターネット接続（github.com への接続）を確認して、もう一度「インストール」をクリックしてください。
 ja.StepConfigure=設定を書き込んでいます…
 ja.StepService=バックグラウンドサービスを開始しています…
-ja.PhaseFailed=次の手順を完了できませんでした:%n%n%1%n%n詳細は %2 を確認してください。
+ja.PhaseFailed=次の手順を完了できませんでした:%n%n%1%n%nログ（%2）の最後の行:%n%n%3
 ja.DoneConnected=RetailGuard Edge %1 がこの PC にインストールされ、店舗に接続して動作しています。%n%nRetailGuard コンソールの「カメラ」>「検索」でカメラを追加してください。ネットワークカメラと、この PC に接続された USB カメラが自動的に見つかります。
 ja.DoneNotPaired=RetailGuard Edge %1 はインストールされましたが、まだ店舗に接続されていません。%n%nコンソール（店舗 >「エッジ端末を接続」）でペアリングコードを作成し、このセットアップを再実行して接続してください。
 ja.DoneFailed=セットアップを完了できませんでした: %1%n%n詳細: %2%n問題を解決してからセットアップを再実行してください。中断した手順から再開します。
@@ -192,12 +192,18 @@ var
   ConnectPage: TInputQueryWizardPage;
   PairLaterBox: TNewCheckBox;
   Upgrading, SetupFailed, PairedNow: Boolean;
-  PrevVersion, FailureText: String;
+  PrevVersion, FailureText, RunLog: String;
 
 function DataDir: String; begin Result := ExpandConstant('{commonappdata}\RetailGuard\Edge'); end;
 function StateDir: String; begin Result := DataDir + '\state'; end;
 function ConfigFile: String; begin Result := DataDir + '\config.toml'; end;
-function SetupLog: String; begin Result := DataDir + '\logs\setup.log'; end;
+{ One log per run: a process left over from an interrupted run cannot block this one's log. }
+function SetupLog: String;
+begin
+  if RunLog = '' then
+    RunLog := DataDir + '\logs\setup-' + GetDateTimeString('yyyymmdd-hhnnss', '-', ':') + '.log';
+  Result := RunLog;
+end;
 function AgentExe: String; begin Result := ExpandConstant('{app}\.venv\Scripts\retailguard-edge.exe'); end;
 function IsPaired: Boolean; begin Result := FileExists(StateDir + '\edge.json'); end;
 function IsConnected: Boolean; begin Result := (not SetupFailed) and IsPaired; end;
@@ -376,6 +382,45 @@ begin
   end;
 end;
 
+function LogTail(Count: Integer): String;
+var
+  Lines: TArrayOfString;
+  I, First: Integer;
+begin
+  Result := '';
+  if not LoadStringsFromFile(SetupLog, Lines) then
+  begin
+    Result := '(the log could not be read)';
+    Exit;
+  end;
+  First := GetArrayLength(Lines) - Count;
+  if First < 0 then First := 0;
+  for I := First to GetArrayLength(Lines) - 1 do
+    Result := Result + Lines[I] + #13#10;
+end;
+
+{ Ends processes left over from an interrupted earlier setup (its PowerShell steps and downloads),
+  which would otherwise hold files under the install and data folders open. }
+procedure StopStaleSetup;
+var
+  Script: String;
+  Code: Integer;
+begin
+  Script := ExpandConstant('{tmp}\stop-stale.ps1');
+  SaveStringToFile(Script,
+    '$me = $PID' + #13#10 +
+    '$parent = (Get-CimInstance Win32_Process -Filter "ProcessId=$me").ParentProcessId' + #13#10 +
+    'Get-CimInstance Win32_Process | Where-Object {' + #13#10 +
+    '  $_.ProcessId -ne $me -and $_.ProcessId -ne $parent -and $_.CommandLine -and' + #13#10 +
+    '  ($_.CommandLine -like "*install-windows.ps1*" -or $_.CommandLine -like "*retailguard-ffmpeg*" -or' + #13#10 +
+    '   $_.CommandLine -like "*codexffmpeg*" -or $_.CommandLine -like "*RetailGuard\Edge\logs\setup*")' + #13#10 +
+    '} | ForEach-Object { Write-Output "stopping $($_.ProcessId) $($_.Name)"; Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }' + #13#10,
+    False);
+  RunHidden('set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
+    ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(Script), Code);
+  Log('stale setup cleanup exit ' + IntToStr(Code));
+end;
+
 procedure StopAgent;
 var
   Code: Integer;
@@ -387,6 +432,7 @@ end;
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
   StopAgent;  // the running agent holds files under the install folder open
+  StopStaleSetup;
   Result := '';
 end;
 
@@ -421,7 +467,7 @@ begin
   WizardForm.ProgressGauge.Style := npbstNormal;
   WizardForm.ProgressGauge.Position := WizardForm.ProgressGauge.Max;
   if SetupFailed then
-    SuppressibleMsgBox(FmtMessage(CustomMessage('PhaseFailed'), [FailureText, SetupLog]), mbError, MB_OK, IDOK);
+    SuppressibleMsgBox(FmtMessage(CustomMessage('PhaseFailed'), [FailureText, SetupLog, LogTail(12)]), mbError, MB_OK, IDOK);
 end;
 
 { Pairs with the store; on failure returns a message for the user. }
