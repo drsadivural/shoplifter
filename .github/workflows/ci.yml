@@ -125,13 +125,13 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          $setup = (Get-ChildItem services/edge/dist/RetailGuardEdgeSetup-*.exe).FullName
+          $setup = (Get-ChildItem services/edge/dist/AyonixRetailGuardSetup-*.exe).FullName
           ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang en -Mode fresh
           ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang ja -Mode fresh
       - name: Setup wizard — silent install, update, bad code, uninstall
         shell: pwsh
         run: |
-          $setup = (Get-ChildItem services/edge/dist/RetailGuardEdgeSetup-*.exe).FullName
+          $setup = (Get-ChildItem services/edge/dist/AyonixRetailGuardSetup-*.exe).FullName
           function RunSetup([string[]]$a, [string]$log) {
             $p = Start-Process $setup -ArgumentList (@('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=$log") + $a) -Wait -PassThru
             if ($p.ExitCode -ne 0) { Get-Content $log -Tail 60; throw "setup exit $($p.ExitCode)" }
@@ -165,13 +165,18 @@ jobs:
           RunSetup @('/CODE=AAAA-BBBB-CCCC', '/NAME=ci') C:\setup-3.log
           if (-not (Select-String -Path C:\setup-3.log -Pattern "pairing failed")) { throw "pairing failure not logged" }
           if (Test-Path "$env:ProgramData\RetailGuard\Edge\state\edge.json") { throw "must not be paired" }
-      - name: Wizard screenshots (update, installing, connect page, rejected code)
-        continue-on-error: true
+      - name: Wizard on the desktop — update, rejected code, Cancel on the connect page, Cancel during the steps
         shell: pwsh
         run: |
-          $setup = (Get-ChildItem services/edge/dist/RetailGuardEdgeSetup-*.exe).FullName
-          ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang en -Mode update
-          ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang ja -Mode update
+          $setup = (Get-ChildItem services/edge/dist/AyonixRetailGuardSetup-*.exe).FullName
+          $ui = "./services/edge/deploy/windows/ci/screenshots.ps1"
+          & $ui -Setup $setup -Out shots -Lang en -Mode update -Log C:\ui-update-en.log
+          if (-not (Select-String -Path C:\ui-update-en.log -Pattern "finish without connecting")) { throw "Cancel on the connect page did not finish setup" }
+          & $ui -Setup $setup -Out shots -Lang ja -Mode update -Log C:\ui-update-ja.log
+          & $ui -Setup $setup -Out shots -Lang en -Mode cancel -Log C:\ui-cancel.log
+          Select-String -Path C:\ui-cancel.log -Pattern "canceled by the user|stale setup cleanup" | Select-Object -First 5
+          if (-not (Select-String -Path C:\ui-cancel.log -Pattern "setup canceled by the user")) { throw "Cancel during the steps did not stop setup" }
+          if (Get-Process powershell -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*install-windows.ps1*" }) { throw "a setup step is still running after Cancel" }
       - name: Setup wizard — uninstall
         shell: pwsh
         run: |

@@ -99,7 +99,7 @@ as a SYSTEM scheduled task (no third-party service wrapper). Linux remains the r
 (systemd hardening has no exact Windows equivalent).
 
 ## ADR-012 Windows setup wizard
-Customers get `RetailGuardEdgeSetup-<version>.exe` (Inno Setup, MIT-licensed tooling, no runtime
+Customers get `AyonixRetailGuardSetup-<version>.exe` (named `RetailGuardEdgeSetup-…` before 0.4.1; Inno Setup, MIT-licensed tooling, no runtime
 dependency). It installs the same files as the zip and runs the same `install-windows.ps1` one phase
 at a time so the wizard can show progress; pairing happens on a page after installation because it
 needs the installed agent, and a rejected code keeps the user on that page. The same AppId makes a

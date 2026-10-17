@@ -47,9 +47,10 @@ def side(scale: int) -> Image.Image:
     big = ImageFont.truetype(FONT, round(19 * scale / 100))
     small = ImageFont.truetype(FONT_REG, round(10.5 * scale / 100))
     x = round(14 * scale / 100)
-    d.text((x, round(22 * scale / 100)), "RetailGuard", font=big, fill=(255, 255, 255))
-    d.text((x, round(46 * scale / 100)), "EDGE APPLIANCE", font=small, fill=(176, 160, 255))
-    d.line((x, round(64 * scale / 100), x + round(28 * scale / 100), round(64 * scale / 100)),
+    d.text((x, round(18 * scale / 100)), "AYONIX", font=small, fill=(176, 160, 255))
+    d.text((x, round(33 * scale / 100)), "RetailGuard", font=big, fill=(255, 255, 255))
+    d.text((x, round(57 * scale / 100)), "EDGE APPLIANCE", font=small, fill=(176, 160, 255))
+    d.line((x, round(75 * scale / 100), x + round(28 * scale / 100), round(75 * scale / 100)),
            fill=(124, 92, 255), width=max(1, round(2 * scale / 100)))
     return img
 
