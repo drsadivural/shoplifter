@@ -21,6 +21,11 @@ function Remove-Tree([string]$Path) {
             return
         } catch {
             if ($i -eq 10) { throw }
+            if ($i -eq 1) {
+                # Repair files whose ACL lost the inherited entries, then retry.
+                & takeown /F $Path /R /D Y 2>&1 | Out-Null
+                & icacls $Path /reset /T /C /Q 2>&1 | Out-Null
+            }
             Start-Sleep -Seconds 2
         }
     }

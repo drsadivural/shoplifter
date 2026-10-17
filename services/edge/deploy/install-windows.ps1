@@ -39,8 +39,14 @@ if ($task) { Stop-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinu
 Step "Folders"
 New-Item -ItemType Directory -Force -Path $Prefix, $Bin, $Data, $State, $Logs | Out-Null
 # Config, keys, camera credentials and spool: SYSTEM and Administrators only (the Linux 0600/0700).
-& icacls $Data /inheritance:r /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /Q | Out-Null
+# Set on the folder only, then make everything inside inherit it: applying /inheritance:r to files
+# would leave them with an empty ACL.
+& icacls $Data /inheritance:r /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /Q | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "icacls failed ($LASTEXITCODE)" }
+if (Get-ChildItem -LiteralPath $Data -Force) {
+    & icacls "$Data\*" /reset /T /C /Q | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "icacls reset failed ($LASTEXITCODE)" }
+}
 
 Step "uv"
 $uv = Join-Path $Bin "uv.exe"

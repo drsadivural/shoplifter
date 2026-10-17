@@ -89,8 +89,12 @@ jobs:
           if ($LASTEXITCODE -ne 2) { throw "a bad pairing code must be rejected (exit 2), got $LASTEXITCODE" }
           $task = Get-ScheduledTask -TaskName "RetailGuard Edge"
           $task.Actions | Format-List Execute, Arguments
-          # Running the installer again is an update and keeps the config.
+          # Running the installer again is an update and keeps the config; files created since the
+          # first run (keys) must stay readable by Administrators.
           & "$dir\deploy\install-windows.ps1" -Api https://shoplifter.ayonix.com
+          Get-Content "$env:ProgramData\RetailGuard\Edge\state\box.key" -Raw -AsByteStream | Out-Null
+          & $cli status
+          if ($LASTEXITCODE -ne 0) { throw "status after update failed" }
           "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
       - name: Edge tests (Windows, with the ffmpeg the installer downloaded)
         working-directory: services/edge
