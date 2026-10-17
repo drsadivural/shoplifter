@@ -53,7 +53,8 @@ try {
     if ($Mode -eq "fresh") {
         Keys "{ENTER}"; Shot "2-license"
         Keys "%a"; Keys "{ENTER}"; Shot "3-server"
-        Keys "{ENTER}"; Shot "4-ready"
+        Keys "{ENTER}"; Shot "4-mode"
+        Keys "{ENTER}"; Shot "5-ready"
     } else {
         Keys "{ENTER}"; Shot "2-ready"
         $started = Get-Date

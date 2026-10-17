@@ -19,7 +19,9 @@ from . import __version__
 from .client import EdgeAPIError, EdgeClient
 from .config import EdgeConfig, write_private_file
 from .discovery import discover as ws_discover
-from .identity import EdgeKeys, PairingState, subnet_policy, update_allowed_subnets
+from .identity import (MODES, EdgeKeys, PairingState, load_mode, save_mode, subnet_policy,
+                       update_allowed_subnets)
+from .live import LiveRelay, hls_plan
 from .netpolicy import TargetNotPermitted
 from .onvif import OnvifClient, OnvifError, address_host, device_service_url, probe_device
 from .outbox import Outbox
@@ -33,7 +35,7 @@ from .watchdog import CameraHealth, StreamMonitor
 log = logging.getLogger(__name__)
 
 COMMAND_KINDS = ("discover", "provision_camera", "activate_camera", "pause_camera", "update_zones",
-                 "model_rollout", "gallery_update")
+                 "model_rollout", "gallery_update", "set_processing_mode")
 RTSP_SCHEMES = frozenset({"rtsp", "rtsps"})
 
 
@@ -117,9 +119,22 @@ class CameraSupervisor:
             creds = self.vault.get(cid) if self.vault else None
             health = CameraHealth(cid, degraded_after_s=self.config.degraded_after_s,
                                   offline_after_s=self.config.offline_after_s)
-            mon = StreamMonitor(StreamSource(camera["stream_uri"], creds), health, ffmpeg=self.config.ffmpeg_path)
+            live_in: list[str] = []
+            live_out: list[str] = []
+            if self.config.live_relay:
+                try:
+                    live_in, live_out = hls_plan(camera, self.config.state_dir)
+                except OSError as exc:
+                    log.warning("live view disabled for camera %s: %s", cid, exc)
+            mon = StreamMonitor(StreamSource(camera["stream_uri"], creds), health, ffmpeg=self.config.ffmpeg_path,
+                                extra_inputs=live_in, extra_output=live_out)
             self._monitors[cid] = mon
             mon.start()
+
+    def restart(self, camera: dict[str, Any]) -> None:
+        """Re-create the camera's monitor, e.g. so new privacy masks apply to the live view."""
+        self.stop(camera["camera_id"])
+        self.ensure(camera)
 
     def stop(self, camera_id: str) -> None:
         with self._lock:
@@ -164,6 +179,8 @@ class Agent:
         self.outbox = outbox or Outbox(sd, config.disk_budget_bytes)
         self.store = store or EdgeStore(sd / "edge.db")
         self.supervisor = supervisor or CameraSupervisor(config, self.vault)
+        self.mode = load_mode(sd, config.processing_mode)
+        self.live = LiveRelay(lambda *a: self.client.upload_live_segment(*a), sd)
         self._discover, self._probe, self._snapshot, self._onvif = discover_fn, probe_fn, snapshot_fn, onvif_factory
         self._usb = usb_fn or (lambda: list_usb_cameras(config.ffmpeg_path))
         self._device_exists = device_exists or (lambda a: usb_device_present(a, config.ffmpeg_path))
@@ -175,6 +192,7 @@ class Agent:
             "update_zones": self._cmd_update_zones,
             "model_rollout": self._cmd_model_rollout,
             "gallery_update": self._cmd_gallery_update,
+            "set_processing_mode": self._cmd_set_processing_mode,
         }
 
     # ---- commands ---------------------------------------------------------
@@ -220,6 +238,7 @@ class Agent:
         for cid, status, result, error in self.store.unacked():
             self._ack(cid, status, result, error)
         items = self.client.get_commands()
+        self.live.set_demand(self.client.live_demand)
         for cmd in items:
             if isinstance(cmd, dict):
                 self.process_command(cmd)
@@ -404,6 +423,10 @@ class Agent:
             zones = validate_zones(p["zones"]) if "zones" in p and p["zones"] is not None else cam.get("zones", [])
         except ZoneError as exc:
             raise CommandFailed("invalid_zones", {"detail": str(exc)}) from None
+        if self.mode != "full":
+            channels = {ch: ({"state": "unavailable", "reason": "streaming_only"} if ch in requested
+                             else {"state": "not_requested"}) for ch in CHANNELS}
+            raise CommandFailed("edge_streaming_only", {"channels": channels, "analysis_state": "unavailable"})
         if cam.get("readiness") != "ready":
             channels = {ch: ({"state": "unavailable", "reason": "camera_not_ready"} if ch in requested
                              else {"state": "not_requested"}) for ch in CHANNELS}
@@ -432,9 +455,34 @@ class Agent:
             zones = validate_zones(p.get("zones"))
         except ZoneError as exc:
             raise CommandFailed("invalid_zones", {"detail": str(exc)}) from None
+        masks_changed = [z for z in cam.get("zones", []) if z.get("type") == "privacy_mask"] != \
+            [z for z in zones if z.get("type") == "privacy_mask"]
         cam.update({"zones": zones, "zones_version": version})
         self.store.put_camera(cam)
+        if masks_changed:
+            self.supervisor.restart(cam)  # the live view burns privacy masks in
         return {"zones_version": version}
+
+    def apply_mode(self, mode: str) -> None:
+        """Streaming only: stop every analysis channel; the cameras keep streaming for live view."""
+        if mode not in MODES or mode == self.mode:
+            return
+        save_mode(self.config.state_dir, mode)
+        self.mode = mode
+        log.info("processing mode is now %s", mode)
+        if mode == "streaming":
+            for cam in self.store.cameras():
+                self.registry.deactivate(cam["camera_id"])
+                cam.update({"analysis_state": "unavailable",
+                            "channels": {ch: {"state": "not_requested"} for ch in CHANNELS}})
+                self.store.put_camera(cam)
+
+    def _cmd_set_processing_mode(self, p: dict) -> dict:
+        mode = p.get("mode")
+        if mode not in MODES:
+            raise CommandFailed("invalid_payload", {"field": "mode"})
+        self.apply_mode(mode)
+        return {"processing_mode": self.mode}
 
     def _cmd_model_rollout(self, p: dict) -> dict:
         # The edge never downloads or fabricates a model. It reports whether the
@@ -505,6 +553,7 @@ class Agent:
             "health": health,
             "cameras": [self.camera_health(c) for c in self.store.cameras()],
             "models": self.registry.models(),
+            "processing_mode": self.mode,
         }
         if self.client.last_clock_offset_ms is not None:
             body["clock_offset_ms"] = self.client.last_clock_offset_ms
@@ -513,6 +562,8 @@ class Agent:
     def heartbeat(self) -> dict[str, Any]:
         body = self.heartbeat_body()
         resp = self.client.heartbeat(body)
+        if isinstance(resp, dict) and resp.get("processing_mode") in MODES:
+            self.apply_mode(resp["processing_mode"])  # the console's choice wins
         subnets = resp.get("allowed_subnets") if isinstance(resp, dict) else None
         if isinstance(subnets, list) and subnets != self.pairing.allowed_subnets:
             # Camera subnets are managed by the API; changes apply without re-pairing.
@@ -572,4 +623,5 @@ class Agent:
         finally:
             stop.set()
             self.supervisor.stop_all()
+            self.live.stop_all()
             worker.join(timeout=10)

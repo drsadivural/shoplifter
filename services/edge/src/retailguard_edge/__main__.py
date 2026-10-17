@@ -39,14 +39,15 @@ def cmd_pair(args: argparse.Namespace) -> int:
     ensure_state_dir(cfg.state_dir)
     try:
         state = pair(cfg.api_base_url or args.api, args.code, args.name, cfg.state_dir,
-                     timeout=cfg.request_timeout_s)
+                     timeout=cfg.request_timeout_s, processing_mode=args.mode or cfg.processing_mode)
     except IdentityError as exc:
         print(f"pairing failed: {exc.code}: {redact_text(str(exc), [args.code])}", file=sys.stderr)
         return 2
-    from .identity import load_or_create_keys
+    from .identity import load_mode, load_or_create_keys
     keys = load_or_create_keys(cfg.state_dir)
     _out({"paired": True, "edge_id": state.edge_id, "org_id": state.org_id, "store_id": state.store_id,
-          "allowed_subnets": state.allowed_subnets, "fingerprint": keys.fingerprint})
+          "allowed_subnets": state.allowed_subnets, "fingerprint": keys.fingerprint,
+          "processing_mode": load_mode(cfg.state_dir)})
     return 0
 
 
@@ -167,6 +168,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--api", required=True)
     p.add_argument("--code", required=True)
     p.add_argument("--name", required=True)
+    p.add_argument("--mode", choices=("streaming", "full"),
+                   help="streaming: live view only; full: also run installed analysis models (default: config)")
     p.set_defaults(func=cmd_pair)
     r = sub.add_parser("run", help="run the edge agent loop")
     r.set_defaults(func=cmd_run)

@@ -1,15 +1,19 @@
-// web-10 Live camera wall. GET /v1/cameras?store_id= every 10 s; each tile shows the latest snapshot
-// the store edge uploaded (privacy masks already applied on the edge) via /v1/media/{snapshot.media_id}.
-// The relay is snapshot-based: tiles state frame freshness honestly and never imply a continuous
-// stream. No RTSP address or credential ever reaches the browser.
+// web-10 Live cameras.
+//   ?camera=<id>  one camera, large live player (LivePlayer: on-demand HLS relayed by its edge).
+//   ?edge=<id>    every camera of one edge appliance, live (GET /v1/edges/tree).
+//   (default)     the selected store's wall: GET /v1/cameras?store_id= every 10 s; ready cameras play
+//                 live (up to MAX_LIVE_TILES), others show the latest verified snapshot or why not.
+// Video leaves the edge only while someone watches, a few seconds behind real time, with privacy
+// masks burned in on the edge. No RTSP address or credential ever reaches the browser.
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { endpoints } from '../api/endpoints';
 import { useApiQuery } from '../api/hooks';
 import type { Camera } from '../api/types';
 import { AnalysisStatePill, ReadinessPill } from '../components/domain';
 import { ageSeconds } from '../components/groupb/api';
 import { FreshnessPill } from '../components/groupb/ui';
+import { LivePlayer } from '../components/LivePlayer';
 import { AuthenticatedImage } from '../components/media';
 import { PageHeader } from '../components/PageHeader';
 import { Button, ButtonLink, FilterTabs, Notice } from '../components/primitives';
@@ -21,9 +25,97 @@ import { useSession } from '../session/SessionProvider';
 import '../styles/group-b.css';
 
 const REFRESH_MS = 10_000;
+/** Live players on one wall; more would mostly cost bandwidth on the store uplink. */
+const MAX_LIVE_TILES = 9;
 type Filter = 'all' | 'analyzing' | 'attention';
 
 export default function LivePage() {
+  const [params] = useSearchParams();
+  const cameraId = params.get('camera');
+  const edgeId = params.get('edge');
+  if (cameraId) return <SingleCamera key={cameraId} cameraId={cameraId} />;
+  if (edgeId) return <EdgeWall key={edgeId} edgeId={edgeId} />;
+  return <StoreWall />;
+}
+
+function SingleCamera({ cameraId }: { cameraId: string }) {
+  const { t } = useI18n();
+  const q = useApiQuery((signal) => endpoints.cameras.get(cameraId, { signal }), [cameraId]);
+  return (
+    <>
+      <PageHeader screenId="web-10" subtitle={q.data ? (q.data.location ? `${q.data.location} · ${q.data.name}` : q.data.name) : undefined} />
+      <RouteStateBoundary query={q} permission="camera.read" loading={<LoadingState variant="cards" rows={1} />}>
+        {(c) => (
+          <div className="live-single">
+            <LivePlayer cameraId={c.id} name={c.name} large />
+            <div className="gb-tile-foot">
+              <Link to={screenPath('web-15', { id: c.id })}>{t('Camera readiness')}</Link>
+              <span className="gb-inline">
+                <ReadinessPill readiness={c.readiness} />
+                <AnalysisStatePill state={c.analysis_state} />
+              </span>
+            </div>
+            <p className="muted small">{t('live|Live video is relayed by the edge appliance only while someone is watching, a few seconds behind real time. Privacy masks are applied on the appliance.')}</p>
+          </div>
+        )}
+      </RouteStateBoundary>
+    </>
+  );
+}
+
+function EdgeWall({ edgeId }: { edgeId: string }) {
+  const { t } = useI18n();
+  const q = useApiQuery((signal) => endpoints.edges.tree({ signal }), [], { pollMs: 30_000 });
+  const edge = q.data?.items.find((e) => e.id === edgeId);
+  return (
+    <>
+      <PageHeader screenId="web-10" subtitle={edge ? `${edge.name} · ${edge.store_name}` : undefined} />
+      <RouteStateBoundary query={q} permission="camera.read" loading={<LoadingState variant="cards" rows={4} />}>
+        {() =>
+          !edge ? (
+            <EmptyState icon="video" title={t('live|Edge appliance not found')} description={t('live|It may have been revoked or belong to a store you cannot access.')} />
+          ) : edge.cameras.length === 0 ? (
+            <EmptyState
+              icon="video"
+              title={t('No cameras yet')}
+              description={t('live|Add cameras to this edge appliance from camera discovery.')}
+              action={<ButtonLink to={`${screenPath('web-11')}?store_id=${encodeURIComponent(edge.store_id)}&edge_id=${encodeURIComponent(edge.id)}`}>{t('Add cameras')}</ButtonLink>}
+            />
+          ) : (
+            <>
+              {edge.state !== 'online' ? <Notice tone="warning">{t('live|The edge appliance serving this camera is offline.')}</Notice> : null}
+              <ul className="gb-wall plain-list" aria-label={t('Camera wall')}>
+                {edge.cameras.slice(0, MAX_LIVE_TILES).map((c) => (
+                  <li key={c.id} className="card gb-wall-tile">
+                    {c.readiness === 'ready' ? (
+                      <LivePlayer cameraId={c.id} name={c.name} />
+                    ) : (
+                      <div className="feed feed-empty" role="status">
+                        <p className="feed-empty-title">{t('No verified frame yet')}</p>
+                      </div>
+                    )}
+                    <div className="gb-tile-foot">
+                      <Link to={`/web/live?camera=${encodeURIComponent(c.id)}`}>{c.name}</Link>
+                      <span className="gb-inline">
+                        <ReadinessPill readiness={c.readiness} />
+                        <AnalysisStatePill state={c.analysis_state} />
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {edge.cameras.length > MAX_LIVE_TILES ? (
+                <p className="muted small">{t('live|Showing {n} cameras live. Open a camera from the side menu to watch the others.', { n: MAX_LIVE_TILES })}</p>
+              ) : null}
+            </>
+          )
+        }
+      </RouteStateBoundary>
+    </>
+  );
+}
+
+function StoreWall() {
   const { t, fmt } = useI18n();
   const { store, timeZone, can } = useSession();
   const [filter, setFilter] = useState<Filter>('all');
@@ -53,8 +145,8 @@ export default function LivePage() {
           </div>
         }
       />
-      <Notice tone="info" title={t('Latest verified snapshots, not a continuous stream')}>
-        {t('Each tile shows the most recent frame the store edge uploaded, with privacy masks already applied on the edge. Tiles refresh about every 10 seconds; the freshness label shows how old each frame is.')}
+      <Notice tone="info" title={t('live|Live video from the store edge')}>
+        {t('live|Ready cameras play live video relayed by their edge appliance, a few seconds behind real time, with privacy masks applied on the appliance. Video is sent only while someone is watching. Other cameras show their latest verified snapshot.')}
       </Notice>
       {!store ? (
         <EmptyState icon="info" title={t('No stores assigned')} description={t('Ask an administrator to assign you to a store.')} />
@@ -96,8 +188,14 @@ export default function LivePage() {
                   <EmptyState compact icon="check" title={t('No cameras in this view')} />
                 ) : (
                   <ul className="gb-wall plain-list" aria-label={t('Camera wall')}>
-                    {items.map((c) => (
-                      <CameraTile key={c.id} camera={c} timeZone={timeZone} now={now} />
+                    {items.map((c, i) => (
+                      <CameraTile
+                        key={c.id}
+                        camera={c}
+                        timeZone={timeZone}
+                        now={now}
+                        live={c.readiness === 'ready' && items.slice(0, i).filter((x) => x.readiness === 'ready').length < MAX_LIVE_TILES}
+                      />
                     ))}
                   </ul>
                 )}
@@ -110,14 +208,16 @@ export default function LivePage() {
   );
 }
 
-function CameraTile({ camera: c, timeZone, now }: { camera: Camera; timeZone: string; now: number }) {
+function CameraTile({ camera: c, timeZone, now, live }: { camera: Camera; timeZone: string; now: number; live: boolean }) {
   const { t, fmt } = useI18n();
   const label = c.location ? `${c.location} · ${c.name}` : c.name;
   const offline = c.readiness === 'offline' || c.readiness === 'disabled';
   const snapAge = ageSeconds(c.snapshot?.captured_at, now);
   return (
     <li className="card gb-wall-tile">
-      {c.snapshot ? (
+      {live ? (
+        <LivePlayer cameraId={c.id} name={label} />
+      ) : c.snapshot ? (
         <div className={`feed ${offline ? 'gb-feed-offline' : ''}`}>
           <AuthenticatedImage
             mediaId={c.snapshot.media_id}
@@ -147,7 +247,7 @@ function CameraTile({ camera: c, timeZone, now }: { camera: Camera; timeZone: st
         <p className="muted small">{t('Camera offline — showing the last verified frame.')}</p>
       ) : null}
       <div className="gb-tile-foot">
-        <Link to={screenPath('web-15', { id: c.id })}>{c.name}</Link>
+        <Link to={`/web/live?camera=${encodeURIComponent(c.id)}`}>{c.name}</Link>
         <span className="gb-inline">
           <ReadinessPill readiness={c.readiness} />
           <AnalysisStatePill state={c.analysis_state} />

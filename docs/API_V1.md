@@ -99,7 +99,9 @@ Clients hide controls the user lacks; the server enforces regardless.
 | Method | Path | Notes |
 |---|---|---|
 | POST | `/v1/stores/{id}/edge-pairing-codes` | `{device_name}` → `{code, expires_at}` (single use, 15 min) |
-| GET | `/v1/edges` | `{id, store_id, name, fingerprint, software_version, last_seen_at, state: "online"|"offline"|"revoked", health}` |
+| GET | `/v1/edges` | `{id, store_id, name, fingerprint, software_version, last_seen_at, state: "online"|"offline"|"revoked", health, models, processing_mode: "streaming"|"full", reported_mode, version}` |
+| PATCH | `/v1/edges/{id}` | `{expected_version, name?, processing_mode?}` (edge.manage). Changing the mode queues `set_processing_mode` for the appliance; switching to `streaming` marks its cameras' analysis `unavailable`. 409 `version_conflict`, 409 `already_revoked`. Audited `edge.updated`. |
+| GET | `/v1/edges/tree` | appliances in the caller's stores with the cameras each serves (side menu): `{items: [Edge + {store_name, cameras: [{id, name, location, readiness, analysis_state, source_type, store_id}]}], unassigned_cameras}` |
 | POST | `/v1/edges/{id}/revoke` | `{reason}` |
 | GET | `/v1/cameras?store_id=` | items `Camera` |
 | POST | `/v1/cameras` | manual add `{store_id, name, location, address, username?, password?, stream_profile: "substream"|"mainstream", rtsp_path?}` → Camera (readiness `pending`). Password is sealed to the store edge's public key immediately and never returned/logged. 422 `address_not_permitted` if outside allowed subnets. |
@@ -107,8 +109,11 @@ Clients hide controls the user lacks; the server enforces regardless.
 | POST | `/v1/cameras/import` | `{store_id, csv, username?, password?, dry_run: bool}` CSV columns `name,location,address[,stream_profile]` → `{rows: [{line, name, address, status: "valid"|"invalid"|"created", errors: [codes]}], created: int}`; never silently skips |
 | GET/PATCH | `/v1/cameras/{id}` | PATCH `{expected_version, name?, location?}` |
 | POST | `/v1/cameras/{id}/provision` | asks edge to authenticate/probe/decode sample → command id |
-| POST | `/v1/cameras/{id}/activate` | `{expected_version, channels: ["behavior","watchlist","checkout"]}`; 409 `camera_not_ready` unless readiness `ready` |
+| POST | `/v1/cameras/{id}/activate` | `{expected_version, channels: ["behavior","watchlist","checkout"]}`; 409 `camera_not_ready` unless readiness `ready`; 409 `edge_streaming_only` when the camera's appliance is set to streaming only |
 | POST | `/v1/cameras/{id}/pause` | `{expected_version}` |
+| GET | `/v1/cameras/{id}/live` | starts/keeps the on-demand live relay and reports it: `{camera_id, state: "starting"|"live"|"unavailable", reason: null|"camera_not_ready"|"edge_unpaired"|"edge_offline", playlist: "/v1/cameras/{id}/live.m3u8"|null, edge: {id, name, processing_mode, state}}`. Audited `camera.live_viewed` once per viewer and camera per 10 min. |
+| GET | `/v1/cameras/{id}/live.m3u8` | HLS playlist of the newest segments (`no-store`); 404 `live_not_started` |
+| GET | `/v1/cameras/{id}/live/{n}.ts` | MPEG-TS segment (camera.read in the camera's store) |
 | GET/PUT | `/v1/cameras/{id}/zones` | `{version, zones: [{id, type: "shelf"|"checkout"|"exit_line"|"privacy_mask", label, points: [[x,y],...] (0..1), direction?: "in"|"out"}], acknowledged_version}`; PUT `{expected_version, zones}` |
 | POST | `/v1/discovery-jobs` | `{store_id, interface?, timeout_s (1-30), cidr?, include_usb? (default true)}` → job; without `interface` the edge probes from every private IPv4 interface; with `include_usb` it also lists USB (V4L2) cameras attached to it. 503 `edge_unavailable` if no online edge |
 | GET | `/v1/discovery-jobs/{id}` | `{id, status: "queued"|"running"|"completed"|"failed", devices: [{kind: "onvif"|"usb", endpoint, address, xaddrs, scopes, vendor?, model?, already_added}], error?}`. USB entries: `endpoint` = `usb:<device path>`, `address` = device path (`/dev/v4l/by-id/...` or `/dev/videoN`), `model` = device name |
@@ -118,7 +123,7 @@ Clients hide controls the user lacks; the server enforces regardless.
 Channel state: `not_requested | unavailable | starting | running | degraded` with optional `reason` (e.g. `model_not_installed`, `face_sdk_unavailable`, `pos_unconfigured`).
 
 ### Edge-authenticated API (`services/edge` only)
-Pairing: `POST /v1/edge/pair` `{code, device_name, sign_public_key (base64 Ed25519), box_public_key (base64 X25519), software_version}` → `{edge_id, org_id, store_id, store_timezone, allowed_subnets: [cidr], api_version: 1}`.
+Pairing: `POST /v1/edge/pair` `{code, device_name, sign_public_key (base64 Ed25519), box_public_key (base64 X25519), software_version, processing_mode?: "streaming"|"full"}` → `{edge_id, org_id, store_id, store_timezone, allowed_subnets: [cidr], api_version: 1, processing_mode}`. A store can have several appliances; each camera is served by one (`camera.edge_id`), and camera, discovery and import requests take an optional `edge_id` (must belong to the store; default: the store's most recently seen appliance).
 
 All other edge calls are signed. Headers:
 `X-Edge-Id`, `X-Edge-Timestamp` (unix seconds), `X-Edge-Nonce` (random ≥16 chars),
@@ -127,8 +132,9 @@ All other edge calls are signed. Headers:
 
 | Method | Path | Body |
 |---|---|---|
-| POST | `/v1/edge/heartbeat` | `{software_version, clock_offset_ms?, health: {disk_free_bytes?, disk_total_bytes?, gpu_utilization?, decode_latency_ms_p95?, queue_age_s?, spool_pending?}, cameras: [{camera_id, readiness, analysis_state, channels: {...}, last_frame_at?, fps?, width?, height?, codec?, error?}], models: [{name, version, sha256}]}` → `{ok, config_version, allowed_subnets}`. `allowed_subnets` = `EDGE_ALLOWED_SUBNETS`, or the RFC 1918 ranges when unset (the same addresses the API accepts); the edge applies changes without re-pairing |
-| GET | `/v1/edge/commands` | → `{items: [{id, kind, payload, created_at}]}` kinds `discover`, `provision_camera`, `activate_camera`, `pause_camera`, `update_zones`, `model_rollout`, `gallery_update` |
+| POST | `/v1/edge/heartbeat` | `{software_version, clock_offset_ms?, health: {disk_free_bytes?, disk_total_bytes?, gpu_utilization?, decode_latency_ms_p95?, queue_age_s?, spool_pending?}, cameras: [{camera_id, readiness, analysis_state, channels: {...}, last_frame_at?, fps?, width?, height?, codec?, error?}], models: [{name, version, sha256}], processing_mode}` → `{ok, config_version, allowed_subnets, processing_mode}`. The appliance adopts the `processing_mode` in the response (the console decides). `allowed_subnets` = `EDGE_ALLOWED_SUBNETS`, or the RFC 1918 ranges when unset (the same addresses the API accepts); the edge applies changes without re-pairing |
+| GET | `/v1/edge/commands` | → `{items: [{id, kind, payload, created_at}], live: [camera_id]}` kinds `discover`, `provision_camera`, `activate_camera`, `pause_camera`, `update_zones`, `model_rollout`, `gallery_update`, `set_processing_mode {mode}`. `live` lists this appliance's cameras with a viewer in the last 30 s. |
+| PUT | `/v1/edge/cameras/{id}/live/{seq}` | one MPEG-TS live segment (≤ 6 MB), headers `X-Segment-Duration` (0.1–15 s), `X-Segment-Discontinuity: 1|0`; `seq` increases (re-sent segments are ignored). Only the camera's appliance may upload (409 `wrong_edge`). The API keeps the newest 8 segments; the worker removes a camera's segments 2 min after the last one. |
 | POST | `/v1/edge/commands/{id}/ack` | `{status: "succeeded"|"failed", result: {...}, error?: str}` |
 | POST | `/v1/edge/events` | `contracts/event.schema.json`; header `Idempotency-Key: <event_id>`. Same event_id twice → 200 with same incident (no duplicate). |
 | PUT | `/v1/edge/events/{event_id}/evidence` | raw `video/mp4` or `image/jpeg` body; header `X-Content-SHA256` must match |

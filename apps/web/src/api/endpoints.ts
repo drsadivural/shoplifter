@@ -15,6 +15,10 @@ import type {
   DetectionChannel,
   DiscoveryJob,
   Edge,
+  EdgeMode,
+  EdgeTreeCamera,
+  EdgeTreeItem,
+  LiveStatus,
   Export,
   GeneralSettings,
   Id,
@@ -145,6 +149,9 @@ export const endpoints = {
   edges: {
     list: (o?: Opts) => http.get<Paged<Edge>>('/v1/edges', undefined, o),
     revoke: (id: Id, body: { reason: string }, o?: Opts) => http.post<Edge>(`/v1/edges/${enc(id)}/revoke`, body, o),
+    tree: (o?: Opts) => http.get<{ items: EdgeTreeItem[]; unassigned_cameras: EdgeTreeCamera[] }>('/v1/edges/tree', undefined, o),
+    update: (id: Id, body: { expected_version: number; name?: string; processing_mode?: EdgeMode }, o?: Opts) =>
+      http.patch<Edge>(`/v1/edges/${enc(id)}`, body, o),
   },
 
   cameras: {
@@ -164,12 +171,14 @@ export const endpoints = {
     ) => http.post<Camera>('/v1/cameras', body, o),
     /** Manual add by RTSP URL. A user:password@ part in the URL is sealed to the edge and never stored. */
     createRtsp: (
-      body: { store_id: Id; name: string; location: string; url: string; username?: string; password?: string },
+      body: { store_id: Id; edge_id?: Id; name: string; location: string; url: string; username?: string; password?: string },
       o?: Opts,
     ) => http.post<Camera>('/v1/cameras/rtsp', body, o),
     import: (body: { store_id: Id; csv: string; username?: string; password?: string; dry_run: boolean }, o?: Opts) =>
       http.post<CameraImportResult>('/v1/cameras/import', body, o),
     get: (id: Id, o?: Opts) => http.get<Camera>(`/v1/cameras/${enc(id)}`, undefined, o),
+    /** Starts/keeps the camera's live view (demand) and reports whether video is flowing. */
+    live: (id: Id, o?: Opts) => http.get<LiveStatus>(`/v1/cameras/${enc(id)}/live`, undefined, o),
     update: (id: Id, body: { expected_version: number; name?: string; location?: string }, o?: Opts) =>
       http.patch<Camera>(`/v1/cameras/${enc(id)}`, body, o),
     provision: (id: Id, o?: Opts) => http.post<{ command_id: Id }>(`/v1/cameras/${enc(id)}/provision`, {}, o),
@@ -183,7 +192,7 @@ export const endpoints = {
 
   discovery: {
     /** Without `interface` the edge probes from all of its private interfaces; USB cameras are listed too. */
-    start: (body: { store_id: Id; interface?: string; timeout_s: number; cidr?: string; include_usb?: boolean }, o?: Opts) =>
+    start: (body: { store_id: Id; edge_id?: Id; interface?: string; timeout_s: number; cidr?: string; include_usb?: boolean }, o?: Opts) =>
       http.post<DiscoveryJob>('/v1/discovery-jobs', body, o),
     get: (id: Id, o?: Opts) => http.get<DiscoveryJob>(`/v1/discovery-jobs/${enc(id)}`, undefined, o),
     add: (

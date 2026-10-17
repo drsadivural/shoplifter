@@ -238,7 +238,29 @@ def retention() -> dict:
         tx.run("DELETE FROM edge_nonces WHERE seen_at < now() - interval '1 hour'")
         tx.run("DELETE FROM integration_nonces WHERE seen_at < now() - interval '1 hour'")
         tx.run("DELETE FROM login_throttle WHERE window_start < now() - interval '1 day' AND (locked_until IS NULL OR locked_until < now())")
+    stats["live_dirs_removed"] = prune_live_segments()
     return stats
+
+
+def prune_live_segments(max_age_s: float = 120.0) -> int:
+    """Live-view segments are transient: remove a camera's folder once nobody has been sent new video
+    for two minutes (the API keeps only the newest few while it is live)."""
+    import shutil
+    import time
+    from pathlib import Path
+    root = Path(get_settings().media_dir) / "live"
+    removed = 0
+    if not root.is_dir():
+        return 0
+    for d in root.iterdir():
+        try:
+            newest = max((p.stat().st_mtime for p in d.iterdir()), default=d.stat().st_mtime)
+        except OSError:
+            continue
+        if time.time() - newest > max_age_s:
+            shutil.rmtree(d, ignore_errors=True)
+            removed += 1
+    return removed
 
 
 def run() -> None:

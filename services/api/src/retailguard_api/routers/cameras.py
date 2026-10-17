@@ -12,16 +12,20 @@ import re
 import uuid
 from urllib.parse import unquote, urlsplit
 
-from fastapi import APIRouter, Depends
+from datetime import timedelta
+from math import ceil
+
+from fastapi import APIRouter, Depends, Response
+from fastapi.responses import FileResponse
 from nacl.public import PublicKey, SealedBox
 from pydantic import BaseModel, Field
 
-from ..authz import audit, check_version, clean, iso
+from ..authz import audit, check_version, clean, iso, now
 from ..db import J, Tx
 from ..deps import Ctx, ctx
 from ..errors import ApiError, conflict, invalid, not_found, unavailable
 from ..settings import get_settings
-from .edge import edge_state, online_edge, queue_command
+from .edge import edge_state, live_dir, online_edge, queue_command
 from .org import store_policy
 
 router = APIRouter(prefix="/v1", tags=["cameras"])
@@ -37,6 +41,8 @@ USB_DEVICE = re.compile(r'^(/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video
 
 class CameraIn(BaseModel):
     store_id: uuid.UUID
+    # Appliance that serves the camera(s); default: the store's most recently seen appliance.
+    edge_id: uuid.UUID | None = None
     name: str = Field(min_length=1, max_length=120)
     location: str = Field(default="", max_length=120)
     address: str = Field(min_length=1, max_length=100)
@@ -48,6 +54,8 @@ class CameraIn(BaseModel):
 
 class RtspCameraIn(BaseModel):
     store_id: uuid.UUID
+    # Appliance that serves the camera(s); default: the store's most recently seen appliance.
+    edge_id: uuid.UUID | None = None
     name: str = Field(min_length=1, max_length=120)
     location: str = Field(default="", max_length=120)
     url: str = Field(min_length=8, max_length=600)
@@ -58,6 +66,8 @@ class RtspCameraIn(BaseModel):
 
 class ImportIn(BaseModel):
     store_id: uuid.UUID
+    # Appliance that serves the camera(s); default: the store's most recently seen appliance.
+    edge_id: uuid.UUID | None = None
     csv: str = Field(max_length=200_000)
     username: str | None = Field(default=None, max_length=120)
     password: str | None = Field(default=None, max_length=256)
@@ -94,6 +104,8 @@ class ZonesIn(BaseModel):
 
 class DiscoveryIn(BaseModel):
     store_id: uuid.UUID
+    # Appliance that serves the camera(s); default: the store's most recently seen appliance.
+    edge_id: uuid.UUID | None = None
     # Omitted: the edge probes from every private interface it has.
     interface: str | None = Field(default=None, max_length=64)
     include_usb: bool = True
@@ -136,11 +148,34 @@ def seal_credentials(edge: dict | None, username: str | None, password: str | No
     return base64.b64encode(sealed).decode()
 
 
+def choose_edge(c: Ctx, store_id, edge_id) -> dict | None:
+    """The appliance a new camera is served by: the one chosen (must belong to the store and not be
+    revoked) or the store's most recently seen appliance."""
+    if edge_id is None:
+        return online_edge(c.tx, store_id)
+    edge = c.tx.one("SELECT * FROM edges WHERE id=%s AND store_id=%s AND revoked_at IS NULL", (edge_id, store_id))
+    if not edge:
+        raise invalid("edge_id", "not_in_store")
+    return edge
+
+
+def camera_edge(tx: Tx, cam: dict) -> dict | None:
+    """The appliance serving an existing camera; falls back to the store's appliance for cameras
+    added before any appliance was paired."""
+    if cam.get("edge_id"):
+        edge = tx.one("SELECT * FROM edges WHERE id=%s AND revoked_at IS NULL", (cam["edge_id"],))
+        if edge:
+            return edge
+    return online_edge(tx, cam["store_id"])
+
+
 def camera_out(r: dict) -> dict:
     out = clean(r)
     out.pop("credential_sealed", None)
     out.pop("org_id", None)
     out["has_credentials"] = bool(r.get("credential_sealed"))
+    for k in ("live_demand_at", "live_seq", "live_edge_seq"):
+        out.pop(k, None)
     out["snapshot"] = ({"media_id": str(r["snapshot_media_id"]), "captured_at": iso(r["snapshot_at"])}
                        if r.get("snapshot_media_id") else None)
     out.pop("snapshot_media_id", None)
@@ -152,7 +187,7 @@ def camera_out(r: dict) -> dict:
 
 def _create_camera(c: Ctx, store_id, name, location, address, username, password, profile, rtsp_path,
                    endpoint=None, vendor=None, model=None, source="manual", source_type="onvif",
-                   rtsp_port=None, rtsp_scheme=None, duplicate_field="address") -> dict:
+                   rtsp_port=None, rtsp_scheme=None, duplicate_field="address", edge_id=None) -> dict:
     if profile not in ("substream", "mainstream"):
         raise invalid("stream_profile")
     if source_type == "usb":
@@ -166,7 +201,7 @@ def _create_camera(c: Ctx, store_id, name, location, address, username, password
                    AND COALESCE(rtsp_path, '')=%s""", (store_id, address, rtsp_port or 0, rtsp_path or "")):
         raise ApiError(422, "validation_failed", "A camera with this address exists in the store",
                        field_errors={duplicate_field: "duplicate"})
-    edge = online_edge(c.tx, store_id)
+    edge = choose_edge(c, store_id, edge_id)
     sealed = seal_credentials(edge, username, password)
     cid = uuid.uuid4()
     c.tx.run("""INSERT INTO cameras (id, org_id, store_id, edge_id, name, location, address, rtsp_path, endpoint_uuid,
@@ -202,7 +237,7 @@ def list_cameras(store_id: uuid.UUID | None = None, c: Ctx = Depends(ctx)) -> di
 def add_camera(body: CameraIn, c: Ctx = Depends(ctx)) -> dict:
     c.actor.require("camera.manage", str(body.store_id))
     return camera_out(_create_camera(c, body.store_id, body.name, body.location, body.address, body.username,
-                                     body.password, body.stream_profile, body.rtsp_path))
+                                     body.password, body.stream_profile, body.rtsp_path, edge_id=body.edge_id))
 
 
 def parse_rtsp_url(url: str) -> dict:
@@ -239,7 +274,8 @@ def add_rtsp_camera(body: RtspCameraIn, c: Ctx = Depends(ctx)) -> dict:
     password = t["password"] if t["password"] is not None else body.password
     return camera_out(_create_camera(c, body.store_id, body.name, body.location, t["address"], username, password,
                                      "substream", t["path"], source="rtsp_url", source_type="rtsp",
-                                     rtsp_port=t["port"], rtsp_scheme=t["scheme"], duplicate_field="url"))
+                                     rtsp_port=t["port"], rtsp_scheme=t["scheme"], duplicate_field="url",
+                                     edge_id=body.edge_id))
 
 
 @router.post("/cameras/import")
@@ -257,7 +293,7 @@ def import_cameras(body: ImportIn, c: Ctx = Depends(ctx)) -> dict:
     if len(rows) > 500:
         raise invalid("csv", "too_many_rows")
     existing = {r["address"] for r in c.tx.all("SELECT address FROM cameras WHERE store_id=%s", (body.store_id,))}
-    edge = online_edge(c.tx, body.store_id)
+    edge = choose_edge(c, body.store_id, body.edge_id)
     parsed = []
     for i, row in enumerate(rows, start=start):
         errors = []
@@ -286,7 +322,7 @@ def import_cameras(body: ImportIn, c: Ctx = Depends(ctx)) -> dict:
                            field_errors={f"line_{r['line']}": ",".join(r["errors"]) for r in results if r["errors"]})
         for (i, name, location, address, profile, _), res in zip(parsed, results):
             _create_camera(c, body.store_id, name, location, address, body.username, body.password, profile, None,
-                           source="csv_import")
+                           source="csv_import", edge_id=edge["id"] if edge else None)
             res["status"] = "created"
             created += 1
         audit(c.tx, c.actor.org_id, "camera.bulk_imported", "store", body.store_id, actor=c.actor,
@@ -333,7 +369,7 @@ def patch_camera(camera_id: uuid.UUID, body: CameraPatch, c: Ctx = Depends(ctx))
 @router.post("/cameras/{camera_id}/provision", status_code=202)
 def provision(camera_id: uuid.UUID, c: Ctx = Depends(ctx)) -> dict:
     row = _camera_for(c, camera_id, "camera.manage", lock=True)
-    edge = online_edge(c.tx, row["store_id"])
+    edge = camera_edge(c.tx, row)
     if not edge or edge_state(edge) != "online":
         raise unavailable("edge_unavailable", "The store edge appliance is offline or not paired")
     cmd = _queue_provision(c, row, edge)
@@ -351,9 +387,12 @@ def activate(camera_id: uuid.UUID, body: ActivateIn, c: Ctx = Depends(ctx)) -> d
     if row["readiness"] != "ready":
         raise conflict("camera_not_ready", row["version"],
                        "Analysis can start only after the edge has verified decoded frames from this camera")
-    edge = online_edge(c.tx, row["store_id"])
+    edge = camera_edge(c.tx, row)
     if not edge or edge_state(edge) != "online":
         raise unavailable("edge_unavailable", "The store edge appliance is offline or not paired")
+    if edge["processing_mode"] != "full":
+        raise conflict("edge_streaming_only", row["version"],
+                       "This camera's edge appliance is set to camera streaming only. Switch it to full processing to analyze on the edge.")
     policy = store_policy(c.tx, c.actor.org_id, row["store_id"], "detection_rules")["settings"]
     channels = {ch: {"state": "starting" if ch in body.channels else "not_requested", "reason": None} for ch in CHANNELS}
     c.tx.run("""UPDATE cameras SET analysis_state='activation_requested', channels=%s, version=version+1 WHERE id=%s""",
@@ -370,7 +409,7 @@ def activate(camera_id: uuid.UUID, body: ActivateIn, c: Ctx = Depends(ctx)) -> d
 def pause(camera_id: uuid.UUID, body: VersionIn, c: Ctx = Depends(ctx)) -> dict:
     row = _camera_for(c, camera_id, "camera.manage", lock=True)
     check_version(row, body.expected_version)
-    edge = online_edge(c.tx, row["store_id"])
+    edge = camera_edge(c.tx, row)
     if not edge:
         raise unavailable("edge_unavailable", "The store edge appliance is not paired")
     cmd = queue_command(c.tx, c.actor.org_id, row["store_id"], edge["id"], "pause_camera", {"camera_id": str(camera_id)},
@@ -419,7 +458,7 @@ def put_zones(camera_id: uuid.UUID, body: ZonesIn, c: Ctx = Depends(ctx)) -> dic
     zones = validate_zones(body.zones)
     new_version = row["zones_version"] + 1
     c.tx.run("UPDATE cameras SET zones=%s, zones_version=%s, version=version+1 WHERE id=%s", (J(zones), new_version, camera_id))
-    edge = online_edge(c.tx, row["store_id"])
+    edge = camera_edge(c.tx, row)
     if edge:
         queue_command(c.tx, c.actor.org_id, row["store_id"], edge["id"], "update_zones",
                       {"camera_id": str(camera_id), "zones_version": new_version, "zones": zones}, c.actor.user_id)
@@ -453,7 +492,7 @@ def start_discovery(body: DiscoveryIn, c: Ctx = Depends(ctx)) -> dict:
                 raise ValueError
         except ValueError:
             raise invalid("cidr", "private_cidr_required")
-    edge = online_edge(c.tx, body.store_id)
+    edge = choose_edge(c, body.store_id, body.edge_id)
     if not edge or edge_state(edge) != "online":
         raise unavailable("edge_unavailable",
                           "Discovery runs on the store edge appliance. Pair an appliance and make sure it is online.")
@@ -492,7 +531,84 @@ def add_discovered(job_id: uuid.UUID, body: DiscoveryAddIn, c: Ctx = Depends(ctx
     if device.get("kind") == "usb":
         return camera_out(_create_camera(c, job["store_id"], body.name, body.location, device["address"], None, None,
                                          "substream", None, model=device.get("model"), source="usb_discovery",
-                                         source_type="usb"))
+                                         source_type="usb", edge_id=job["edge_id"]))
     return camera_out(_create_camera(c, job["store_id"], body.name, body.location, device["address"], body.username,
                                      body.password, body.stream_profile, None, endpoint=device["endpoint"],
-                                     vendor=device.get("vendor"), model=device.get("model"), source="onvif_discovery"))
+                                     vendor=device.get("vendor"), model=device.get("model"), source="onvif_discovery",
+                                     edge_id=job["edge_id"]))
+
+
+# ---- live view (relayed by the camera's edge appliance on demand) ----------------------------
+
+LIVE_FRESH_S = 12
+
+
+def _live_segments(camera_id) -> list[tuple[int, dict]]:
+    d = live_dir(camera_id)
+    if not d.is_dir():
+        return []
+    out = []
+    for p in sorted(d.glob("*.ts"), key=lambda p: int(p.stem)):
+        try:
+            meta = json.loads(p.with_suffix(".meta").read_text())
+        except (OSError, ValueError):
+            continue
+        out.append((int(p.stem), meta))
+    return out
+
+
+def _want_live(c: Ctx, cam: dict) -> None:
+    # Demand is what makes the appliance upload; refreshed at most every 5 s per camera.
+    c.tx.run("""UPDATE cameras SET live_demand_at=now() WHERE id=%s
+                AND (live_demand_at IS NULL OR live_demand_at < now() - interval '5 seconds')""", (cam["id"],))
+
+
+@router.get("/cameras/{camera_id}/live")
+def live_status(camera_id: uuid.UUID, c: Ctx = Depends(ctx)) -> dict:
+    """Start (or keep) the camera's live view and report whether video is flowing yet."""
+    cam = _camera_for(c, camera_id, "camera.read")
+    edge = camera_edge(c.tx, cam)
+    out: dict = {"camera_id": str(camera_id), "playlist": None, "reason": None,
+                 "edge": ({"id": str(edge["id"]), "name": edge["name"], "processing_mode": edge["processing_mode"],
+                           "state": edge_state(edge)} if edge else None)}
+    if cam["readiness"] != "ready":
+        return {**out, "state": "unavailable", "reason": "camera_not_ready"}
+    if not edge:
+        return {**out, "state": "unavailable", "reason": "edge_unpaired"}
+    if edge_state(edge) != "online":
+        return {**out, "state": "unavailable", "reason": "edge_offline"}
+    _want_live(c, cam)
+    if not c.tx.one("""SELECT 1 FROM audit WHERE action='camera.live_viewed' AND resource_id=%s AND actor_id=%s
+                       AND created_at > now() - interval '10 minutes' LIMIT 1""", (str(camera_id), c.actor.user_id)):
+        audit(c.tx, c.actor.org_id, "camera.live_viewed", "camera", camera_id, actor=c.actor, store_id=cam["store_id"])
+    fresh = cam["live_segment_at"] and cam["live_segment_at"] > now() - timedelta(seconds=LIVE_FRESH_S)
+    if fresh and len(_live_segments(camera_id)) >= 2:
+        return {**out, "state": "live", "playlist": f"/v1/cameras/{camera_id}/live.m3u8"}
+    return {**out, "state": "starting"}
+
+
+@router.get("/cameras/{camera_id}/live.m3u8")
+def live_playlist(camera_id: uuid.UUID, c: Ctx = Depends(ctx)) -> Response:
+    cam = _camera_for(c, camera_id, "camera.read")
+    _want_live(c, cam)
+    segs = _live_segments(camera_id)
+    if not segs or not cam["live_segment_at"] or cam["live_segment_at"] < now() - timedelta(seconds=LIVE_FRESH_S * 2):
+        raise ApiError(404, "live_not_started", "Live video has not started for this camera")
+    lines = ["#EXTM3U", "#EXT-X-VERSION:3",
+             f"#EXT-X-TARGETDURATION:{max(1, ceil(max(m['duration'] for _, m in segs)))}",
+             f"#EXT-X-MEDIA-SEQUENCE:{segs[0][0]}"]
+    for i, (index, meta) in enumerate(segs):
+        if meta.get("discontinuity") and i > 0:
+            lines.append("#EXT-X-DISCONTINUITY")
+        lines += [f"#EXTINF:{meta['duration']:.3f},", f"live/{index}.ts"]
+    return Response("\n".join(lines) + "\n", media_type="application/vnd.apple.mpegurl",
+                    headers={"Cache-Control": "no-store"})
+
+
+@router.get("/cameras/{camera_id}/live/{index}.ts")
+def live_segment(camera_id: uuid.UUID, index: int, c: Ctx = Depends(ctx)) -> FileResponse:
+    _camera_for(c, camera_id, "camera.read")
+    path = live_dir(camera_id) / f"{index}.ts"
+    if index < 0 or not path.is_file():
+        raise not_found()
+    return FileResponse(path, media_type="video/mp2t", headers={"Cache-Control": "private, max-age=60"})

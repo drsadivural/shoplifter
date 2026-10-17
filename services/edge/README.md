@@ -121,6 +121,24 @@ executes `discover`, `provision_camera`, `activate_camera`, `pause_camera`, `upd
 `model_rollout`, `gallery_update`, and acks each with `POST /v1/edge/commands/{id}/ack`.
 Processed command IDs are recorded, so a re-delivered command is re-acked, not re-executed.
 
+Processing modes (`processing_mode`, requested at pairing with `--mode` / the setup wizard, then set
+from the console):
+
+- `streaming`: cameras are monitored and relayed for live view; `activate_camera` fails with
+  `edge_streaming_only`.
+- `full`: also runs the installed analysis channels (pipeline.py) and reports events. No model ships
+  with this package: until a licensed model/SDK manifest is installed, channels report
+  `model_not_installed` and no events are produced.
+
+The current mode is kept in `mode.json`; a `set_processing_mode` command or the heartbeat response
+changes it (switching to `streaming` stops analysis on every camera).
+
+Live view (`live.py`): each camera's monitor also writes a rolling local HLS playlist
+(`<state>/live/<camera>/`, 1 s segments). H.264 RTSP cameras are remuxed; USB, H.265 and privacy-masked
+cameras are encoded to H.264 with the masks burned in. Segments are uploaded only for the cameras the
+API lists as watched in the command-poll response (`live`), newest first, and stop when nobody watches.
+Set `live_relay = false` to disable local segment writing.
+
 Camera sources (`provision_camera.source_type`):
 
 - `onvif` (default): ONVIF device service at the address; the stream URI comes from the Media service.

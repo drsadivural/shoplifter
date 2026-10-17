@@ -18,6 +18,8 @@ this zip. This zip is for scripted installs.
    powershell -ExecutionPolicy Bypass -File .\deploy\install-windows.ps1 -Api https://shoplifter.ayonix.com
 
    The same command updates an existing installation; the config is kept.
+   Add -Mode full to also run analysis on this PC (default: -Mode streaming, live view only).
+   The setup wizard (RetailGuardEdgeSetup.exe) asks this on its "How should this PC work?" page.
 
 3. Pair with the store. In the RetailGuard console open the store, choose
    "Connect edge appliance" and create a pairing code (single use, valid 15 minutes).
@@ -62,6 +64,8 @@ Ayonix RetailGuard エッジ端末 — Windows パッケージ
    powershell -ExecutionPolicy Bypass -File .\deploy\install-windows.ps1 -Api https://shoplifter.ayonix.com
 
    同じコマンドで既存環境を更新できます。設定ファイルは保持されます。
+   この PC で分析も行う場合は -Mode full を付けてください（既定は -Mode streaming: ライブ映像のみ）。
+   セットアップウィザード（RetailGuardEdgeSetup.exe）では「この PC の動作」ページで選択します。
 
 3. 店舗とのペアリング。RetailGuard コンソールで店舗を開き「エッジ端末を接続」から
    ペアリングコードを作成します（1回限り、15分間有効）。新しく開いた管理者 PowerShell で:

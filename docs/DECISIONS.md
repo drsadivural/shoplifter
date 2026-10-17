@@ -105,3 +105,25 @@ at a time so the wizard can show progress; pairing happens on a page after insta
 needs the installed agent, and a rejected code keeps the user on that page. The same AppId makes a
 re-run an in-place update that keeps `%ProgramData%\RetailGuard\Edge`. The executable is unsigned until
 a code-signing certificate is provided.
+
+## ADR-013 Live view relay
+Live video goes from the edge to browsers as HLS through the API, on demand. The camera's stream
+monitor (the one ffmpeg reader per camera, which USB cameras require) also writes a rolling local
+playlist of 1 s MPEG-TS segments: H.264 RTSP cameras are remuxed without re-encoding; USB, H.265 and
+privacy-masked cameras are encoded to H.264 (≤ 960 px, 15 fps) with privacy masks burned in, so live
+video never shows what snapshots hide. The appliance uploads the newest segments (signed requests) only
+for cameras the API lists as watched in its command-poll response (a viewer request in the last 30 s);
+the API keeps 8 segments per camera, serves them to signed-in users of that store, audits viewing, and
+the worker deletes them 2 min after the last one. This works through the existing Cloudflare Tunnel
+(HTTPS only); it is a few seconds behind real time. WebRTC would be faster but needs UDP/TURN
+reachability that the tunnel does not provide.
+
+## ADR-014 Edge processing modes
+Each appliance is either `streaming` (live view only; analysis refused with `edge_streaming_only`) or
+`full` (it also runs installed analysis channels and reports events, which become alerts through the
+existing event pipeline). The device requests a mode at pairing (setup wizard / `--mode`); afterwards
+the console is authoritative (`PATCH /v1/edges/{id}`, `set_processing_mode` command, and the heartbeat
+response, which the appliance adopts). Full processing does not ship a detection model: per the
+algorithm and model-lifecycle rules, a licensed, validated model must be installed through a manifest.
+Until then the channels report `model_not_installed`, the console says that no alerts are generated,
+and nothing is fabricated.

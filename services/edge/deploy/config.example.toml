@@ -3,13 +3,17 @@
 # Outbound-only HTTPS to the regional API. Plain http:// is accepted only for loopback testing.
 api_base_url = "https://retailguard.example.com"
 state_dir = "/var/lib/retailguard-edge"
+# Requested when pairing: "streaming" = relay camera video for live view only;
+# "full" = also run the installed analysis models on this appliance and report events.
+# After pairing, the RetailGuard console decides (Edge devices page).
+processing_mode = "streaming"
 # WS-Discovery probes from every private IPv4 interface by default. Set this only to restrict the
 # probe to one interface (its local IPv4 address).
 # discovery_interface = "192.168.10.2"
 # Spool budget for evidence + raw ring buffers (bytes).
 disk_budget_bytes = 21474836480
 heartbeat_interval_s = 15
-command_poll_interval_s = 5
+command_poll_interval_s = 3
 sample_seconds = 10
 required_decoded_seconds = 10
 degraded_after_s = 10

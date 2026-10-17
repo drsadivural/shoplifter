@@ -14,6 +14,9 @@
 [CmdletBinding()]
 param(
     [string]$Api = "https://shoplifter.ayonix.com",
+    # Requested at pairing (new installs only): camera streaming only, or full processing on this PC.
+    [ValidateSet("streaming", "full")]
+    [string]$Mode = "streaming",
     [ValidateSet("All", "Prepare", "Runtime", "Dependencies", "Ffmpeg", "Configure", "Service")]
     [string]$Phase = "All",
     # A zip already downloaded (and checksum-verified) by the setup wizard.
@@ -162,6 +165,7 @@ if (Want "Configure") {
         $text = Get-Content -Raw -Path (Join-Path $Prefix "deploy\config.example.toml")
         $text = $text -replace '(?m)^api_base_url = .*?(\r?)$', "api_base_url = `"$Api`"`$1"
         $text = $text -replace '(?m)^state_dir = .*?(\r?)$', "state_dir = '$State'`$1"
+        $text = $text -replace '(?m)^processing_mode = .*?(\r?)$', "processing_mode = `"$Mode`"`$1"
         [IO.File]::WriteAllText($Config, $text, (New-Object Text.UTF8Encoding($false)))
     }
     # The agent runs as SYSTEM without this PC's PATH: it needs the full ffmpeg/ffprobe paths. Also

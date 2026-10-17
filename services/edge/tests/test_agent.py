@@ -16,7 +16,7 @@ from retailguard_edge.identity import IdentityError, PairingState, load_or_creat
 from retailguard_edge.stream import StreamSource, capture_masked_snapshot, probe_readiness
 from conftest import has_mode
 
-HEARTBEAT_KEYS = {"software_version", "clock_offset_ms", "health", "cameras", "models"}
+HEARTBEAT_KEYS = {"software_version", "clock_offset_ms", "health", "cameras", "models", "processing_mode"}
 HEALTH_KEYS = {"disk_free_bytes", "disk_total_bytes", "gpu_utilization", "decode_latency_ms_p95", "queue_age_s",
                "spool_pending"}
 CAMERA_KEYS = {"camera_id", "readiness", "analysis_state", "channels", "last_frame_at", "fps", "width", "height",
@@ -26,6 +26,7 @@ CAMERA_KEYS = {"camera_id", "readiness", "analysis_state", "channels", "last_fra
 class FakeAPI:
     def __init__(self, vk):
         self.vk, self.acks, self.commands, self.heartbeats, self.snapshots = vk, [], [], [], []
+        self.live, self.segments = [], []
 
     def __call__(self, req: httpx.Request) -> httpx.Response:
         msg = canonical_string(req.method, req.url.raw_path.decode(), req.headers["X-Edge-Timestamp"],
@@ -34,7 +35,7 @@ class FakeAPI:
         path = req.url.path
         if path == "/v1/edge/commands":
             items, self.commands = self.commands, []
-            return httpx.Response(200, json={"items": items})
+            return httpx.Response(200, json={"items": items, "live": self.live})
         if path.startswith("/v1/edge/commands/") and path.endswith("/ack"):
             self.acks.append((path.split("/")[4], json.loads(req.content)))
             return httpx.Response(200, json={"ok": True})
@@ -42,6 +43,10 @@ class FakeAPI:
             self.heartbeats.append(json.loads(req.content))
             return httpx.Response(200, json={"ok": True, "config_version": 1},
                                   headers={"Date": "Sat, 11 Oct 2026 01:42:18 GMT"})
+        if path.startswith("/v1/edge/cameras/") and "/live/" in path:
+            self.segments.append((path.split("/")[4], int(path.split("/")[6]), req.headers["X-Segment-Duration"],
+                                  req.headers["X-Segment-Discontinuity"], req.content))
+            return httpx.Response(200, json={"ok": True})
         if path.startswith("/v1/edge/cameras/") and path.endswith("/snapshot"):
             assert req.headers["Content-Type"] == "image/jpeg"
             self.snapshots.append((path.split("/")[4], req.content))
@@ -49,7 +54,10 @@ class FakeAPI:
         return httpx.Response(404, json={"code": "not_found"})
 
 
-def make_agent(state_dir, subnets, **kw):
+def make_agent(state_dir, subnets, mode="full", **kw):
+    """Agents in these tests analyze (full processing) unless a test asks for streaming only."""
+    from retailguard_edge.identity import save_mode
+    save_mode(state_dir, mode)
     keys = load_or_create_keys(state_dir)
     pairing = PairingState("edge-1", "org-1", "store-1", "Asia/Tokyo", subnets, "https://api.test", 1, 0.0)
     api = FakeAPI(keys.signing_key.verify_key)

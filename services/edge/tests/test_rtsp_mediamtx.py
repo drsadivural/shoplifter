@@ -206,3 +206,42 @@ def test_agent_provision_direct_rtsp_url_without_onvif(rtsp_server, private_ip, 
         "camera_id": "cam-direct-2", "address": private_ip, "source_type": "rtsp", "rtsp_port": PORT + 1,
         "rtsp_path": "/test", "credential_sealed": sealed})
     assert status == "failed" and result["readiness"] == "offline"
+
+
+def test_live_view_relays_a_real_rtsp_camera_while_watched(rtsp_server, private_ip, state_dir):
+    """Real RTSP camera → the monitor's ffmpeg remuxes H.264 into local HLS (no re-encoding) → the
+    relay uploads segments only after the API lists the camera as watched."""
+    from dataclasses import replace
+    from retailguard_edge.agent import CameraSupervisor
+    from test_agent import make_agent
+    agent, api, keys = make_agent(state_dir, [f"{private_ip}/32"],
+                                  onvif_factory=lambda *a, **k: pytest.fail("ONVIF not used"))
+    agent.supervisor = CameraSupervisor(replace(agent.config, monitor_streams=True), agent.vault)
+    sealed = base64.b64encode(SealedBox(keys.box_key.public_key).encrypt(
+        json.dumps({"username": VIEWER.username, "password": VIEWER.password}).encode())).decode()
+    try:
+        status, result, error = agent.execute("provision_camera", {
+            "camera_id": "cam-live", "address": private_ip, "source_type": "rtsp", "rtsp_port": PORT,
+            "rtsp_path": "/test", "credential_sealed": sealed})
+        assert (status, error) == ("succeeded", None), json.dumps(result)
+        time.sleep(4)
+        agent.poll_commands()
+        assert api.segments == []                       # not watched: nothing uploaded
+        api.live = ["cam-live"]
+        agent.poll_commands()
+        deadline = time.time() + 30
+        while len(api.segments) < 3 and time.time() < deadline:
+            time.sleep(0.5)
+        assert len(api.segments) >= 3, "no live segments were uploaded"
+        cid, seq, duration, disc, data = api.segments[-1]
+        assert cid == "cam-live" and data[0] == 0x47 and 0.3 <= float(duration) <= 5
+        assert [s[1] for s in api.segments] == sorted(s[1] for s in api.segments)
+        assert VIEWER.password.encode() not in data
+        api.live = []
+        agent.poll_commands()
+        count = len(api.segments)
+        time.sleep(2.5)
+        assert len(api.segments) == count               # viewer left: uploads stop
+    finally:
+        agent.live.stop_all()
+        agent.supervisor.stop_all()

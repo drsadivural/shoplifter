@@ -87,6 +87,8 @@ class EdgeClient:
         self._sleep = sleep
         self._rng = rng
         self.last_clock_offset_ms: int | None = None
+        # Cameras with a viewer, as listed in the latest command poll (see live.LiveRelay).
+        self.live_demand: list[str] = []
 
     def close(self) -> None:
         self._http.close()
@@ -164,6 +166,8 @@ class EdgeClient:
         items = data.get("items") if isinstance(data, dict) else None
         if not isinstance(items, list):
             raise EdgeAPIError(200, "commands_response_invalid", False)
+        live = data.get("live")
+        self.live_demand = [c for c in live if isinstance(c, str)][:256] if isinstance(live, list) else []
         return items
 
     def ack_command(self, command_id: str, status: str, result: dict, error: str | None = None) -> None:
@@ -173,6 +177,12 @@ class EdgeClient:
         if error is not None:
             body["error"] = error
         self.request("POST", f"/v1/edge/commands/{quote(command_id, safe='')}/ack", json=body)
+
+    def upload_live_segment(self, camera_id: str, seq: int, data: bytes, duration: float,
+                            discontinuity: bool = False) -> None:
+        self.request("PUT", f"/v1/edge/cameras/{quote(camera_id, safe='')}/live/{int(seq)}", content=data,
+                     headers={"Content-Type": "video/mp2t", "X-Segment-Duration": f"{duration:.3f}",
+                              "X-Segment-Discontinuity": "1" if discontinuity else "0"})
 
     def upload_snapshot(self, camera_id: str, jpeg: bytes) -> None:
         self.request("PUT", f"/v1/edge/cameras/{quote(camera_id, safe='')}/snapshot", content=jpeg,

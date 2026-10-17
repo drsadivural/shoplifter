@@ -2,7 +2,7 @@
 # Install or update the RetailGuard edge appliance software (Debian/Ubuntu, run as root).
 #
 #   git clone https://github.com/drsadivural/shoplifter.git
-#   sudo bash shoplifter/services/edge/deploy/install.sh --api https://shoplifter.ayonix.com
+#   sudo bash shoplifter/services/edge/deploy/install.sh --api https://shoplifter.ayonix.com [--mode streaming|full]
 #
 # Installs ffmpeg and uv, a private Python 3.12 and the locked dependencies under
 # /opt/retailguard-edge, the config (/etc/retailguard-edge/config.toml, kept on updates), the
@@ -10,9 +10,13 @@
 set -euo pipefail
 
 API=""
+MODE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --api) API="${2:?--api needs a URL}"; shift 2 ;;
+    --mode)
+      MODE="${2:?--mode needs streaming or full}"; shift 2
+      case "$MODE" in streaming|full) ;; *) echo "--mode must be streaming or full" >&2; exit 2 ;; esac ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
 done
@@ -48,7 +52,8 @@ install -d -m 0700 -o "$SVC_USER" -g "$SVC_USER" "$STATE"
 
 if [ ! -f "$ETC/config.toml" ]; then
   cp deploy/config.example.toml "$ETC/config.toml"
-  [ -n "$API" ] && sed -i "s#^api_base_url = .*#api_base_url = \"$API\"#" "$ETC/config.toml"
+  if [ -n "$API" ]; then sed -i "s#^api_base_url = .*#api_base_url = \"$API\"#" "$ETC/config.toml"; fi
+  if [ -n "$MODE" ]; then sed -i "s#^processing_mode = .*#processing_mode = \"$MODE\"#" "$ETC/config.toml"; fi
 fi
 chown root:"$SVC_USER" "$ETC/config.toml"
 chmod 0640 "$ETC/config.toml"

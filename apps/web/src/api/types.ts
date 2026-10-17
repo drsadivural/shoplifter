@@ -250,6 +250,38 @@ export interface Edge {
   last_seen_at: Timestamp | null;
   state: 'online' | 'offline' | 'revoked';
   health: Record<string, unknown> | null;
+  /** streaming: live view only; full: the appliance also runs installed analysis models. */
+  processing_mode?: EdgeMode;
+  /** Mode the appliance last reported (differs briefly after a change in the console). */
+  reported_mode?: EdgeMode | null;
+  version?: number;
+  models?: { name?: string; version?: string }[] | null;
+}
+
+export type EdgeMode = 'streaming' | 'full';
+
+export interface EdgeTreeCamera {
+  id: Id;
+  name: string;
+  location: string;
+  readiness: CameraReadiness;
+  analysis_state: CameraAnalysisState;
+  source_type: CameraSourceType;
+  store_id: Id;
+}
+
+/** GET /v1/edges/tree: paired appliances with the cameras each serves (side menu). */
+export interface EdgeTreeItem extends Edge {
+  store_name: string;
+  cameras: EdgeTreeCamera[];
+}
+
+export interface LiveStatus {
+  camera_id: Id;
+  state: 'starting' | 'live' | 'unavailable';
+  reason: 'camera_not_ready' | 'edge_unpaired' | 'edge_offline' | null;
+  playlist: string | null;
+  edge: { id: Id; name: string; processing_mode: EdgeMode; state: Edge['state'] } | null;
 }
 
 export type CameraReadiness = 'pending' | 'ready' | 'degraded' | 'offline' | 'disabled';
