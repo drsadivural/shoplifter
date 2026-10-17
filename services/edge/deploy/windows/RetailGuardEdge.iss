@@ -350,7 +350,7 @@ end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
-  StopAgent;  { the running agent holds files under {app} open }
+  StopAgent;  // the running agent holds files under the install folder open
   Result := '';
 end;
 
