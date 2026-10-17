@@ -22,9 +22,10 @@ class Edge:
         self.box = PrivateKey.generate()
         self.id = None
 
-    def pair(self, code):
+    def pair(self, code, mode=None):
         r = self.c.post("/v1/edge/pair", json={
             "code": code, "device_name": "Store appliance", "software_version": "test",
+            **({"processing_mode": mode} if mode else {}),
             "sign_public_key": base64.b64encode(bytes(self.sign.verify_key)).decode(),
             "box_public_key": base64.b64encode(bytes(self.box.public_key)).decode()})
         if r.status_code == 201:
@@ -45,11 +46,11 @@ class Edge:
         return self.c.request(method, path, content=body, headers=h)
 
 
-def paired_edge(org):
-    admin, store = org["admin"], org["store"]
+def paired_edge(org, mode=None, store=None):
+    admin, store = org["admin"], store or org["store"]
     code = admin.post(f"/v1/stores/{store['id']}/edge-pairing-codes", json={"device_name": "Edge 1"}).json()["code"]
     edge = Edge(org["app"])
-    assert edge.pair(code).status_code == 201
+    assert edge.pair(code, mode).status_code == 201
     assert edge.pair(code).status_code == 401  # single use
     assert edge.req("POST", "/v1/edge/heartbeat", {"software_version": "t", "cameras": []}).status_code == 200
     return edge
@@ -77,7 +78,7 @@ def test_camera_ssrf_rejection_credentials_sealed_and_readiness_gate(org):
     r = admin.post("/v1/cameras", json={"store_id": store["id"], "name": "Entrance", "address": "10.20.1.10",
                                         "username": "viewer", "password": "cam-pass"})
     assert r.status_code == 409 and r.json()["code"] == "edge_required"
-    edge = paired_edge(org)
+    edge = paired_edge(org, mode="full")  # analysis runs only on appliances set to full processing
     r = admin.post("/v1/cameras", json={"store_id": store["id"], "name": "Entrance", "location": "Door",
                                         "address": "10.20.1.10", "username": "viewer", "password": "cam-pass"})
     cam = r.json()
@@ -291,3 +292,100 @@ def test_unconfigured_subnets_mean_private_ranges(monkeypatch):
     from retailguard_api.routers import edge as edge_router
     monkeypatch.setattr(edge_router, "get_settings", lambda: SimpleNamespace(edge_allowed_subnets=()))
     assert edge_router.allowed_subnets() == ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+
+
+
+def ready_camera(org, edge, address, **extra):
+    admin = org["admin"]
+    store = extra.pop("store", org["store"])
+    r = admin.post("/v1/cameras", json={"store_id": store["id"], "name": f"Cam {address}", "address": address,
+                                        "edge_id": edge.id, **extra})
+    assert r.status_code == 201, r.text
+    cam = r.json()
+    prov = next(c for c in edge.req("GET", "/v1/edge/commands").json()["items"]
+                if c["kind"] == "provision_camera" and c["payload"]["camera_id"] == cam["id"])
+    edge.req("POST", f"/v1/edge/commands/{prov['id']}/ack", {"status": "succeeded", "result": {
+        "readiness": "ready", "report": {"decoded_seconds": 10.4, "codec": "h264", "width": 640, "height": 360, "fps": 15}}})
+    return admin.get(f"/v1/cameras/{cam['id']}").json()
+
+
+def test_processing_mode_chosen_at_pairing_changed_in_console_and_gates_analysis(org):
+    admin = org["admin"]
+    edge = paired_edge(org, mode="full")
+    e = next(x for x in admin.get("/v1/edges").json()["items"] if x["id"] == edge.id)
+    assert e["processing_mode"] == "full" and edge.info["processing_mode"] == "full"
+    cam = ready_camera(org, edge, "10.20.2.10")
+    r = admin.patch(f"/v1/edges/{edge.id}", json={"expected_version": e["version"], "processing_mode": "streaming"})
+    assert r.status_code == 200 and r.json()["processing_mode"] == "streaming"
+    assert admin.patch(f"/v1/edges/{edge.id}", json={"expected_version": e["version"], "name": "x"}).status_code == 409
+    cmd = next(c for c in edge.req("GET", "/v1/edge/commands").json()["items"] if c["kind"] == "set_processing_mode")
+    assert cmd["payload"] == {"mode": "streaming"}
+    r = admin.post(f"/v1/cameras/{cam['id']}/activate", json={"expected_version": cam["version"], "channels": ["behavior"]})
+    assert r.status_code == 409 and r.json()["code"] == "edge_streaming_only"
+    assert edge.req("POST", "/v1/edge/heartbeat", {"software_version": "t", "processing_mode": "streaming"}).json()["processing_mode"] == "streaming"
+    v = next(x for x in admin.get("/v1/edges").json()["items"] if x["id"] == edge.id)["version"]
+    r = admin.patch(f"/v1/edges/{edge.id}", json={"expected_version": v, "processing_mode": "full", "name": "Register edge"})
+    assert r.json()["processing_mode"] == "full" and r.json()["name"] == "Register edge"
+    cam = admin.get(f"/v1/cameras/{cam['id']}").json()
+    r = admin.post(f"/v1/cameras/{cam['id']}/activate", json={"expected_version": cam["version"], "channels": ["behavior"]})
+    assert r.status_code == 202, r.text
+    v = next(x for x in admin.get("/v1/edges").json()["items"] if x["id"] == edge.id)["version"]
+    assert admin.patch(f"/v1/edges/{edge.id}", json={"expected_version": v, "processing_mode": "everything"}).status_code == 422
+    assert "edge.updated" in [a["action"] for a in admin.get("/v1/audit?action=edge.updated").json()["items"]]
+
+
+def test_several_edges_in_one_store_each_serve_their_own_cameras(org):
+    admin, store, other = org["admin"], org["store"], org["store_b"]
+    e1, e2 = paired_edge(org), paired_edge(org)
+    cam = ready_camera(org, e2, "10.20.3.10", username="viewer", password="pw-e2")
+    assert cam["edge_id"] == e2.id
+    assert not [c for c in e1.req("GET", "/v1/edge/commands").json()["items"] if c["kind"] == "provision_camera"]
+    r = admin.post(f"/v1/cameras/{cam['id']}/provision")
+    assert r.status_code == 202
+    prov = next(c for c in e2.req("GET", "/v1/edge/commands").json()["items"] if c["kind"] == "provision_camera")
+    assert json.loads(SealedBox(e2.box).decrypt(base64.b64decode(prov["payload"]["credential_sealed"])))["password"] == "pw-e2"
+    job = admin.post("/v1/discovery-jobs", json={"store_id": store["id"], "edge_id": e1.id}).json()
+    assert job["edge_id"] == e1.id
+    assert [c["kind"] for c in e1.req("GET", "/v1/edge/commands").json()["items"]] == ["discover"]
+    e3 = paired_edge(org, store=other)
+    r = admin.post("/v1/cameras", json={"store_id": store["id"], "name": "x", "address": "10.20.3.11", "edge_id": e3.id})
+    assert r.status_code == 422 and r.json()["field_errors"] == {"edge_id": "not_in_store"}
+    tree = admin.get("/v1/edges/tree").json()["items"]
+    by_id = {t["id"]: t for t in tree}
+    assert [c["id"] for c in by_id[e2.id]["cameras"]] == [cam["id"]] and by_id[e1.id]["cameras"] == []
+    assert by_id[e3.id]["store_name"] == other["name"]
+
+
+def test_live_view_is_relayed_on_demand_and_store_scoped(org):
+    admin, app = org["admin"], org["app"]
+    edge = paired_edge(org)
+    cam = ready_camera(org, edge, "10.20.4.10")
+    assert edge.req("GET", "/v1/edge/commands").json()["live"] == []
+    r = admin.get(f"/v1/cameras/{cam['id']}/live").json()
+    assert r["state"] == "starting" and r["edge"]["id"] == edge.id
+    assert edge.req("GET", "/v1/edge/commands").json()["live"] == [cam["id"]]
+    assert admin.get(f"/v1/cameras/{cam['id']}/live.m3u8").status_code == 404
+    seg = bytes([0x47]) + b"\x00" * 187
+    for n in (1001, 1002, 1003):
+        r = edge.req("PUT", f"/v1/edge/cameras/{cam['id']}/live/{n}", seg * 10, headers={"Content-Type": "video/mp2t", "X-Segment-Duration": "1.0"})
+        assert r.status_code == 200, r.text
+    assert edge.req("PUT", f"/v1/edge/cameras/{cam['id']}/live/1002", seg, headers={"X-Segment-Duration": "1.0"}).json()["duplicate"] is True
+    assert edge.req("PUT", f"/v1/edge/cameras/{cam['id']}/live/1004", b"not ts", headers={"X-Segment-Duration": "1.0"}).status_code == 415
+    r = admin.get(f"/v1/cameras/{cam['id']}/live").json()
+    assert r["state"] == "live" and r["playlist"] == f"/v1/cameras/{cam['id']}/live.m3u8"
+    pl = admin.get(r["playlist"])
+    assert pl.status_code == 200 and pl.headers["content-type"].startswith("application/vnd.apple.mpegurl")
+    text = pl.text
+    assert "#EXT-X-MEDIA-SEQUENCE:1" in text and text.count("#EXTINF:1.000,") == 3 and "live/3.ts" in text
+    seg_r = admin.get(f"/v1/cameras/{cam['id']}/live/3.ts")
+    assert seg_r.status_code == 200 and seg_r.content == seg * 10 and seg_r.headers["content-type"] == "video/mp2t"
+    # another store's responder cannot see it
+    from conftest import invite_and_login
+    other, _ = invite_and_login(app, admin, "responder", [org["store_b"]["id"]])
+    assert other.get(f"/v1/cameras/{cam['id']}/live").status_code == 404
+    assert other.get(f"/v1/cameras/{cam['id']}/live/3.ts").status_code == 404
+    # another appliance cannot push video for this camera
+    e2 = paired_edge(org)
+    assert e2.req("PUT", f"/v1/edge/cameras/{cam['id']}/live/2000", seg, headers={"X-Segment-Duration": "1.0"}).status_code == 409
+    views = admin.get("/v1/audit?action=camera.live_viewed").json()["items"]
+    assert len([v for v in views if v["resource_id"] == cam["id"]]) == 1

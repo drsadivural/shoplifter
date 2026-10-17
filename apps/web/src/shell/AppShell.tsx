@@ -16,6 +16,7 @@ import { getScreen, NAV, ROUTE_META, screenForPath } from '../routes.meta';
 import type { ScreenId } from '../screens.generated';
 import { useSession } from '../session/SessionProvider';
 import { useConnectivity } from '../hooks/useConnectivity';
+import { EdgeTree } from './EdgeTree';
 
 export function AppShell() {
   const { t } = useI18n();
@@ -121,6 +122,7 @@ function Sidebar({ activeScreenId, open, isDrawer }: { activeScreenId: ScreenId 
               );
             })
           : null}
+        {me ? <EdgeTree /> : null}
       </nav>
       <EdgeFooter />
     </aside>

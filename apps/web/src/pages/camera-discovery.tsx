@@ -13,7 +13,7 @@ import type { ApiError } from '../api/client';
 import { endpoints } from '../api/endpoints';
 import { errorMessageKey, useApiQuery, useMutation } from '../api/hooks';
 import type { Camera, DiscoveryJob } from '../api/types';
-import { TextField, fieldErrorText } from '../components/forms';
+import { SelectField, TextField, fieldErrorText } from '../components/forms';
 import { gb } from '../components/groupb/api';
 import { CredentialFields, EdgeRequiredNotice, onvifProfiles } from '../components/groupb/camera-forms';
 import { StoreSelect, WizardSteps, useScopedStore } from '../components/groupb/ui';
@@ -40,8 +40,15 @@ export default function CameraDiscoveryPage() {
   const [params, setParams] = useSearchParams();
   const jobId = params.get('job');
   // Defaults to the store chosen in the header (or the only store); can be changed here.
-  const [storeId, setStoreId] = useState(scoped?.id ?? '');
+  const [storeId, setStoreId] = useState(params.get('store_id') ?? scoped?.id ?? '');
   const store = stores.find((s) => s.id === storeId);
+  // The edge appliance that will search and serve the cameras (stores can have several).
+  const edgesQ = useApiQuery((signal) => gb.edges(storeId, { signal }), [storeId], { enabled: Boolean(storeId) });
+  const storeEdges = (edgesQ.data?.items ?? []).filter((e) => e.state !== 'revoked');
+  const [edgeChoice, setEdgeChoice] = useState(params.get('edge_id') ?? '');
+  const edgeId = storeEdges.some((e) => e.id === edgeChoice)
+    ? edgeChoice
+    : (storeEdges.find((e) => e.state === 'online') ?? storeEdges[0])?.id ?? '';
   // ONVIF credentials are kept in memory only and used for each camera added from the results;
   // they are sealed to the store edge's key by the API and never stored readable in the cloud.
   const [onvifUser, setOnvifUser] = useState('');
@@ -50,7 +57,8 @@ export default function CameraDiscoveryPage() {
   const [unavailable, setUnavailable] = useState<ApiError | null>(null);
 
   const start = useMutation(
-    (body: { store_id: string; timeout_s: number }) => endpoints.discovery.start({ ...body, include_usb: true }),
+    (body: { store_id: string; timeout_s: number }) =>
+      endpoints.discovery.start({ ...body, include_usb: true, ...(edgeId ? { edge_id: edgeId } : {}) }),
     {
       successMessage: t('Discovery started on the store edge'),
       onSuccess: (job) => {
@@ -123,6 +131,23 @@ export default function CameraDiscoveryPage() {
                   error={errors.store_id}
                   hint={t('The edge appliance of this store searches its own network.')}
                 />
+                {storeEdges.length > 1 ? (
+                  <SelectField
+                    label={t('Edge appliance')}
+                    value={edgeId}
+                    onChange={(e) => setEdgeChoice(e.target.value)}
+                    options={storeEdges.map((e) => ({
+                      value: e.id,
+                      label: `${e.name} · ${e.state === 'online' ? t('edge|Online') : t('edge|Offline')}`,
+                    }))}
+                    hint={t('This appliance searches its networks and serves the cameras you add.')}
+                  />
+                ) : storeEdges.length === 1 ? (
+                  <p className="muted small">
+                    {t('Edge appliance')}: <strong>{storeEdges[0]!.name}</strong>
+                  </p>
+                ) : null}
+                {edgesQ.error ? <ErrorState compact error={edgesQ.error} onRetry={edgesQ.reload} /> : null}
                 <TextField
                   label={t('ONVIF username')}
                   autoComplete="off"
@@ -172,7 +197,7 @@ export default function CameraDiscoveryPage() {
               </UnavailableNotice>
             ) : null}
           </Card>
-          <RtspCard storeId={storeId} />
+          <RtspCard storeId={storeId} edgeId={edgeId} />
         </div>
         <Card title={t('Discovered devices')}>
           {jobId ? (
@@ -189,7 +214,7 @@ export default function CameraDiscoveryPage() {
 const RTSP_URL = /^rtsps?:\/\/\S+$/i;
 
 /** Manual add by RTSP URL, for cameras that ONVIF discovery cannot find. */
-function RtspCard({ storeId }: { storeId: string }) {
+function RtspCard({ storeId, edgeId }: { storeId: string; edgeId: string }) {
   const { t, locale } = useI18n();
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
@@ -210,6 +235,7 @@ function RtspCard({ storeId }: { storeId: string }) {
     () =>
       endpoints.cameras.createRtsp({
         store_id: storeId,
+        ...(edgeId ? { edge_id: edgeId } : {}),
         name: name.trim(),
         location: location.trim(),
         url: url.trim(),

@@ -99,6 +99,24 @@ def update_allowed_subnets(state_dir: Path, pairing: PairingState, cidrs: list[s
     return state
 
 
+MODES = ("streaming", "full")
+
+
+def load_mode(state_dir: Path, default: str = "streaming") -> str:
+    """The processing mode last set at pairing or by the console (mode.json)."""
+    try:
+        mode = json.loads((state_dir / "mode.json").read_text("utf-8")).get("processing_mode")
+    except (OSError, ValueError, AttributeError):
+        mode = None
+    return mode if mode in MODES else default
+
+
+def save_mode(state_dir: Path, mode: str) -> None:
+    if mode not in MODES:
+        raise ValueError(f"unknown processing mode {mode!r}")
+    write_private_file(state_dir / "mode.json", json.dumps({"processing_mode": mode}).encode())
+
+
 def subnet_policy(pairing: PairingState | None) -> SubnetPolicy:
     return SubnetPolicy.from_cidrs(pairing.allowed_subnets if pairing else [])
 
@@ -111,7 +129,8 @@ def _require_str(obj: dict, key: str) -> str:
 
 
 def pair(api_base_url: str, code: str, device_name: str, state_dir: Path,
-         *, transport: httpx.BaseTransport | None = None, timeout: float = 15.0) -> PairingState:
+         *, transport: httpx.BaseTransport | None = None, timeout: float = 15.0,
+         processing_mode: str = "streaming") -> PairingState:
     """POST /v1/edge/pair and persist the resulting identity binding.
 
     The pairing code is single-use; it is never logged or persisted.
@@ -130,6 +149,7 @@ def pair(api_base_url: str, code: str, device_name: str, state_dir: Path,
         "sign_public_key": keys.sign_public_b64,
         "box_public_key": keys.box_public_b64,
         "software_version": __version__,
+        "processing_mode": processing_mode if processing_mode in MODES else "streaming",
     }
     try:
         with httpx.Client(base_url=api_base_url, transport=transport, timeout=timeout,
@@ -170,5 +190,7 @@ def pair(api_base_url: str, code: str, device_name: str, state_dir: Path,
         paired_at=time.time(),
     )
     write_private_file(state_dir / "edge.json", json.dumps(asdict(state), indent=2).encode())
+    granted = data.get("processing_mode")
+    save_mode(state_dir, granted if granted in MODES else body["processing_mode"])
     log.info("paired edge_id=%s store_id=%s fingerprint=%s", state.edge_id, state.store_id, keys.fingerprint)
     return state

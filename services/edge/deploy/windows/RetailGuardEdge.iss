@@ -7,7 +7,8 @@
 ; update: the pages that ask for input are skipped when the PC is already paired, the config, pairing
 ; identity and camera credentials in %ProgramData%\RetailGuard\Edge are kept, and the agent restarts.
 ;
-; Silent: RetailGuardEdgeSetup.exe /VERYSILENT /SUPPRESSMSGBOXES [/SERVER=https://...] [/CODE=XXXX-XXXX-XXXX] [/NAME="Store 1"]
+; Silent: RetailGuardEdgeSetup.exe /VERYSILENT /SUPPRESSMSGBOXES [/SERVER=https://...] [/MODE=streaming|full]
+;         [/CODE=XXXX-XXXX-XXXX] [/NAME="Store 1"]
 
 #ifndef AppVersion
   #define AppVersion "0.0.0"
@@ -65,6 +66,12 @@ en.ServerSubtitle=Where should this PC connect?
 en.ServerIntro=Enter the address of your RetailGuard console. Leave it unchanged unless your administrator gave you a different address.
 en.ServerLabel=Server address:
 en.ServerInvalid=Enter an address that starts with https://, for example {#DefaultServer}.
+en.ModeTitle=How should this PC work?
+en.ModeSubtitle=Choose what this PC does with the cameras it serves.
+en.ModeIntro=You can change this later in the RetailGuard console (Edge devices). Full processing needs an installed, licensed analysis model; until one is installed, no alerts are produced.
+en.ModeStreaming=Camera streaming only: live video in the console, lowest CPU use
+en.ModeFull=Full processing on this PC: also analyze video here and report events as alerts
+en.ReadyProcessing=Processing:
 en.ConnectTitle=Connect this PC to a store
 en.ConnectSubtitle=Pair the edge appliance with its store.
 en.ConnectIntro=In the RetailGuard console open the store, choose "Connect edge appliance" and create a pairing code. The code works once and is valid for 15 minutes.
@@ -107,6 +114,12 @@ ja.ServerSubtitle=この PC の接続先を指定します。
 ja.ServerIntro=RetailGuard コンソールのアドレスを入力してください。管理者から別のアドレスを指定されていない場合は、そのままにしてください。
 ja.ServerLabel=サーバーのアドレス:
 ja.ServerInvalid=https:// で始まるアドレスを入力してください（例: {#DefaultServer}）。
+ja.ModeTitle=この PC の動作
+ja.ModeSubtitle=この PC が担当するカメラの扱い方を選択します。
+ja.ModeIntro=後から RetailGuard コンソール（エッジ端末）で変更できます。完全処理には、ライセンス済みの分析モデルのインストールが必要です。インストールされるまでアラートは生成されません。
+ja.ModeStreaming=映像配信のみ: コンソールでライブ映像を表示（CPU 負荷が最小）
+ja.ModeFull=この PC で完全処理: 映像をここで分析し、検出したイベントをアラートとして通知
+ja.ReadyProcessing=処理:
 ja.ConnectTitle=この PC を店舗に接続
 ja.ConnectSubtitle=エッジ端末を店舗とペアリングします。
 ja.ConnectIntro=RetailGuard コンソールで店舗を開き「エッジ端末を接続」からペアリングコードを作成してください。コードは1回限り、15分間有効です。
@@ -189,6 +202,7 @@ var
   DownloadPage: TDownloadWizardPage;
   FfmpegDownloaded: Boolean;
   ServerPage: TInputQueryWizardPage;
+  ModePage: TInputOptionWizardPage;
   ConnectPage: TInputQueryWizardPage;
   PairLaterBox: TNewCheckBox;
   Upgrading, SetupFailed, PairedNow: Boolean;
@@ -259,6 +273,11 @@ begin
     Delete(Result, Length(Result), 1);
 end;
 
+function SelectedMode: String;
+begin
+  if ModePage.Values[1] then Result := 'full' else Result := 'streaming';
+end;
+
 function ConsoleUrl(Param: String): String;
 begin
   Result := ServerUrl + '/web/camera-discovery';
@@ -313,6 +332,15 @@ begin
   if Server = '' then Server := '{#DefaultServer}';
   ServerPage.Values[0] := Server;
 
+  ModePage := CreateInputOptionPage(ServerPage.ID, CustomMessage('ModeTitle'), CustomMessage('ModeSubtitle'),
+    CustomMessage('ModeIntro'), True, False);
+  ModePage.Add(CustomMessage('ModeStreaming'));
+  ModePage.Add(CustomMessage('ModeFull'));
+  if Lowercase(ExpandConstant('{param:MODE|}')) = 'full' then
+    ModePage.Values[1] := True
+  else
+    ModePage.Values[0] := True;
+
   { Shown after the files are installed: pairing needs the installed agent. }
   ConnectPage := CreateInputQueryPage(wpInstalling, CustomMessage('ConnectTitle'), CustomMessage('ConnectSubtitle'),
     CustomMessage('ConnectIntro'));
@@ -335,7 +363,9 @@ end;
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
   Result := False;
-  if Upgrading and ((PageID = wpLicense) or ((PageID = ServerPage.ID) and (ConfiguredServer <> ''))) then
+  { An update keeps the existing configuration: no questions about it. }
+  if Upgrading and ((PageID = wpLicense) or
+     (((PageID = ServerPage.ID) or (PageID = ModePage.ID)) and (ConfiguredServer <> ''))) then
     Result := True;
   if (PageID = ConnectPage.ID) and (SetupFailed or IsPaired) then
     Result := True;
@@ -345,6 +375,13 @@ function UpdateReadyMemo(Space, NewLine, MemoUserInfoInfo, MemoDirInfo, MemoType
   MemoGroupInfo, MemoTasksInfo: String): String;
 begin
   Result := CustomMessage('ReadyServer') + NewLine + Space + ServerUrl + NewLine;
+  if not (Upgrading and (ConfiguredServer <> '')) then
+  begin
+    if SelectedMode = 'full' then
+      Result := Result + CustomMessage('ReadyProcessing') + NewLine + Space + CustomMessage('ModeFull') + NewLine
+    else
+      Result := Result + CustomMessage('ReadyProcessing') + NewLine + Space + CustomMessage('ModeStreaming') + NewLine;
+  end;
   if Upgrading then
     Result := Result + NewLine + FmtMessage(CustomMessage('ReadyMode'), [PrevVersion, '{#AppVersion}']) + NewLine +
       Space + CustomMessage('ReadyKeep') + NewLine;
@@ -465,6 +502,7 @@ begin
   begin
     Extra := '';
     if (Phases[I] = 'Ffmpeg') and FfmpegDownloaded then Extra := ' -FfmpegZip ' + Quoted(FfmpegZip);
+    if Phases[I] = 'Configure' then Extra := ' -Mode ' + SelectedMode;
     if not RunPhase(Phases[I], Msgs[I], Extra, I + 1, GetArrayLength(Phases)) then
     begin
       SetupFailed := True;

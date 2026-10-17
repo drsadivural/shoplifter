@@ -47,7 +47,8 @@ class EdgeConfig:
     discovery_interface: str | None = None
     disk_budget_bytes: int = 20 * 1024**3
     heartbeat_interval_s: float = 15.0
-    command_poll_interval_s: float = 5.0
+    # Also how quickly a viewer's live request reaches the appliance.
+    command_poll_interval_s: float = 3.0
     outbox_flush_interval_s: float = 10.0
     request_timeout_s: float = 15.0
     sample_seconds: float = 10.0
@@ -61,6 +62,11 @@ class EdgeConfig:
     face_sdk_manifest: Path | None = None
     pos_config: Path | None = None
     log_level: str = "INFO"
+    # Requested at pairing: "streaming" (live view only) or "full" (also run installed analysis
+    # models). After pairing the console decides; the current value is kept in the state directory.
+    processing_mode: str = "streaming"
+    # Keep a rolling local HLS playlist per camera for the on-demand live view.
+    live_relay: bool = True
 
     def with_overrides(self, **kw: Any) -> "EdgeConfig":
         clean = {k: v for k, v in kw.items() if v is not None}
@@ -74,7 +80,7 @@ _FLOAT_FIELDS = {
     "request_timeout_s", "sample_seconds", "required_decoded_seconds",
     "degraded_after_s", "offline_after_s",
 }
-_BOOL_FIELDS = {"monitor_streams"}
+_BOOL_FIELDS = {"monitor_streams", "live_relay"}
 
 _ENV = {
     "RETAILGUARD_EDGE_API": "api_base_url",
@@ -85,6 +91,7 @@ _ENV = {
     "RETAILGUARD_EDGE_FACE_MANIFEST": "face_sdk_manifest",
     "RETAILGUARD_EDGE_POS_CONFIG": "pos_config",
     "RETAILGUARD_EDGE_LOG_LEVEL": "log_level",
+    "RETAILGUARD_EDGE_MODE": "processing_mode",
 }
 
 
@@ -145,6 +152,8 @@ def _validate(cfg: EdgeConfig) -> EdgeConfig:
     for name in _FLOAT_FIELDS:
         if getattr(cfg, name) <= 0:
             raise ConfigError(f"{name} must be positive")
+    if cfg.processing_mode not in ("streaming", "full"):
+        raise ConfigError('processing_mode must be "streaming" or "full"')
     if cfg.offline_after_s <= cfg.degraded_after_s:
         raise ConfigError("offline_after_s must exceed degraded_after_s")
     if cfg.discovery_interface:

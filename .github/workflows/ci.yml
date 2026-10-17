@@ -141,7 +141,7 @@ jobs:
           $key = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{8E3C2F4A-6C1B-4B7E-9F0A-5D2E7C1A9B30}_is1"
           # A process left over from an interrupted earlier setup must not block this one.
           $stale = Start-Process powershell -ArgumentList '-NoProfile', '-Command', 'Start-Sleep 900 # deploy\install-windows.ps1 -Phase Ffmpeg' -PassThru -WindowStyle Hidden
-          RunSetup @('/SERVER=https://shoplifter.ayonix.com') C:\setup-1.log
+          RunSetup @('/SERVER=https://shoplifter.ayonix.com', '/MODE=full') C:\setup-1.log
           Start-Sleep 2
           if (-not $stale.HasExited) { throw "the leftover setup process was not stopped" }
           Get-ChildItem "$env:ProgramData\RetailGuard\Edge\logs" | Format-Table Name, Length
@@ -149,7 +149,8 @@ jobs:
           & $cli status; if ($LASTEXITCODE -ne 0) { throw "status failed" }
           if ((Get-ItemProperty $key).DisplayVersion -eq $null) { throw "not registered" }
           if (-not (Get-ScheduledTask -TaskName "RetailGuard Edge")) { throw "task missing" }
-          Get-Content "$env:ProgramData\RetailGuard\Edge\config.toml" | Select-String api_base_url, ffmpeg_path
+          Get-Content "$env:ProgramData\RetailGuard\Edge\config.toml" | Select-String api_base_url, ffmpeg_path, processing_mode
+          if (-not (Select-String -Path "$env:ProgramData\RetailGuard\Edge\config.toml" -Pattern '^processing_mode = "full"')) { throw "mode not written" }
           # The wizard downloaded ffmpeg itself (download page, SHA-256 verified) and unpacked only what is needed.
           if (-not (Test-Path "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\bin\ffmpeg.exe")) { throw "wizard did not install ffmpeg" }
           if (-not (Test-Path "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\LICENSE.txt")) { throw "ffmpeg license missing" }

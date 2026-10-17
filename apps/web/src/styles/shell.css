@@ -63,6 +63,110 @@
   color: var(--brand-ink);
   background: var(--soft);
 }
+/* Side menu: edge devices with their cameras (opens on hover, keyboard focus or the chevron). */
+.edge-tree .edge-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.edge-tree .edge-row > a {
+  flex: 1;
+  min-width: 0;
+}
+.edge-tree .nav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.edge-tree .edge-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.edge-led,
+.cam-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--muted);
+}
+.edge-led.online,
+.cam-led.ready {
+  background: var(--ok);
+}
+.edge-led.offline,
+.cam-led.offline {
+  background: var(--critical);
+}
+.cam-led.degraded,
+.cam-led.pending {
+  background: var(--warning);
+}
+.edge-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 6px;
+  min-height: 32px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+}
+.edge-toggle:hover {
+  background: var(--bg);
+  color: var(--ink);
+}
+.edge-toggle > span[aria-hidden='true'] {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.edge-count {
+  font-variant-numeric: tabular-nums;
+}
+.edge-cams {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+  margin-left: 14px !important;
+  border-left: 1px solid var(--line);
+  padding-left: 6px !important;
+}
+.edge-node:hover .edge-cams,
+.edge-node:focus-within .edge-cams,
+.edge-node.open .edge-cams {
+  max-height: 640px;
+}
+.edge-node:hover .edge-toggle > span[aria-hidden='true'],
+.edge-node:focus-within .edge-toggle > span[aria-hidden='true'],
+.edge-node.open .edge-toggle > span[aria-hidden='true'] {
+  transform: rotate(90deg);
+}
+.sidebar nav .edge-cams a {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-weight: 500;
+  font-size: 13px;
+}
+.edge-empty {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 6px 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .edge-cams,
+  .edge-toggle > span[aria-hidden='true'] {
+    transition: none;
+  }
+}
 .nav-head {
   font-size: 10px;
   letter-spacing: 1.4px;

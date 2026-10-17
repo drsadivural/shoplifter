@@ -1559,6 +1559,86 @@
         }
       }
     },
+    "/v1/edges/{edge_id}": {
+      "patch": {
+        "tags": [
+          "edge"
+        ],
+        "summary": "Update Edge",
+        "description": "Rename an appliance or switch it between streaming only and full processing on the edge.",
+        "operationId": "update_edge_v1_edges__edge_id__patch",
+        "parameters": [
+          {
+            "name": "edge_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Edge Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EdgePatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Update Edge V1 Edges  Edge Id  Patch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/edges/tree": {
+      "get": {
+        "tags": [
+          "edge"
+        ],
+        "summary": "Edges Tree",
+        "description": "Paired appliances in the caller's stores with the cameras each one serves (side menu).",
+        "operationId": "edges_tree_v1_edges_tree_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Edges Tree V1 Edges Tree Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/edges/{edge_id}/revoke": {
       "post": {
         "tags": [
@@ -1843,6 +1923,61 @@
                   "type": "object",
                   "additionalProperties": true,
                   "title": "Response Upload Snapshot V1 Edge Cameras  Camera Id  Snapshot Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/edge/cameras/{camera_id}/live/{seq}": {
+      "put": {
+        "tags": [
+          "edge"
+        ],
+        "summary": "Upload Live Segment",
+        "description": "One MPEG-TS segment of a camera's live view. Kept only briefly (the newest few) and served\nto signed-in viewers of that store; never part of evidence.",
+        "operationId": "upload_live_segment_v1_edge_cameras__camera_id__live__seq__put",
+        "parameters": [
+          {
+            "name": "camera_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Camera Id"
+            }
+          },
+          {
+            "name": "seq",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Seq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Upload Live Segment V1 Edge Cameras  Camera Id  Live  Seq  Put"
                 }
               }
             }
@@ -2518,6 +2653,143 @@
                   "additionalProperties": true,
                   "title": "Response Add Discovered V1 Discovery Jobs  Job Id  Add Post"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cameras/{camera_id}/live": {
+      "get": {
+        "tags": [
+          "cameras"
+        ],
+        "summary": "Live Status",
+        "description": "Start (or keep) the camera's live view and report whether video is flowing yet.",
+        "operationId": "live_status_v1_cameras__camera_id__live_get",
+        "parameters": [
+          {
+            "name": "camera_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Camera Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Live Status V1 Cameras  Camera Id  Live Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cameras/{camera_id}/live.m3u8": {
+      "get": {
+        "tags": [
+          "cameras"
+        ],
+        "summary": "Live Playlist",
+        "operationId": "live_playlist_v1_cameras__camera_id__live_m3u8_get",
+        "parameters": [
+          {
+            "name": "camera_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Camera Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cameras/{camera_id}/live/{index}.ts": {
+      "get": {
+        "tags": [
+          "cameras"
+        ],
+        "summary": "Live Segment",
+        "operationId": "live_segment_v1_cameras__camera_id__live__index__ts_get",
+        "parameters": [
+          {
+            "name": "camera_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Camera Id"
+            }
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -5600,6 +5872,18 @@
             "format": "uuid",
             "title": "Store Id"
           },
+          "edge_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Id"
+          },
           "name": {
             "type": "string",
             "maxLength": 120,
@@ -5851,6 +6135,18 @@
             "format": "uuid",
             "title": "Store Id"
           },
+          "edge_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Id"
+          },
           "interface": {
             "anyOf": [
               {
@@ -5893,6 +6189,43 @@
           "store_id"
         ],
         "title": "DiscoveryIn"
+      },
+      "EdgePatch": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "title": "Expected Version"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "processing_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processing Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "EdgePatch"
       },
       "EscalateIn": {
         "properties": {
@@ -6006,6 +6339,18 @@
             "type": "string",
             "format": "uuid",
             "title": "Store Id"
+          },
+          "edge_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Id"
           },
           "csv": {
             "type": "string",
@@ -6636,6 +6981,11 @@
             "maxLength": 100,
             "title": "Software Version",
             "default": ""
+          },
+          "processing_mode": {
+            "type": "string",
+            "title": "Processing Mode",
+            "default": "streaming"
           }
         },
         "type": "object",
@@ -7117,6 +7467,18 @@
             "type": "string",
             "format": "uuid",
             "title": "Store Id"
+          },
+          "edge_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Id"
           },
           "name": {
             "type": "string",

@@ -99,15 +99,19 @@ class StreamMonitor(threading.Thread):
     """
 
     def __init__(self, source: StreamSource, health: CameraHealth, *, ffmpeg: str = "ffmpeg",
-                 stop_event: threading.Event | None = None):
+                 stop_event: threading.Event | None = None, extra_inputs: list[str] | None = None,
+                 extra_output: list[str] | None = None):
         super().__init__(name=f"monitor-{health.camera_id}", daemon=True)
         self.source, self.health, self.ffmpeg = source, health, ffmpeg
+        # e.g. the live view's HLS output (live.hls_plan): same decoder, no second camera connection.
+        self.extra_inputs, self.extra_output = list(extra_inputs or []), list(extra_output or [])
         self.stop_event = stop_event or threading.Event()
         self._proc: subprocess.Popen[bytes] | None = None
 
     def argv(self) -> list[str]:
-        return [self.ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", *input_args(self.source),
-                "-map", "0:v:0", "-an", "-f", "null", "-", "-progress", "pipe:1", "-stats_period", "1"]
+        return [self.ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-progress", "pipe:1",
+                "-stats_period", "1", *input_args(self.source), *self.extra_inputs,
+                "-map", "0:v:0", "-an", "-f", "null", "-", *self.extra_output]
 
     def stop(self) -> None:
         self.stop_event.set()

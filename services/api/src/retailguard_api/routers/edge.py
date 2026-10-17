@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 from ..authz import audit, clean, iso, now, outbox
 from ..db import J, Tx, transaction
 from ..deps import Ctx, ctx
-from ..errors import ApiError, invalid, not_found
+from ..errors import ApiError, conflict, invalid, not_found
 from ..security import new_token, token_hash
 from ..settings import get_settings
 from .. import media as media_store
@@ -46,6 +46,17 @@ class PairIn(BaseModel):
     sign_public_key: str = Field(max_length=100)
     box_public_key: str = Field(max_length=100)
     software_version: str = Field(default="", max_length=100)
+    # Chosen on the device; the console can change it later.
+    processing_mode: str = "streaming"
+
+
+MODES = ("streaming", "full")
+
+
+class EdgePatch(BaseModel):
+    expected_version: int
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    processing_mode: str | None = None
 
 
 def edge_state(row: dict) -> str:
@@ -60,7 +71,8 @@ def edge_out(row: dict) -> dict:
     return {"id": str(row["id"]), "store_id": str(row["store_id"]), "name": row["name"],
             "fingerprint": row["certificate_fingerprint"], "software_version": row["software_version"],
             "last_seen_at": iso(row["last_seen_at"]), "state": edge_state(row), "health": row["health"],
-            "models": row["models"], "clock_offset_ms": row["clock_offset_ms"], "created_at": iso(row["created_at"])}
+            "models": row["models"], "clock_offset_ms": row["clock_offset_ms"], "created_at": iso(row["created_at"]),
+            "processing_mode": row["processing_mode"], "reported_mode": row["reported_mode"], "version": row["version"]}
 
 
 # Without EDGE_ALLOWED_SUBNETS the API accepts any private camera address; the appliance is told the
@@ -100,6 +112,58 @@ def list_edges(store_id: uuid.UUID | None = None, c: Ctx = Depends(ctx)) -> dict
     stores = c.actor.scoped_stores(str(store_id) if store_id else None)
     rows = c.tx.all("SELECT * FROM edges WHERE store_id = ANY(%s::uuid[]) ORDER BY created_at DESC", (stores,))
     return {"items": [edge_out(r) for r in rows], "next_cursor": None}
+
+
+@router.patch("/edges/{edge_id}")
+def update_edge(edge_id: uuid.UUID, body: EdgePatch, c: Ctx = Depends(ctx)) -> dict:
+    """Rename an appliance or switch it between streaming only and full processing on the edge."""
+    row = c.tx.one("SELECT * FROM edges WHERE id=%s FOR UPDATE", (edge_id,))
+    if not row:
+        raise not_found()
+    c.actor.require("edge.manage", str(row["store_id"]))
+    if row["version"] != body.expected_version:
+        raise conflict("version_conflict", row["version"])
+    if row["revoked_at"]:
+        raise ApiError(409, "already_revoked", "This appliance is revoked")
+    detail: dict = {}
+    if body.name is not None and body.name.strip() != row["name"]:
+        c.tx.run("UPDATE edges SET name=%s WHERE id=%s", (body.name.strip(), edge_id))
+        detail["name"] = body.name.strip()
+    if body.processing_mode is not None and body.processing_mode != row["processing_mode"]:
+        if body.processing_mode not in MODES:
+            raise invalid("processing_mode")
+        c.tx.run("UPDATE edges SET processing_mode=%s WHERE id=%s", (body.processing_mode, edge_id))
+        queue_command(c.tx, c.actor.org_id, row["store_id"], edge_id, "set_processing_mode",
+                      {"mode": body.processing_mode}, c.actor.user_id)
+        if body.processing_mode == "streaming":
+            # Analysis stops on the appliance; the console must not keep showing it as running.
+            c.tx.run("""UPDATE cameras SET analysis_state='unavailable', version=version+1
+                        WHERE edge_id=%s AND analysis_state IN ('analyzing','activation_requested','degraded')""", (edge_id,))
+        detail["processing_mode"] = {"from": row["processing_mode"], "to": body.processing_mode}
+    if detail:
+        c.tx.run("UPDATE edges SET version=version+1 WHERE id=%s", (edge_id,))
+        audit(c.tx, c.actor.org_id, "edge.updated", "edge", edge_id, actor=c.actor, store_id=row["store_id"], detail=detail)
+    return edge_out(c.tx.one("SELECT * FROM edges WHERE id=%s", (edge_id,)))
+
+
+@router.get("/edges/tree")
+def edges_tree(c: Ctx = Depends(ctx)) -> dict:
+    """Paired appliances in the caller's stores with the cameras each one serves (side menu)."""
+    c.actor.require("camera.read")
+    stores = c.actor.scoped_stores()
+    edges = c.tx.all("""SELECT e.*, s.name AS store_name FROM edges e JOIN stores s ON s.id=e.store_id
+                        WHERE e.store_id = ANY(%s::uuid[]) AND e.revoked_at IS NULL ORDER BY s.name, e.name""", (stores,))
+    cams = c.tx.all("""SELECT id, edge_id, store_id, name, location, readiness, analysis_state, source_type
+                       FROM cameras WHERE store_id = ANY(%s::uuid[]) AND readiness <> 'disabled' ORDER BY name, id""", (stores,))
+    by_edge: dict[str, list] = {}
+    unassigned: list = []
+    for cam in cams:
+        item = {"id": str(cam["id"]), "name": cam["name"], "location": cam["location"], "readiness": cam["readiness"],
+                "analysis_state": cam["analysis_state"], "source_type": cam["source_type"], "store_id": str(cam["store_id"])}
+        (by_edge.setdefault(str(cam["edge_id"]), []) if cam["edge_id"] else unassigned).append(item)
+    items = [{**{k: v for k, v in edge_out(e).items() if k not in ("health", "models", "fingerprint")},
+              "store_name": e["store_name"], "cameras": by_edge.get(str(e["id"]), [])} for e in edges]
+    return {"items": items, "unassigned_cameras": unassigned}
 
 
 @router.post("/edges/{edge_id}/revoke")
@@ -160,14 +224,16 @@ def pair(body: PairIn, request: Request) -> dict:
             raise ApiError(409, "key_already_paired", "This appliance key is already paired")
         edge_id = uuid.uuid4()
         tx.run("UPDATE edge_pairing_codes SET used_at=now() WHERE id=%s", (code["id"],))
+        mode = body.processing_mode if body.processing_mode in MODES else "streaming"
         tx.run("""INSERT INTO edges (id, org_id, store_id, name, sign_public_key, box_public_key, certificate_fingerprint,
-                  software_version) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+                  software_version, processing_mode, reported_mode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                (edge_id, code["org_id"], code["store_id"], body.device_name.strip() or code["device_name"],
-                body.sign_public_key, body.box_public_key, fingerprint, body.software_version))
+                body.sign_public_key, body.box_public_key, fingerprint, body.software_version, mode, mode))
         store = tx.one("SELECT timezone FROM stores WHERE id=%s", (code["store_id"],))
         audit(tx, str(code["org_id"]), "edge.paired", "edge", edge_id, actor_kind="edge", actor_id=None,
-              store_id=code["store_id"], detail={"fingerprint": fingerprint, "device_name": body.device_name})
-        return {"edge_id": str(edge_id), "org_id": str(code["org_id"]), "store_id": str(code["store_id"]),
+              store_id=code["store_id"], detail={"fingerprint": fingerprint, "device_name": body.device_name,
+                                                 "processing_mode": mode})
+        return {"edge_id": str(edge_id), "processing_mode": mode, "org_id": str(code["org_id"]), "store_id": str(code["store_id"]),
                 "store_timezone": store["timezone"], "allowed_subnets": allowed_subnets(), "api_version": 1,
                 "fingerprint": fingerprint}
 
@@ -265,10 +331,11 @@ def heartbeat(e: EdgeCtx = Depends(edge_ctx)) -> dict:
     models = [m for m in data.get("models", []) if isinstance(m, dict)][:50] if isinstance(data.get("models"), list) else []
     offset = data.get("clock_offset_ms")
     prev_seen = e.edge["last_seen_at"]
-    e.tx.run("""UPDATE edges SET last_seen_at=now(), software_version=%s, health=%s, models=%s, clock_offset_ms=%s
-                WHERE id=%s""",
+    reported = data.get("processing_mode") if data.get("processing_mode") in MODES else None
+    e.tx.run("""UPDATE edges SET last_seen_at=now(), software_version=%s, health=%s, models=%s, clock_offset_ms=%s,
+                reported_mode=COALESCE(%s, reported_mode) WHERE id=%s""",
              (str(data.get("software_version", ""))[:100], J(health), J(models),
-              int(offset) if isinstance(offset, (int, float)) else None, e.id))
+              int(offset) if isinstance(offset, (int, float)) else None, reported, e.id))
     elapsed = 0
     if prev_seen:
         elapsed = int(min(max((now() - prev_seen).total_seconds(), 0), 60))
@@ -303,7 +370,7 @@ def heartbeat(e: EdgeCtx = Depends(edge_ctx)) -> dict:
                         ON CONFLICT (org_id, camera_id, day) DO UPDATE SET seconds = camera_analysis_time.seconds + EXCLUDED.seconds""",
                      (e.org_id, cid, date.today(), elapsed))
     return {"ok": True, "config_version": e.tx.scalar("SELECT config_version FROM stores WHERE id=%s", (e.store_id,)),
-            "allowed_subnets": allowed_subnets()}
+            "allowed_subnets": allowed_subnets(), "processing_mode": e.edge["processing_mode"]}
 
 
 @router.get("/edge/commands")
@@ -316,8 +383,12 @@ def edge_commands(e: EdgeCtx = Depends(edge_ctx)) -> dict:
         e.tx.run("UPDATE edge_commands SET status='sent', sent_at=now() WHERE id=%s", (r["id"],))
         if r["kind"] == "discover":
             e.tx.run("UPDATE discovery_jobs SET status='running' WHERE command_id=%s AND status='queued'", (r["id"],))
+    # Cameras someone is watching: the appliance uploads live segments only for these.
+    live = [str(r["id"]) for r in e.tx.all(
+        """SELECT id FROM cameras WHERE store_id=%s AND (edge_id=%s OR edge_id IS NULL) AND readiness='ready'
+           AND live_demand_at > now() - make_interval(secs => %s)""", (e.store_id, e.id, LIVE_DEMAND_S))]
     return {"items": [{"id": str(r["id"]), "kind": r["kind"], "payload": r["payload"], "created_at": iso(r["created_at"])}
-                      for r in rows]}
+                      for r in rows], "live": live}
 
 
 @router.post("/edge/commands/{command_id}/ack")
@@ -469,6 +540,9 @@ def ingest_event(request: Request, e: EdgeCtx = Depends(edge_ctx)) -> dict:
 
 EVIDENCE_MAX = 64 * 1024 * 1024
 SNAPSHOT_MAX = 4 * 1024 * 1024
+LIVE_SEGMENT_MAX = 6 * 1024 * 1024
+LIVE_DEMAND_S = 30      # a viewer keeps a camera live this long after their last request
+LIVE_KEEP_SEGMENTS = 8
 
 
 def evidence_retention_days(tx: Tx, org_id: str) -> int:
@@ -524,3 +598,50 @@ def upload_snapshot(camera_id: uuid.UUID, e: EdgeCtx = Depends(edge_ctx)) -> dic
     if old:
         media_store.delete(e.tx, old)
     return {"media_id": str(m["id"])}
+
+
+# ---- live relay (on demand) ----------------------------------------------------------------
+
+def live_dir(camera_id) -> "Path":
+    from pathlib import Path
+    return Path(get_settings().media_dir) / "live" / str(camera_id)
+
+
+@router.put("/edge/cameras/{camera_id}/live/{seq}")
+def upload_live_segment(camera_id: uuid.UUID, seq: int, request: Request, e: EdgeCtx = Depends(edge_ctx)) -> dict:
+    """One MPEG-TS segment of a camera's live view. Kept only briefly (the newest few) and served
+    to signed-in viewers of that store; never part of evidence."""
+    data = e.body
+    if not data or len(data) > LIVE_SEGMENT_MAX or data[0] != 0x47:
+        raise ApiError(415, "unsupported_media", "Live segments must be MPEG-TS up to 6 MB")
+    try:
+        duration = float(request.headers.get("x-segment-duration", ""))
+        if not 0.1 <= duration <= 15:
+            raise ValueError
+    except ValueError:
+        raise invalid("x-segment-duration")
+    if seq < 0:
+        raise invalid("seq")
+    cam = e.tx.one("SELECT * FROM cameras WHERE id=%s AND store_id=%s FOR UPDATE", (camera_id, e.store_id))
+    if not cam:
+        raise not_found()
+    if cam["edge_id"] and str(cam["edge_id"]) != e.id:
+        raise ApiError(409, "wrong_edge", "This camera is served by another appliance")
+    if seq <= cam["live_edge_seq"]:
+        return {"ok": True, "duplicate": True}
+    # A gap (appliance restarted, viewer came back) starts a new run of segments for the player.
+    stale = not cam["live_segment_at"] or cam["live_segment_at"] < now() - timedelta(seconds=10)
+    discontinuity = request.headers.get("x-segment-discontinuity") == "1" or stale
+    index = cam["live_seq"] + 1
+    d = live_dir(camera_id)
+    d.mkdir(parents=True, exist_ok=True)
+    tmp = d / f".{index}.tmp"
+    tmp.write_bytes(data)
+    tmp.replace(d / f"{index}.ts")
+    (d / f"{index}.meta").write_text(json.dumps({"duration": round(duration, 3), "discontinuity": discontinuity}))
+    for old in sorted(d.glob("*.ts"), key=lambda p: int(p.stem))[:-LIVE_KEEP_SEGMENTS]:
+        old.unlink(missing_ok=True)
+        old.with_suffix(".meta").unlink(missing_ok=True)
+    e.tx.run("UPDATE cameras SET live_seq=%s, live_edge_seq=%s, live_segment_at=now() WHERE id=%s",
+             (index, seq, camera_id))
+    return {"ok": True, "index": index}

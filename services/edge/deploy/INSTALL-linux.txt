@@ -10,7 +10,11 @@ Requirements
 1. Install (also updates an existing installation; the config is kept)
 
    tar xzf retailguard-edge-VERSION-linux.tar.gz
-   sudo bash retailguard-edge-VERSION/deploy/install.sh --api https://shoplifter.ayonix.com
+   sudo bash retailguard-edge-VERSION/deploy/install.sh --api https://shoplifter.ayonix.com [--mode full]
+
+   --mode streaming (default): relay camera video for live view only.
+   --mode full: also run the installed analysis models on this appliance and report events.
+   The mode can be changed later in the console (Edge devices).
 
 2. Pair with the store. In the RetailGuard console open the store, choose
    "Connect edge appliance" and create a pairing code (single use, valid 15 minutes):
@@ -45,7 +49,11 @@ Ayonix RetailGuard エッジ端末 — Linux パッケージ
 1. インストール（既存環境の更新にも使用できます。設定ファイルは保持されます）
 
    tar xzf retailguard-edge-VERSION-linux.tar.gz
-   sudo bash retailguard-edge-VERSION/deploy/install.sh --api https://shoplifter.ayonix.com
+   sudo bash retailguard-edge-VERSION/deploy/install.sh --api https://shoplifter.ayonix.com [--mode full]
+
+   --mode streaming（既定）: ライブ映像の中継のみ。
+   --mode full: この端末でインストール済みの分析モデルも実行し、イベントを通知します。
+   モードは後からコンソール（エッジ端末）で変更できます。
 
 2. 店舗とのペアリング。RetailGuard コンソールで店舗を開き「エッジ端末を接続」から
    ペアリングコードを作成します（1回限り、15分間有効）。
