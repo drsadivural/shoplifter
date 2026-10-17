@@ -3,8 +3,9 @@
 # Outbound-only HTTPS to the regional API. Plain http:// is accepted only for loopback testing.
 api_base_url = "https://retailguard.example.com"
 state_dir = "/var/lib/retailguard-edge"
-# Local IPv4 address of the camera-VLAN interface used for WS-Discovery.
-discovery_interface = "192.168.10.2"
+# WS-Discovery probes from every private IPv4 interface by default. Set this only to restrict the
+# probe to one interface (its local IPv4 address).
+# discovery_interface = "192.168.10.2"
 # Spool budget for evidence + raw ring buffers (bytes).
 disk_budget_bytes = 21474836480
 heartbeat_interval_s = 15

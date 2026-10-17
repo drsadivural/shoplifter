@@ -45,19 +45,19 @@ The wire contract is `docs/API_V1.md` → "Edge-authenticated API".
 
 ## Install
 
+On the appliance (Debian/Ubuntu, as root). The same command updates an existing install; the
+config file is kept.
+
 ```bash
-sudo apt-get install -y ffmpeg
-sudo useradd --system --home /var/lib/retailguard-edge --shell /usr/sbin/nologin retailguard-edge
-sudo mkdir -p /opt/retailguard-edge /etc/retailguard-edge
-sudo cp -r services/edge/* /opt/retailguard-edge/
-cd /opt/retailguard-edge
-# Install the interpreter under /opt so the hardened unit (ProtectHome=yes) can reach it.
-sudo env UV_PYTHON_INSTALL_DIR=/opt/retailguard-edge/python uv python install 3.12
-sudo env UV_PYTHON_INSTALL_DIR=/opt/retailguard-edge/python uv sync --frozen --no-dev
-sudo cp deploy/config.example.toml /etc/retailguard-edge/config.toml   # edit api_base_url, interface
-sudo chown root:retailguard-edge /etc/retailguard-edge/config.toml && sudo chmod 0640 /etc/retailguard-edge/config.toml
-sudo cp deploy/retailguard-edge.service /etc/systemd/system/
+git clone https://github.com/drsadivural/shoplifter.git
+sudo bash shoplifter/services/edge/deploy/install.sh --api https://shoplifter.ayonix.com
 ```
+
+`deploy/install.sh` installs ffmpeg and uv, a private Python 3.12 and the locked dependencies under
+`/opt/retailguard-edge`, creates the `retailguard-edge` service user (member of `video` for USB
+cameras) and `/var/lib/retailguard-edge` (`0700`), writes `/etc/retailguard-edge/config.toml`
+(`0640`, `api_base_url` set from `--api`), installs the hardened systemd unit, and adds
+`/usr/local/bin/retailguard-edge`, which runs the CLI as the service user with that config and state.
 
 ## Pair
 
@@ -65,8 +65,7 @@ An org/store admin creates a one-time code (`POST /v1/stores/{id}/edge-pairing-c
 single use, 15 min). On the appliance:
 
 ```bash
-sudo -u retailguard-edge /opt/retailguard-edge/.venv/bin/retailguard-edge \
-  --state-dir /var/lib/retailguard-edge pair --api https://retailguard.example.com --code ABCD-1234 --name "Shibuya edge 1"
+sudo retailguard-edge pair --api https://shoplifter.ayonix.com --code ABCD-1234-EFGH --name "Shibuya edge 1"
 ```
 
 This generates the keys (never leave the appliance), sends the public keys, and stores
@@ -80,7 +79,7 @@ console first). The pairing code is not logged or stored.
 ```bash
 sudo systemctl daemon-reload && sudo systemctl enable --now retailguard-edge
 journalctl -u retailguard-edge -f
-sudo -u retailguard-edge /opt/retailguard-edge/.venv/bin/retailguard-edge --state-dir /var/lib/retailguard-edge status
+sudo retailguard-edge status
 ```
 
 The loop sends `POST /v1/edge/heartbeat` every 15 s (software version, clock offset from the
