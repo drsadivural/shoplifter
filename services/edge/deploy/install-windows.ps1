@@ -155,13 +155,21 @@ if (Want "Ffmpeg") {
 
 if (Want "Configure") {
     Step "Configuration"
+    $ff = Get-Ffmpeg
+    if (-not $ff) { $ff = @("ffmpeg", "ffprobe") }
+    $ffLines = "ffmpeg_path = '$($ff[0])'`r`nffprobe_path = '$($ff[1])'"
     if (-not (Test-Path $Config)) {
-        $ff = Get-Ffmpeg
-        if (-not $ff) { $ff = @("ffmpeg", "ffprobe") }
         $text = Get-Content -Raw -Path (Join-Path $Prefix "deploy\config.example.toml")
-        $text = $text -replace '(?m)^api_base_url = .*$', "api_base_url = `"$Api`""
-        $text = $text -replace '(?m)^state_dir = .*$', "state_dir = '$State'"
-        $text = $text -replace '(?m)^\[edge\][ \t]*$', "[edge]`r`nffmpeg_path = '$($ff[0])'`r`nffprobe_path = '$($ff[1])'"
+        $text = $text -replace '(?m)^api_base_url = .*?(\r?)$', "api_base_url = `"$Api`"`$1"
+        $text = $text -replace '(?m)^state_dir = .*?(\r?)$', "state_dir = '$State'`$1"
+        [IO.File]::WriteAllText($Config, $text, (New-Object Text.UTF8Encoding($false)))
+    }
+    # The agent runs as SYSTEM without this PC's PATH: it needs the full ffmpeg/ffprobe paths. Also
+    # repairs configs written by 0.3.0, whose CRLF template never received these lines.
+    $text = Get-Content -Raw -Path $Config
+    if ($text -notmatch '(?m)^\s*ffmpeg_path\s*=') {
+        $text = $text -replace '(?m)^\[edge\][ \t]*\r?$', "[edge]`r`n$ffLines"
+        if ($text -notmatch '(?m)^\s*ffmpeg_path\s*=') { throw "could not add ffmpeg_path to $Config" }
         [IO.File]::WriteAllText($Config, $text, (New-Object Text.UTF8Encoding($false)))
     }
     $cmd = @"
