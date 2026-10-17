@@ -161,6 +161,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--version", action="version", version=__version__)
     ap.add_argument("--config", help="TOML config path (default /etc/retailguard-edge/config.toml)")
     ap.add_argument("--state-dir", help="state directory (default /var/lib/retailguard-edge)")
+    ap.add_argument("--log-file", help="also write logs to this file (rotated at 10 MB)")
     sub = ap.add_subparsers(dest="command", required=True)
     p = sub.add_parser("pair", help="pair this appliance with a store using a one-time code")
     p.add_argument("--api", required=True)
@@ -187,7 +188,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         cfg_level = os.environ.get("RETAILGUARD_EDGE_LOG_LEVEL", "INFO")
-        configure_logging(cfg_level)
+        configure_logging(cfg_level, args.log_file or os.environ.get("RETAILGUARD_EDGE_LOG_FILE"))
         return args.func(args)
     except ConfigError as exc:
         print(f"configuration error: {exc}", file=sys.stderr)

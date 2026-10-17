@@ -345,7 +345,8 @@ def ack_command(command_id: uuid.UUID, e: EdgeCtx = Depends(edge_ctx)) -> dict:
     return {"ok": True}
 
 
-USB_DEVICE = re.compile(r"^/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})$")
+# Linux V4L2 device path, or "dshow:" + a Windows DirectShow device (no quotes, ":" or control chars).
+USB_DEVICE = re.compile(r'^(/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})|dshow:[^":\x00-\x1f]{1,300})$')
 
 
 def _apply_discovery(e: EdgeCtx, cmd: dict, status: str, result: dict, error: str | None) -> None:

@@ -59,6 +59,24 @@ cameras) and `/var/lib/retailguard-edge` (`0700`), writes `/etc/retailguard-edge
 (`0640`, `api_base_url` set from `--api`), installs the hardened systemd unit, and adds
 `/usr/local/bin/retailguard-edge`, which runs the CLI as the service user with that config and state.
 
+### Windows
+
+Customer packages are built with `python3 deploy/package.py` (`dist/retailguard-edge-<version>-linux.tar.gz`
+and `-windows.zip`, each with a bilingual `INSTALL.txt`). On Windows 10/11 or Server 2019+ (x64), in an
+elevated PowerShell inside the extracted zip:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\install-windows.ps1 -Api https://shoplifter.ayonix.com
+```
+
+It installs uv, Python 3.12 and the locked dependencies under `%ProgramFiles%\RetailGuard\Edge`, ffmpeg
+(unless already on `PATH`; otherwise the gyan.dev release-essentials build), config and state under
+`%ProgramData%\RetailGuard\Edge` (ACL: SYSTEM and Administrators only, the Windows counterpart of the
+`0600`/`0700` modes), a `RetailGuard Edge` scheduled task (SYSTEM, at startup, restarted on failure, log
+`%ProgramData%\RetailGuard\Edge\logs\edge.log`) and a `retailguard-edge` command. USB cameras are
+DirectShow devices (`dshow:@device_pnp_...`). `deploy/uninstall-windows.ps1 [-RemoveData]` removes it.
+The `edge-windows` CI job installs the built zip on a Windows runner and runs the test suite there.
+
 ## Pair
 
 An org/store admin creates a one-time code (`POST /v1/stores/{id}/edge-pairing-codes`,

@@ -31,11 +31,17 @@ from .vault import Credentials
 log = logging.getLogger(__name__)
 
 SUPPORTED_CODECS = {"h264", "hevc"}
-# USB (V4L2) cameras usually deliver MJPEG or raw YUV; the edge decodes them locally.
+# USB cameras usually deliver MJPEG or raw YUV; the edge decodes them locally.
 V4L2_CODECS = SUPPORTED_CODECS | {"mjpeg", "rawvideo"}
 V4L2_SCHEME = "v4l2:"
-# Stable udev links or a numbered node; nothing else on the filesystem is accepted as a camera.
+# Linux: stable udev links or a numbered node; nothing else on the filesystem is accepted.
 V4L2_DEVICE = re.compile(r"^/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})$")
+# Windows: "dshow:" + DirectShow device (alternative name "@device_pnp_..." or friendly name). No quotes,
+# control characters or ":" (which would let a value name a second, audio device).
+DSHOW_SCHEME = "dshow:"
+DSHOW_DEVICE = re.compile(r'^dshow:[^":\x00-\x1f]{1,300}$')
+# A USB camera's address as stored by the API: a Linux device path or a DirectShow device.
+USB_DEVICE = re.compile(V4L2_DEVICE.pattern + "|" + DSHOW_DEVICE.pattern)
 KEYFRAME_GRACE_S = 4.0
 RTSP_IO_TIMEOUT_US = 5_000_000
 MAX_SNAPSHOT_BYTES = 8 * 1024 * 1024
@@ -64,8 +70,21 @@ class StreamSource:
         return self.url.startswith(V4L2_SCHEME)
 
     @property
+    def is_dshow(self) -> bool:
+        return self.url.startswith(DSHOW_SCHEME)
+
+    @property
+    def is_usb(self) -> bool:
+        return self.is_v4l2 or self.is_dshow
+
+    @property
     def kind(self) -> str:
-        return "rtsp" if self.is_rtsp else "v4l2" if self.is_v4l2 else "file"
+        return "rtsp" if self.is_rtsp else "v4l2" if self.is_v4l2 else "dshow" if self.is_dshow else "file"
+
+    def dshow_device(self) -> str:
+        if not DSHOW_DEVICE.match(self.url):
+            raise StreamError("invalid_device", "not a DirectShow device")
+        return self.url[len(DSHOW_SCHEME):]
 
     def v4l2_device(self) -> str:
         path = self.url[len(V4L2_SCHEME):]
@@ -98,6 +117,8 @@ def input_args(source: StreamSource) -> list[str]:
                 "-protocol_whitelist", "rtsp,rtsps,tcp,tls,udp,rtp,srtp", "-i", source.argv_url()]
     if source.is_v4l2:
         return ["-f", "v4l2", "-i", source.v4l2_device()]
+    if source.is_dshow:
+        return ["-f", "dshow", "-i", f"video={source.dshow_device()}"]
     return ["-protocol_whitelist", "file", "-i", source.url]
 
 
@@ -259,7 +280,7 @@ def probe_readiness(source: StreamSource, *, sample_seconds: float = 10.0, requi
         report.detail = stderr.strip()[-500:] or None
         return report
     metrics, errors = evaluate_frames(streams[0], frames, required_seconds,
-                                      V4L2_CODECS if source.is_v4l2 else SUPPORTED_CODECS)
+                                      V4L2_CODECS if source.is_usb else SUPPORTED_CODECS)
     for k, v in metrics.items():
         setattr(report, k, v)
     report.errors = errors

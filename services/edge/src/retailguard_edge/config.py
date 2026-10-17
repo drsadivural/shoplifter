@@ -1,12 +1,14 @@
-"""Edge configuration from a TOML file and environment variables.
+r"""Edge configuration from a TOML file and environment variables.
 
 Precedence (highest first): explicit overrides passed by the CLI, environment
 variables, the TOML file, built-in defaults.
 
 Environment variables:
-  RETAILGUARD_EDGE_CONFIG          path to a TOML file (default /etc/retailguard-edge/config.toml)
+  RETAILGUARD_EDGE_CONFIG          path to a TOML file (default /etc/retailguard-edge/config.toml;
+                                   Windows: %ProgramData%\RetailGuard\Edge\config.toml)
   RETAILGUARD_EDGE_API             API base URL (https://...; http only for loopback)
-  RETAILGUARD_EDGE_STATE_DIR       state directory (default /var/lib/retailguard-edge)
+  RETAILGUARD_EDGE_STATE_DIR       state directory (default /var/lib/retailguard-edge;
+                                   Windows: %ProgramData%\RetailGuard\Edge\state)
   RETAILGUARD_EDGE_INTERFACE       default local IPv4 address for WS-Discovery
   RETAILGUARD_EDGE_DISK_BUDGET     spool disk budget in bytes
   RETAILGUARD_EDGE_MODEL_MANIFEST  behavior model manifest JSON path
@@ -23,8 +25,15 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-DEFAULT_CONFIG_PATH = Path("/etc/retailguard-edge/config.toml")
-DEFAULT_STATE_DIR = Path("/var/lib/retailguard-edge")
+if os.name == "nt":
+    # The Windows installer restricts this folder to SYSTEM and Administrators (ACL), which is what
+    # the 0600/0700 modes used below provide on Linux.
+    _WIN_BASE = Path(os.environ.get("PROGRAMDATA", r"C:\ProgramData")) / "RetailGuard" / "Edge"
+    DEFAULT_CONFIG_PATH = _WIN_BASE / "config.toml"
+    DEFAULT_STATE_DIR = _WIN_BASE / "state"
+else:
+    DEFAULT_CONFIG_PATH = Path("/etc/retailguard-edge/config.toml")
+    DEFAULT_STATE_DIR = Path("/var/lib/retailguard-edge")
 
 
 class ConfigError(ValueError):

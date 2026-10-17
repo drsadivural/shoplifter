@@ -63,6 +63,49 @@ jobs:
         working-directory: services/edge
         run: uv run pytest -q -p no:warnings
 
+  edge-windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+      - name: Build customer packages
+        working-directory: services/edge
+        run: uv run python deploy/package.py --out dist
+      - name: Install the Windows package as a customer would (downloads uv, Python, ffmpeg)
+        shell: pwsh
+        run: |
+          Expand-Archive services/edge/dist/retailguard-edge-*-windows.zip -DestinationPath C:\pkg
+          $dir = (Get-ChildItem C:\pkg | Select-Object -First 1).FullName
+          & "$dir\deploy\install-windows.ps1" -Api https://shoplifter.ayonix.com
+          $cli = "$env:ProgramFiles\RetailGuard\Edge\bin\retailguard-edge.cmd"
+          & $cli --version
+          & $cli status
+          if ($LASTEXITCODE -ne 0) { throw "status failed" }
+          & $cli discover --timeout 1 --cidr 10.0.0.0/8
+          if ($LASTEXITCODE -ne 0) { throw "discover failed" }
+          & $cli pair --api https://shoplifter.ayonix.com --code AAAA-BBBB-CCCC --name ci
+          if ($LASTEXITCODE -ne 2) { throw "a bad pairing code must be rejected (exit 2), got $LASTEXITCODE" }
+          $task = Get-ScheduledTask -TaskName "RetailGuard Edge"
+          $task.Actions | Format-List Execute, Arguments
+          # Running the installer again is an update and keeps the config.
+          & "$dir\deploy\install-windows.ps1" -Api https://shoplifter.ayonix.com
+          "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+      - name: Edge tests (Windows, with the ffmpeg the installer downloaded)
+        working-directory: services/edge
+        run: uv run pytest -q -p no:warnings
+      - name: Uninstall
+        shell: pwsh
+        run: |
+          $dir = (Get-ChildItem C:\pkg | Select-Object -First 1).FullName
+          & "$dir\deploy\uninstall-windows.ps1" -RemoveData
+          if (Test-Path "$env:ProgramFiles\RetailGuard\Edge") { throw "not removed" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: edge-packages
+          path: services/edge/dist/
+
   web:
     runs-on: ubuntu-24.04
     defaults:

@@ -49,6 +49,10 @@ def private_ip() -> str:
                     return str(ip)
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError):
         pass
+    from retailguard_edge.discovery import local_ipv4_addresses  # Windows / no iproute2
+    addrs = local_ipv4_addresses()
+    if addrs:
+        return addrs[0]
     pytest.skip("no private non-loopback IPv4 address on this host")
 
 

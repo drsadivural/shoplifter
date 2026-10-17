@@ -209,6 +209,9 @@ def test_webhook_signature_and_replay(org):
     assert admin.get("/v1/integrations").json()["items"][0]["status"] == "receiving"
 
 
+WIN_CAM = r"dshow:@device_pnp_\\?\usb#vid_04f2&pid_b6be&mi_00#6&2e0c5b07&0&0000#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\global"
+
+
 def test_discovery_without_interface_lists_usb_cameras_and_adds_them(org):
     admin, store = org["admin"], org["store"]
     edge = paired_edge(org)
@@ -220,9 +223,13 @@ def test_discovery_without_interface_lists_usb_cameras_and_adds_them(org):
     usb = "/dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_ABC123-video-index0"
     edge.req("POST", f"/v1/edge/commands/{cmd['id']}/ack", {"status": "succeeded", "result": {
         "devices": [], "usb_devices": [{"device": usb, "node": "/dev/video0", "name": "HD Pro Webcam C920"},
-                                       {"device": "/etc/passwd", "name": "bad"}]}})
+                                       {"device": "/etc/passwd", "name": "bad"},
+                                       {"device": WIN_CAM, "name": "Integrated Camera"},
+                                       {"device": 'dshow:a" -i x', "name": "bad"},
+                                       {"device": "dshow:video=a:audio=b", "name": "bad"}]}})
     job = admin.get(f"/v1/discovery-jobs/{job['id']}").json()
-    assert [(d["kind"], d["address"], d["model"]) for d in job["devices"]] == [("usb", usb, "HD Pro Webcam C920")]
+    assert [(d["kind"], d["address"], d["model"]) for d in job["devices"]] == [
+        ("usb", usb, "HD Pro Webcam C920"), ("usb", WIN_CAM, "Integrated Camera")]
     r = admin.post(f"/v1/discovery-jobs/{job['id']}/add", json={"endpoint": "usb:" + usb, "name": "Register 1"})
     assert r.status_code == 201, r.text
     cam = r.json()

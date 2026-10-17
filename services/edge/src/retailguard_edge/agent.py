@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import shutil
 import sqlite3
 import threading
@@ -25,9 +24,9 @@ from .netpolicy import TargetNotPermitted
 from .onvif import OnvifClient, OnvifError, address_host, device_service_url, probe_device
 from .outbox import Outbox
 from .pipeline import CHANNELS, ChannelRegistry
-from .stream import (V4L2_DEVICE, V4L2_SCHEME, ReadinessReport, StreamError, StreamSource, ZoneError,
-                     capture_masked_snapshot, probe_readiness, validate_zones)
-from .usb import list_usb_cameras
+from .stream import (DSHOW_SCHEME, USB_DEVICE, V4L2_SCHEME, ReadinessReport, StreamError, StreamSource,
+                     ZoneError, capture_masked_snapshot, probe_readiness, validate_zones)
+from .usb import list_usb_cameras, usb_device_present
 from .vault import CredentialVault, VaultError
 from .watchdog import CameraHealth, StreamMonitor
 
@@ -153,8 +152,8 @@ class Agent:
                  probe_fn: Callable[..., ReadinessReport] = probe_readiness,
                  snapshot_fn: Callable[..., bytes] = capture_masked_snapshot,
                  onvif_factory: Callable[..., OnvifClient] = OnvifClient,
-                 usb_fn: Callable[[], list[dict]] = list_usb_cameras,
-                 device_exists: Callable[[str], bool] = os.path.exists):
+                 usb_fn: Callable[[], list[dict]] | None = None,
+                 device_exists: Callable[[str], bool] | None = None):
         self.config, self.keys, self.pairing, self.client = config, keys, pairing, client
         self.policy = subnet_policy(pairing)
         sd = config.state_dir
@@ -166,7 +165,8 @@ class Agent:
         self.store = store or EdgeStore(sd / "edge.db")
         self.supervisor = supervisor or CameraSupervisor(config, self.vault)
         self._discover, self._probe, self._snapshot, self._onvif = discover_fn, probe_fn, snapshot_fn, onvif_factory
-        self._usb, self._device_exists = usb_fn, device_exists
+        self._usb = usb_fn or (lambda: list_usb_cameras(config.ffmpeg_path))
+        self._device_exists = device_exists or (lambda a: usb_device_present(a, config.ffmpeg_path))
         self.handlers: dict[str, Callable[[dict], dict]] = {
             "discover": self._cmd_discover,
             "provision_camera": self._cmd_provision,
@@ -279,13 +279,13 @@ class Agent:
         onvif_info: dict[str, Any] = {}
         stream_uri: str | None = None
         if source_type == "usb":
-            # Local USB (V4L2) camera: no network target, no credentials.
-            if not V4L2_DEVICE.match(address):
+            # Local USB camera (V4L2 / DirectShow): no network target, no credentials.
+            if not USB_DEVICE.match(address):
                 raise offline("invalid_device")
             if not self._device_exists(address):
                 raise offline("device_not_found")
             creds = None
-            stream_uri = V4L2_SCHEME + address
+            stream_uri = address if address.startswith(DSHOW_SCHEME) else V4L2_SCHEME + address
             conformance = "usb_v4l2"
         elif source_type == "rtsp":
             # RTSP URL entered by the operator: no ONVIF negotiation.
