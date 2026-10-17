@@ -8,7 +8,7 @@
 # %ProgramData%\RetailGuard\Edge (SYSTEM and Administrators only), a "RetailGuard Edge" scheduled
 # task that runs the agent as SYSTEM at startup and restarts it, and a `retailguard-edge` command.
 #
-# The setup wizard (RetailGuardEdgeSetup.exe) copies the files itself and runs one -Phase at a time
+# The setup wizard (AyonixRetailGuardSetup.exe) copies the files itself and runs one -Phase at a time
 # to show progress: Prepare, Runtime, Dependencies, Ffmpeg, Configure, Service. Every phase can be
 # re-run; running all of them again is an update.
 [CmdletBinding()]

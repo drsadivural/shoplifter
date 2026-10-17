@@ -61,9 +61,13 @@ cameras) and `/var/lib/retailguard-edge` (`0700`), writes `/etc/retailguard-edge
 
 ### Windows
 
-**Setup wizard (recommended):** `RetailGuardEdgeSetup-<version>.exe`, built in CI from
+**Setup wizard (recommended):** `AyonixRetailGuardSetup-<version>.exe`, built in CI from
 `deploy/windows/RetailGuardEdge.iss` (Inno Setup 6.3+; artwork from `deploy/windows/make_art.py`).
-English/Japanese by the Windows display language. Pages: Welcome, License, Server, install progress
+Shown as **Ayonix RetailGuard** (window titles, Start menu, Settings > Apps); the AppId is unchanged,
+so installs made under the earlier name "RetailGuard Edge" are updated in place.
+English/Japanese by the Windows display language. **Cancel** works on every page: during the six
+installation steps it stops the running step and everything it started (finished steps are kept; a
+re-run continues), and on "Connect this PC to a store" it finishes without connecting. Pages: Welcome, License, Server, install progress
 (six steps), "Connect this PC to a store" (pairing code + appliance name, retried in place when the
 server rejects a code), Finished. Running a newer (or the same) setup again is an update: the input
 pages are skipped when the PC is already paired and the data in `%ProgramData%\RetailGuard\Edge` is

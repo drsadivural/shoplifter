@@ -7,7 +7,7 @@ Requirements
 - Outbound HTTPS to your RetailGuard server and to the internet during installation
   (uv, Python and ffmpeg are downloaded)
 
-Easier: use RetailGuardEdgeSetup-VERSION.exe (setup wizard) from the same download page instead of
+Easier: use AyonixRetailGuardSetup-VERSION.exe (setup wizard) from the same download page instead of
 this zip. This zip is for scripted installs.
 
 1. Extract the zip, e.g. to C:\retailguard-edge-VERSION
@@ -19,7 +19,7 @@ this zip. This zip is for scripted installs.
 
    The same command updates an existing installation; the config is kept.
    Add -Mode full to also run analysis on this PC (default: -Mode streaming, live view only).
-   The setup wizard (RetailGuardEdgeSetup.exe) asks this on its "How should this PC work?" page.
+   The setup wizard (AyonixRetailGuardSetup.exe) asks this on its "How should this PC work?" page.
 
 3. Pair with the store. In the RetailGuard console open the store, choose
    "Connect edge appliance" and create a pairing code (single use, valid 15 minutes).
@@ -53,7 +53,7 @@ Ayonix RetailGuard エッジ端末 — Windows パッケージ
 - RetailGuard サーバーへの HTTPS 通信、およびインストール時のインターネット接続
   （uv、Python、ffmpeg をダウンロードします）
 
-より簡単な方法: 同じダウンロードページの RetailGuardEdgeSetup-VERSION.exe（セットアップウィザード）を
+より簡単な方法: 同じダウンロードページの AyonixRetailGuardSetup-VERSION.exe（セットアップウィザード）を
 使用してください。この zip はスクリプトによるインストール用です。
 
 1. zip を展開します（例: C:\retailguard-edge-VERSION）
@@ -65,7 +65,7 @@ Ayonix RetailGuard エッジ端末 — Windows パッケージ
 
    同じコマンドで既存環境を更新できます。設定ファイルは保持されます。
    この PC で分析も行う場合は -Mode full を付けてください（既定は -Mode streaming: ライブ映像のみ）。
-   セットアップウィザード（RetailGuardEdgeSetup.exe）では「この PC の動作」ページで選択します。
+   セットアップウィザード（AyonixRetailGuardSetup.exe）では「この PC の動作」ページで選択します。
 
 3. 店舗とのペアリング。RetailGuard コンソールで店舗を開き「エッジ端末を接続」から
    ペアリングコードを作成します（1回限り、15分間有効）。新しく開いた管理者 PowerShell で:

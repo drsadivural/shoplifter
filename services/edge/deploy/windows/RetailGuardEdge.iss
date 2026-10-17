@@ -1,4 +1,4 @@
-﻿; RetailGuard Edge for Windows — setup wizard (Inno Setup 6.3+).
+﻿; Ayonix RetailGuard (store edge software) for Windows — setup wizard (Inno Setup 6.3+).
 ;
 ;   iscc /DAppVersion=0.3.0 /O..\..\dist RetailGuardEdge.iss
 ;
@@ -7,12 +7,14 @@
 ; update: the pages that ask for input are skipped when the PC is already paired, the config, pairing
 ; identity and camera credentials in %ProgramData%\RetailGuard\Edge are kept, and the agent restarts.
 ;
-; Silent: RetailGuardEdgeSetup.exe /VERYSILENT /SUPPRESSMSGBOXES [/SERVER=https://...] [/MODE=streaming|full]
+; Silent: AyonixRetailGuardSetup.exe /VERYSILENT /SUPPRESSMSGBOXES [/SERVER=https://...] [/MODE=streaming|full]
 ;         [/CODE=XXXX-XXXX-XXXX] [/NAME="Store 1"]
 
 #ifndef AppVersion
   #define AppVersion "0.0.0"
 #endif
+; Shown name. The AppId stays the same, so installs made under the earlier name are updated in place.
+#define AppTitle "Ayonix RetailGuard"
 #define AppIdRaw "8E3C2F4A-6C1B-4B7E-9F0A-5D2E7C1A9B30"
 #define DefaultServer "https://shoplifter.ayonix.com"
 ; Keep in sync with $FfmpegUrl / $FfmpegSha256 in install-windows.ps1.
@@ -21,18 +23,20 @@
 
 [Setup]
 AppId={{{#AppIdRaw}}
-AppName=RetailGuard Edge
+AppName={#AppTitle}
 AppVersion={#AppVersion}
-AppVerName=RetailGuard Edge {#AppVersion}
+AppVerName={#AppTitle} {#AppVersion}
 AppPublisher=Ayonix
 AppPublisherURL={#DefaultServer}
 AppSupportURL={#DefaultServer}
 VersionInfoVersion={#AppVersion}
-VersionInfoDescription=RetailGuard Edge Setup
+VersionInfoDescription={#AppTitle} Setup
+VersionInfoProductName={#AppTitle}
+VersionInfoCompany=Ayonix
 DefaultDirName={autopf}\RetailGuard\Edge
 DisableDirPage=yes
 DisableProgramGroupPage=yes
-DefaultGroupName=RetailGuard
+DefaultGroupName={#AppTitle}
 UsePreviousAppDir=no
 PrivilegesRequired=admin
 ArchitecturesAllowed=x64compatible
@@ -46,9 +50,9 @@ WizardImageFile=art\side-100.bmp,art\side-125.bmp,art\side-150.bmp,art\side-175.
 WizardSmallImageFile=art\small-100.bmp,art\small-125.bmp,art\small-150.bmp,art\small-175.bmp,art\small-200.bmp,art\small-225.bmp,art\small-250.bmp
 SetupIconFile=art\retailguard.ico
 UninstallDisplayIcon={app}\retailguard.ico
-UninstallDisplayName=RetailGuard Edge
+UninstallDisplayName={#AppTitle}
 LicenseFile=..\..\..\..\LICENSE
-OutputBaseFilename=RetailGuardEdgeSetup-{#AppVersion}
+OutputBaseFilename=AyonixRetailGuardSetup-{#AppVersion}
 Compression=lzma2/max
 SolidCompression=yes
 ChangesEnvironment=yes
@@ -80,18 +84,18 @@ en.NameLabel=Appliance name (shown in the console):
 en.PairLater=&Pair later (run this setup again with a code)
 en.UpdateButton=&Update
 en.ReadyUpdateTitle=Ready to update
-en.ReadyUpdateSubtitle=Setup is ready to update RetailGuard Edge on this computer.
+en.ReadyUpdateSubtitle=Setup is ready to update {#AppTitle} on this computer.
 en.ReadyUpdateText=Click Update to continue. The edge agent stops for a minute while it is updated.
 en.CodeInvalid=Enter the pairing code shown in the console, for example ABCD-EFGH-JKLM.
 en.NameInvalid=Enter a name for this appliance.
 en.PairRejected=The server did not accept this pairing code. It may be mistyped, already used or expired (codes are valid for 15 minutes). Create a new code in the console and try again.
 en.PairUnreachable=The RetailGuard server could not be reached. Check the internet connection and the server address, then try again.
 en.PairFailed=Pairing failed:%n%n%1
-en.UpdateWelcome=This will update RetailGuard Edge from version %1 to %2.%n%nThe connection to your store, the settings and the camera passwords are kept. The edge agent restarts when the update is finished.
+en.UpdateWelcome=This will update {#AppTitle} from version %1 to %2.%n%nThe connection to your store, the settings and the camera passwords are kept. The edge agent restarts when the update is finished.
 en.StepOf=Step %1 of %2
 en.StepPrepare=Preparing folders and permissions…
 en.StepRuntime=Installing the Python runtime (first install downloads about 30 MB)…
-en.StepDependencies=Installing RetailGuard Edge components…
+en.StepDependencies=Installing {#AppTitle} components…
 en.StepFfmpeg=Setting up ffmpeg for video…
 en.DownloadTitle=Downloading ffmpeg
 en.DownloadSubtitle=ffmpeg reads the camera video. About 110 MB is downloaded once from github.com.
@@ -99,11 +103,15 @@ en.DownloadFailed=ffmpeg could not be downloaded:%n%n%1%n%nCheck the internet co
 en.StepConfigure=Writing the configuration…
 en.StepService=Starting the background service…
 en.PhaseFailed=Setup could not finish this step:%n%n%1%n%nLast lines of the log (%2):%n%n%3
-en.DoneConnected=RetailGuard Edge %1 is installed and running on this PC, connected to your store.%n%nAdd cameras in the RetailGuard console: Cameras > Discover. Network cameras and USB cameras connected to this PC are found automatically.
-en.DoneNotPaired=RetailGuard Edge %1 is installed but not yet connected to a store.%n%nCreate a pairing code in the console (store > Connect edge appliance) and run this setup again to connect.
+en.DoneConnected={#AppTitle} %1 is installed and running on this PC, connected to your store.%n%nAdd cameras in the RetailGuard console: Cameras > Discover. Network cameras and USB cameras connected to this PC are found automatically.
+en.DoneNotPaired={#AppTitle} %1 is installed but not yet connected to a store.%n%nCreate a pairing code in the console (store > Connect edge appliance) and run this setup again to connect.
 en.DoneFailed=Setup did not finish: %1%n%nDetails: %2%nRun this setup again after fixing the problem; it continues where it stopped.
+en.CancelStepAsk=Stop setup now?%n%nThe current step (%1) is stopped. Steps that already finished are kept: run this setup again to continue where it stopped.
+en.CanceledDuring=stopped by you during: %1
+en.DoneCanceled=Setup was stopped during: %1%n%n{#AppTitle} is not completely set up yet. Steps that finished are kept; run this setup again to continue where it stopped.
+en.SkipConnectAsk=Finish setup without connecting this PC to a store?%n%n{#AppTitle} stays installed. To connect later, create a pairing code in the console and run this setup again.
 en.OpenConsole=Open the RetailGuard console
-en.ConsoleShortcut=RetailGuard console
+en.ConsoleShortcut={#AppTitle} console
 en.RemoveDataAsk=Also delete this PC's store connection, settings and camera passwords?%n%nChoose No to keep them for a later reinstall. If this PC will not be used again, also remove it from the store in the RetailGuard console.
 en.ReadyServer=Server:
 en.ReadyMode=Update from version %1 to %2
@@ -128,18 +136,18 @@ ja.NameLabel=エッジ端末の名前（コンソールに表示されます）:
 ja.PairLater=後でペアリングする（コードを用意してこのセットアップを再実行）(&P)
 ja.UpdateButton=更新(&U)
 ja.ReadyUpdateTitle=更新の準備完了
-ja.ReadyUpdateSubtitle=この PC の RetailGuard Edge を更新する準備ができました。
+ja.ReadyUpdateSubtitle=この PC の {#AppTitle} を更新する準備ができました。
 ja.ReadyUpdateText=「更新」をクリックして続行してください。更新中はエッジエージェントが1分ほど停止します。
 ja.CodeInvalid=コンソールに表示されたペアリングコードを入力してください（例: ABCD-EFGH-JKLM）。
 ja.NameInvalid=このエッジ端末の名前を入力してください。
 ja.PairRejected=サーバーがこのペアリングコードを受け付けませんでした。入力間違い、使用済み、または有効期限切れ（15分）の可能性があります。コンソールで新しいコードを作成して、もう一度お試しください。
 ja.PairUnreachable=RetailGuard サーバーに接続できませんでした。インターネット接続とサーバーのアドレスを確認して、もう一度お試しください。
 ja.PairFailed=ペアリングに失敗しました:%n%n%1
-ja.UpdateWelcome=RetailGuard Edge をバージョン %1 から %2 に更新します。%n%n店舗との接続、設定、カメラのパスワードはそのまま保持されます。更新が完了するとエッジエージェントが再起動します。
+ja.UpdateWelcome={#AppTitle} をバージョン %1 から %2 に更新します。%n%n店舗との接続、設定、カメラのパスワードはそのまま保持されます。更新が完了するとエッジエージェントが再起動します。
 ja.StepOf=手順 %1 / %2
 ja.StepPrepare=フォルダーと権限を準備しています…
 ja.StepRuntime=Python ランタイムをインストールしています（初回は約 30 MB をダウンロード）…
-ja.StepDependencies=RetailGuard Edge のコンポーネントをインストールしています…
+ja.StepDependencies={#AppTitle} のコンポーネントをインストールしています…
 ja.StepFfmpeg=映像処理用の ffmpeg を準備しています…
 ja.DownloadTitle=ffmpeg をダウンロードしています
 ja.DownloadSubtitle=ffmpeg はカメラ映像の読み取りに使用します。github.com から約 110 MB を一度だけダウンロードします。
@@ -147,11 +155,15 @@ ja.DownloadFailed=ffmpeg をダウンロードできませんでした:%n%n%1%n%
 ja.StepConfigure=設定を書き込んでいます…
 ja.StepService=バックグラウンドサービスを開始しています…
 ja.PhaseFailed=次の手順を完了できませんでした:%n%n%1%n%nログ（%2）の最後の行:%n%n%3
-ja.DoneConnected=RetailGuard Edge %1 がこの PC にインストールされ、店舗に接続して動作しています。%n%nRetailGuard コンソールの「カメラ」>「検索」でカメラを追加してください。ネットワークカメラと、この PC に接続された USB カメラが自動的に見つかります。
-ja.DoneNotPaired=RetailGuard Edge %1 はインストールされましたが、まだ店舗に接続されていません。%n%nコンソール（店舗 >「エッジ端末を接続」）でペアリングコードを作成し、このセットアップを再実行して接続してください。
+ja.DoneConnected={#AppTitle} %1 がこの PC にインストールされ、店舗に接続して動作しています。%n%nRetailGuard コンソールの「カメラ」>「検索」でカメラを追加してください。ネットワークカメラと、この PC に接続された USB カメラが自動的に見つかります。
+ja.DoneNotPaired={#AppTitle} %1 はインストールされましたが、まだ店舗に接続されていません。%n%nコンソール（店舗 >「エッジ端末を接続」）でペアリングコードを作成し、このセットアップを再実行して接続してください。
 ja.DoneFailed=セットアップを完了できませんでした: %1%n%n詳細: %2%n問題を解決してからセットアップを再実行してください。中断した手順から再開します。
+ja.CancelStepAsk=セットアップを中止しますか？%n%n実行中の手順（%1）を停止します。完了した手順はそのまま保持されます。このセットアップを再実行すると、中断した手順から再開します。
+ja.CanceledDuring=次の手順中に中止しました: %1
+ja.DoneCanceled=次の手順中にセットアップを中止しました: %1%n%n{#AppTitle} のセットアップはまだ完了していません。完了した手順は保持されています。このセットアップを再実行すると、中断した手順から再開します。
+ja.SkipConnectAsk=この PC を店舗に接続せずにセットアップを終了しますか？%n%n{#AppTitle} はインストールされたままです。後で接続するには、コンソールでペアリングコードを作成し、このセットアップを再実行してください。
 ja.OpenConsole=RetailGuard コンソールを開く
-ja.ConsoleShortcut=RetailGuard コンソール
+ja.ConsoleShortcut={#AppTitle} コンソール
 ja.RemoveDataAsk=この PC の店舗接続、設定、カメラのパスワードも削除しますか？%n%n再インストール時に使う場合は「いいえ」を選んでください。この PC を今後使用しない場合は、RetailGuard コンソールで店舗からも削除してください。
 ja.ReadyServer=サーバー:
 ja.ReadyMode=バージョン %1 から %2 への更新
@@ -177,7 +189,7 @@ Filename: "{app}\RetailGuard console.url"; Section: "InternetShortcut"; Key: "UR
 
 [Icons]
 Name: "{group}\{cm:ConsoleShortcut}"; Filename: "{app}\RetailGuard console.url"; IconFilename: "{app}\retailguard.ico"
-Name: "{group}\{cm:UninstallProgram,RetailGuard Edge}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram,{#AppTitle}}"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{code:ConsoleUrl}"; Description: "{cm:OpenConsole}"; Flags: postinstall shellexec nowait skipifsilent; Check: IsConnected
@@ -206,6 +218,9 @@ var
   ConnectPage: TInputQueryWizardPage;
   PairLaterBox: TNewCheckBox;
   Upgrading, SetupFailed, PairedNow: Boolean;
+  { Cancel during the installation steps (after the files are copied, Inno's own cancel no longer applies). }
+  InSteps, CancelRequested, SetupCanceled: Boolean;
+  CurrentStep: String;
   PrevVersion, FailureText, RunLog: String;
 
 function DataDir: String; begin Result := ExpandConstant('{commonappdata}\RetailGuard\Edge'); end;
@@ -411,6 +426,9 @@ var
 begin
   WizardForm.StatusLabel.Caption := CustomMessage(MsgName);
   WizardForm.FilenameLabel.Caption := FmtMessage(CustomMessage('StepOf'), [IntToStr(Index), IntToStr(Count)]);
+  CurrentStep := CustomMessage(MsgName);
+  WizardForm.CancelButton.Visible := True;
+  WizardForm.CancelButton.Enabled := True;
   { Windows PowerShell 5.1 must not inherit a PowerShell 7 module path (setup started from pwsh). }
   Line := 'set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
     ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(ExpandConstant('{app}\deploy\install-windows.ps1')) +
@@ -457,7 +475,11 @@ begin
     '  $_.ProcessId -ne $me -and $_.ProcessId -ne $parent -and $_.CommandLine -and' + #13#10 +
     '  ($_.CommandLine -like "*install-windows.ps1*" -or $_.CommandLine -like "*retailguard-ffmpeg*" -or' + #13#10 +
     '   $_.CommandLine -like "*codexffmpeg*" -or $_.CommandLine -like "*RetailGuard\Edge\logs\setup*")' + #13#10 +
-    '} | ForEach-Object { Write-Output "stopping $($_.ProcessId) $($_.Name)"; Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }' + #13#10,
+    '} | ForEach-Object {' + #13#10 +
+    '  Write-Output "stopping $($_.ProcessId) $($_.Name)"' + #13#10 +
+    '  & taskkill.exe /F /T /PID $_.ProcessId 2>&1 | Out-Null  # with its children (uv, curl, ffmpeg)' + #13#10 +
+    '  Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue' + #13#10 +
+    '}' + #13#10,
     False);
   RunHidden('set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
     ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(Script) + ' > ' + Quoted(Script + '.log') + ' 2>&1', Code);
@@ -488,7 +510,7 @@ var
 begin
   if CurStep <> ssPostInstall then Exit;
   ForceDirectories(DataDir + '\logs');
-  SaveStringToFile(SetupLog, #13#10 + '==== RetailGuard Edge {#AppVersion} setup ' + GetDateTimeString('yyyy-mm-dd hh:nn:ss', '-', ':') + #13#10, True);
+  SaveStringToFile(SetupLog, #13#10 + '==== {#AppTitle} {#AppVersion} setup ' + GetDateTimeString('yyyy-mm-dd hh:nn:ss', '-', ':') + #13#10, True);
   SetArrayLength(Phases, 6);
   SetArrayLength(Msgs, 6);
   Phases[0] := 'Prepare';      Msgs[0] := 'StepPrepare';
@@ -498,20 +520,35 @@ begin
   Phases[4] := 'Configure';    Msgs[4] := 'StepConfigure';
   Phases[5] := 'Service';      Msgs[5] := 'StepService';
   WizardForm.ProgressGauge.Style := npbstMarquee;
+  InSteps := True;
   for I := 0 to GetArrayLength(Phases) - 1 do
   begin
+    if CancelRequested then
+    begin
+      SetupFailed := True;
+      SetupCanceled := True;
+      Break;
+    end;
     Extra := '';
     if (Phases[I] = 'Ffmpeg') and FfmpegDownloaded then Extra := ' -FfmpegZip ' + Quoted(FfmpegZip);
     if Phases[I] = 'Configure' then Extra := ' -Mode ' + SelectedMode;
     if not RunPhase(Phases[I], Msgs[I], Extra, I + 1, GetArrayLength(Phases)) then
     begin
       SetupFailed := True;
+      SetupCanceled := CancelRequested;
       Break;
     end;
   end;
+  InSteps := False;
+  WizardForm.CancelButton.Enabled := False;
   WizardForm.ProgressGauge.Style := npbstNormal;
   WizardForm.ProgressGauge.Position := WizardForm.ProgressGauge.Max;
-  if SetupFailed then
+  if SetupCanceled then
+  begin
+    FailureText := FmtMessage(CustomMessage('CanceledDuring'), [CurrentStep]);
+    Log('setup canceled by the user during: ' + CurrentStep);
+  end
+  else if SetupFailed then
     SuppressibleMsgBox(FmtMessage(CustomMessage('PhaseFailed'), [FailureText, SetupLog, LogTail(12)]), mbError, MB_OK, IDOK);
 end;
 
@@ -613,6 +650,35 @@ begin
   end;
 end;
 
+procedure CancelButtonClick(CurPageID: Integer; var Cancel, Confirm: Boolean);
+begin
+  if (CurPageID = wpInstalling) and InSteps then
+  begin
+    Cancel := False;
+    Confirm := False;
+    if CancelRequested then Exit;
+    if SuppressibleMsgBox(FmtMessage(CustomMessage('CancelStepAsk'), [CurrentStep]), mbConfirmation,
+       MB_YESNO or MB_DEFBUTTON2, IDNO) = IDYES then
+    begin
+      CancelRequested := True;
+      WizardForm.CancelButton.Enabled := False;
+      StopStaleSetup;  { ends the running step and everything it started }
+    end;
+  end
+  else if CurPageID = ConnectPage.ID then
+  begin
+    Cancel := False;
+    Confirm := False;
+    if SuppressibleMsgBox(CustomMessage('SkipConnectAsk'), mbConfirmation, MB_YESNO, IDNO) = IDYES then
+    begin
+      Log('Cancel on the connect page: finish without connecting');
+      PairLaterBox.Checked := True;
+      PairLaterClick(PairLaterBox);
+      WizardForm.NextButton.OnClick(WizardForm.NextButton);
+    end;
+  end;
+end;
+
 { Silent/scripted installs see a failed step as a non-zero exit code. }
 function GetCustomSetupExitCode: Integer;
 begin
@@ -628,9 +694,17 @@ begin
     WizardForm.PageDescriptionLabel.Caption := CustomMessage('ReadyUpdateSubtitle');
     WizardForm.ReadyLabel.Caption := CustomMessage('ReadyUpdateText');
   end;
+  if CurPageID = ConnectPage.ID then
+  begin
+    { After installation Inno hides Cancel; here it means "finish without connecting". }
+    WizardForm.CancelButton.Visible := True;
+    WizardForm.CancelButton.Enabled := True;
+  end;
   if CurPageID = wpFinished then
   begin
-    if SetupFailed then
+    if SetupCanceled then
+      WizardForm.FinishedLabel.Caption := FmtMessage(CustomMessage('DoneCanceled'), [CurrentStep])
+    else if SetupFailed then
       WizardForm.FinishedLabel.Caption := FmtMessage(CustomMessage('DoneFailed'), [FailureText, SetupLog])
     else if IsPaired then
       WizardForm.FinishedLabel.Caption := FmtMessage(CustomMessage('DoneConnected'), ['{#AppVersion}'])
