@@ -721,6 +721,7 @@ begin
   end;
   if CurPageID = wpFinished then
   begin
+    WizardForm.BackButton.Visible := False;  { the store connection step is not revisited from here }
     if SetupCanceled then
       WizardForm.FinishedLabel.Caption := FmtMessage(CustomMessage('DoneCanceled'), [CurrentStep])
     else if SetupFailed then
