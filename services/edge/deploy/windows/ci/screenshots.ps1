@@ -5,7 +5,7 @@
 #   cancel: Cancel while the installation steps run -> confirm -> finished page says where it stopped
 param([string]$Setup, [string]$Out, [string]$Lang = "en", [string]$Mode = "fresh", [string]$Log = "")
 $ErrorActionPreference = "Stop"
-Add-Type -AssemblyName System.Windows.Forms, System.Drawing, UIAutomationClient, UIAutomationTypes
+Add-Type -AssemblyName System.Windows.Forms, System.Drawing
 Add-Type @"
 using System; using System.Text; using System.Runtime.InteropServices;
 public struct RECT { public int Left, Top, Right, Bottom; }
@@ -19,6 +19,28 @@ public static class W {
   [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);
   [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern int GetClassName(IntPtr h, StringBuilder s, int n);
   [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
+  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr parent, EnumProc p, IntPtr l);
+  [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
+  [DllImport("user32.dll")] public static extern int GetDlgCtrlID(IntPtr h);
+  [DllImport("user32.dll")] public static extern IntPtr GetParent(IntPtr h);
+  [DllImport("user32.dll")] public static extern bool IsWindowEnabled(IntPtr h);
+  // Clicks the enabled, visible button labelled with one of the labels inside a window: posts the
+  // BN_CLICKED notification a real click sends to the button's parent.
+  public static bool ClickButton(IntPtr window, string[] labels) {
+    IntPtr target = IntPtr.Zero;
+    EnumChildWindows(window, (h, l) => {
+      var cls = new StringBuilder(64); GetClassName(h, cls, 64);
+      if (cls.ToString().IndexOf("Button", StringComparison.OrdinalIgnoreCase) < 0) return true;
+      if (!IsWindowVisible(h) || !IsWindowEnabled(h)) return true;
+      var t = new StringBuilder(128); GetWindowText(h, t, 128);
+      string text = System.Text.RegularExpressions.Regex.Replace(t.ToString().Replace("&", ""), @"\(.\)$", "").Trim();
+      foreach (var x in labels) if (text == x) { target = h; return false; }
+      return true;
+    }, IntPtr.Zero);
+    if (target == IntPtr.Zero) return false;
+    int id = GetDlgCtrlID(target);
+    return PostMessage(GetParent(target), 0x0111, (IntPtr)(id & 0xFFFF), target);  // WM_COMMAND, BN_CLICKED
+  }
   // A visible standard dialog (message box) owned by the process.
   public static IntPtr Dialog(uint pid) {
     IntPtr found = IntPtr.Zero;
@@ -77,23 +99,16 @@ function Keys([string]$k) {
     [System.Windows.Forms.SendKeys]::SendWait($k)
 }
 
-# Clicks a button of the setup process by its label (UI Automation: independent of keyboard focus).
+# Clicks a button of the setup process by its label: in an open message box first, else in the wizard.
 function Click([string[]]$names, [int]$waitS = 15) {
-    $A = [System.Windows.Automation.AutomationElement]
-    $button = New-Object System.Windows.Automation.PropertyCondition($A::ControlTypeProperty,
-        [System.Windows.Automation.ControlType]::Button)
     for ($i = 0; $i -lt $waitS * 2; $i++) {
         $p = Wizard
-        $proc = New-Object System.Windows.Automation.PropertyCondition($A::ProcessIdProperty, [int]$p.Id)
-        foreach ($w in $A::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children, $proc)) {
-            foreach ($b in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants, $button)) {
-                $label = ($b.Current.Name -replace '&', '' -replace '\(.\)$', '').Trim()
-                if ($names -contains $label -and $b.Current.IsEnabled) {
-                    $b.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
-                    Start-Sleep -Milliseconds 700
-                    return $true
-                }
-            }
+        $dlg = [W]::Dialog([uint32]$p.Id)
+        if ($dlg -ne [IntPtr]::Zero) {
+            if ([W]::ClickButton($dlg, $names)) { Start-Sleep -Milliseconds 700; return $true }
+        } elseif ([W]::ClickButton($p.MainWindowHandle, $names)) {
+            Start-Sleep -Milliseconds 700
+            return $true
         }
         Start-Sleep -Milliseconds 500
     }
@@ -114,16 +129,16 @@ function Dump {
             Write-Host "  window $h pid $wp class $($sb.ToString())"
         }
         return $true }, [IntPtr]::Zero) | Out-Null
-    $A = [System.Windows.Automation.AutomationElement]
-    foreach ($w in $A::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children, [System.Windows.Automation.Condition]::TrueCondition)) {
-        if ($all.Id -notcontains $w.Current.ProcessId) { continue }
-        Write-Host "  uia window '$($w.Current.Name)' pid $($w.Current.ProcessId) class $($w.Current.ClassName)"
-        foreach ($b in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) {
-            if ($b.Current.ControlType.ProgrammaticName -like "*Button*") {
-                Write-Host "    $($b.Current.ControlType.ProgrammaticName) '$($b.Current.Name)' enabled=$($b.Current.IsEnabled)"
-            }
+    [W]::EnumWindows({ param($h, $l)
+        $wp = [uint32]0; [W]::GetWindowThreadProcessId($h, [ref]$wp) | Out-Null
+        if ($all.Id -contains [int]$wp -and [W]::IsWindowVisible($h)) {
+            [W]::EnumChildWindows($h, { param($c, $x)
+                $sb = New-Object System.Text.StringBuilder 64; [W]::GetClassName($c, $sb, 64) | Out-Null
+                $tb = New-Object System.Text.StringBuilder 128; [W]::GetWindowText($c, $tb, 128) | Out-Null
+                Write-Host "    child of $h class $($sb.ToString()) '$($tb.ToString())' enabled=$([W]::IsWindowEnabled($c))"
+                return $true }, [IntPtr]::Zero) | Out-Null
         }
-    }
+        return $true }, [IntPtr]::Zero) | Out-Null
 }
 
 function WaitForLog([datetime]$started, [string]$pattern, [int]$timeoutS = 300) {
