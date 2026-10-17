@@ -328,7 +328,8 @@ var
 begin
   WizardForm.StatusLabel.Caption := CustomMessage(MsgName);
   WizardForm.FilenameLabel.Caption := FmtMessage(CustomMessage('StepOf'), [IntToStr(Index), IntToStr(Count)]);
-  Line := Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
+  { Windows PowerShell 5.1 must not inherit a PowerShell 7 module path (setup started from pwsh). }
+  Line := 'set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
     ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(ExpandConstant('{app}\deploy\install-windows.ps1')) +
     ' -Api ' + Quoted(ServerUrl) + ' -Phase ' + Phase + ' >> ' + Quoted(SetupLog) + ' 2>&1';
   Log('Phase ' + Phase);
@@ -460,6 +461,12 @@ begin
       WizardForm.NextButton.Enabled := True;
     end;
   end;
+end;
+
+{ Silent/scripted installs see a failed step as a non-zero exit code. }
+function GetCustomSetupExitCode: Integer;
+begin
+  if SetupFailed then Result := 10 else Result := 0;
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
