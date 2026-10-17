@@ -9,6 +9,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import pytest
 
 from retailguard_edge.config import ConfigError, ensure_state_dir, load_config, validate_api_url
+from conftest import has_mode
 
 
 def test_api_url_must_be_https_except_loopback():
@@ -38,8 +39,8 @@ def test_state_dir_created_0700(tmp_path):
     d = tmp_path / "x"
     d.mkdir(mode=0o755)
     ensure_state_dir(d)
-    assert stat.S_IMODE(os.stat(d).st_mode) == 0o700
-    assert stat.S_IMODE(os.stat(d / "spool").st_mode) == 0o700
+    assert has_mode(d, 0o700)
+    assert has_mode(d / "spool", 0o700)
 
 
 def _cli(*args, env_extra=None):

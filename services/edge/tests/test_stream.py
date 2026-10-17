@@ -7,6 +7,7 @@ from PIL import Image
 from retailguard_edge.stream import (StreamSource, ZoneError, apply_privacy_masks, capture_frame_jpeg,
                                      capture_masked_snapshot, evaluate_frames, probe_readiness, validate_zones)
 from retailguard_edge.watchdog import CameraHealth, StreamMonitor
+from conftest import has_mode
 
 
 def test_12s_file_is_ready_with_measured_properties(video_12s):
@@ -83,7 +84,7 @@ def test_masked_snapshot_written_0600(tmp_path, video_12s):
     import stat
     p = tmp_path / "snap.jpg"
     capture_masked_snapshot(StreamSource(str(video_12s)), [], out_path=p)
-    assert stat.S_IMODE(os.stat(p).st_mode) == 0o600
+    assert has_mode(p, 0o600)
     assert Image.open(p).format == "JPEG"
 
 

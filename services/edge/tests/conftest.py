@@ -60,3 +60,11 @@ def private_ip() -> str:
 def state_dir(tmp_path) -> Path:
     from retailguard_edge.config import ensure_state_dir
     return ensure_state_dir(tmp_path / "state")
+
+
+def has_mode(path, mode: int) -> bool:
+    """POSIX permission bits. On Windows they are not meaningful: the installer protects the data
+    folder with an ACL (SYSTEM + Administrators), so only Linux checks the bits."""
+    import os
+    import stat
+    return os.name == "nt" or stat.S_IMODE(os.stat(path).st_mode) == mode
