@@ -69,6 +69,9 @@ en.CodeLabel=Pairing code:
 en.NameLabel=Appliance name (shown in the console):
 en.PairLater=&Pair later (run this setup again with a code)
 en.UpdateButton=&Update
+en.ReadyUpdateTitle=Ready to update
+en.ReadyUpdateSubtitle=Setup is ready to update RetailGuard Edge on this computer.
+en.ReadyUpdateText=Click Update to continue. The edge agent stops for a minute while it is updated.
 en.CodeInvalid=Enter the pairing code shown in the console, for example ABCD-EFGH-JKLM.
 en.NameInvalid=Enter a name for this appliance.
 en.PairRejected=The server did not accept this pairing code. It may be mistyped, already used or expired (codes are valid for 15 minutes). Create a new code in the console and try again.
@@ -105,6 +108,9 @@ ja.CodeLabel=ペアリングコード:
 ja.NameLabel=エッジ端末の名前（コンソールに表示されます）:
 ja.PairLater=後でペアリングする（コードを用意してこのセットアップを再実行）(&P)
 ja.UpdateButton=更新(&U)
+ja.ReadyUpdateTitle=更新の準備完了
+ja.ReadyUpdateSubtitle=この PC の RetailGuard Edge を更新する準備ができました。
+ja.ReadyUpdateText=「更新」をクリックして続行してください。更新中はエッジエージェントが1分ほど停止します。
 ja.CodeInvalid=コンソールに表示されたペアリングコードを入力してください（例: ABCD-EFGH-JKLM）。
 ja.NameInvalid=このエッジ端末の名前を入力してください。
 ja.PairRejected=サーバーがこのペアリングコードを受け付けませんでした。入力間違い、使用済み、または有効期限切れ（15分）の可能性があります。コンソールで新しいコードを作成して、もう一度お試しください。
@@ -476,7 +482,12 @@ end;
 procedure CurPageChanged(CurPageID: Integer);
 begin
   if (CurPageID = wpReady) and Upgrading then
+  begin
     WizardForm.NextButton.Caption := CustomMessage('UpdateButton');
+    WizardForm.PageNameLabel.Caption := CustomMessage('ReadyUpdateTitle');
+    WizardForm.PageDescriptionLabel.Caption := CustomMessage('ReadyUpdateSubtitle');
+    WizardForm.ReadyLabel.Caption := CustomMessage('ReadyUpdateText');
+  end;
   if CurPageID = wpFinished then
   begin
     if SetupFailed then
