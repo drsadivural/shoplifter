@@ -76,6 +76,9 @@ jobs:
       - name: Install the Windows package as a customer would (downloads uv, Python, ffmpeg)
         shell: pwsh
         run: |
+          # Hide any ffmpeg the runner image has, so the installer's download path is exercised.
+          Get-Command ffmpeg -All -ErrorAction SilentlyContinue | Format-Table Source
+          $env:PATH = ($env:PATH -split ';' | Where-Object { $_ -and -not (Test-Path (Join-Path $_ 'ffmpeg.exe')) }) -join ';'
           Expand-Archive services/edge/dist/retailguard-edge-*-windows.zip -DestinationPath C:\pkg
           $dir = (Get-ChildItem C:\pkg | Select-Object -First 1).FullName
           & "$dir\deploy\install-windows.ps1" -Api https://shoplifter.ayonix.com
@@ -83,6 +86,8 @@ jobs:
           & $cli --version
           & $cli status
           if ($LASTEXITCODE -ne 0) { throw "status failed" }
+          if (-not (Test-Path "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\bin\ffprobe.exe")) { throw "ffmpeg was not downloaded" }
+          & "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\bin\ffmpeg.exe" -hide_banner -version | Select-Object -First 1
           & $cli discover --timeout 1 --cidr 10.0.0.0/8
           if ($LASTEXITCODE -ne 0) { throw "discover failed" }
           & $cli pair --api https://shoplifter.ayonix.com --code AAAA-BBBB-CCCC --name ci
@@ -132,6 +137,7 @@ jobs:
             if ($p.ExitCode -ne 0) { Get-Content $log -Tail 60; throw "setup exit $($p.ExitCode)" }
           }
           $cli = "$env:ProgramFiles\RetailGuard\Edge\bin\retailguard-edge.cmd"
+          $env:PATH = ($env:PATH -split ';' | Where-Object { $_ -and -not (Test-Path (Join-Path $_ 'ffmpeg.exe')) }) -join ';'
           $key = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{8E3C2F4A-6C1B-4B7E-9F0A-5D2E7C1A9B30}_is1"
           RunSetup @('/SERVER=https://shoplifter.ayonix.com') C:\setup-1.log
           Get-Content "$env:ProgramData\RetailGuard\Edge\logs\setup.log" -Tail 15
@@ -139,6 +145,11 @@ jobs:
           if ((Get-ItemProperty $key).DisplayVersion -eq $null) { throw "not registered" }
           if (-not (Get-ScheduledTask -TaskName "RetailGuard Edge")) { throw "task missing" }
           Get-Content "$env:ProgramData\RetailGuard\Edge\config.toml" | Select-String api_base_url, ffmpeg_path
+          # The wizard downloaded ffmpeg itself (download page, SHA-256 verified) and unpacked only what is needed.
+          if (-not (Test-Path "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\bin\ffmpeg.exe")) { throw "wizard did not install ffmpeg" }
+          if (-not (Test-Path "$env:ProgramFiles\RetailGuard\Edge\ffmpeg\LICENSE.txt")) { throw "ffmpeg license missing" }
+          if (-not (Select-String -Path "$env:ProgramData\RetailGuard\Edge\config.toml" -SimpleMatch "RetailGuard\Edge\ffmpeg\bin\ffmpeg.exe")) { throw "config does not use the downloaded ffmpeg" }
+          Select-String -Path C:\setup-1.log -Pattern "ffmpeg.zip" | Select-Object -First 3
           # Second run = update; the config stays as it was.
           $before = Get-FileHash "$env:ProgramData\RetailGuard\Edge\config.toml"
           RunSetup @() C:\setup-2.log

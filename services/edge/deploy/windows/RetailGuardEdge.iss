@@ -14,6 +14,9 @@
 #endif
 #define AppIdRaw "8E3C2F4A-6C1B-4B7E-9F0A-5D2E7C1A9B30"
 #define DefaultServer "https://shoplifter.ayonix.com"
+; Keep in sync with $FfmpegUrl / $FfmpegSha256 in install-windows.ps1.
+#define FfmpegUrl "https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/ffmpeg-9.0.2-essentials_build.zip"
+#define FfmpegSha256 "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba"
 
 [Setup]
 AppId={{{#AppIdRaw}}
@@ -82,7 +85,10 @@ en.StepOf=Step %1 of %2
 en.StepPrepare=Preparing folders and permissions…
 en.StepRuntime=Installing the Python runtime (first install downloads about 30 MB)…
 en.StepDependencies=Installing RetailGuard Edge components…
-en.StepFfmpeg=Setting up ffmpeg for video (first install downloads about 100 MB)…
+en.StepFfmpeg=Setting up ffmpeg for video…
+en.DownloadTitle=Downloading ffmpeg
+en.DownloadSubtitle=ffmpeg reads the camera video. About 110 MB is downloaded once from github.com.
+en.DownloadFailed=ffmpeg could not be downloaded:%n%n%1%n%nCheck the internet connection (github.com must be reachable) and click Install again.
 en.StepConfigure=Writing the configuration…
 en.StepService=Starting the background service…
 en.PhaseFailed=Setup could not finish this step:%n%n%1%n%nDetails are in %2.
@@ -121,7 +127,10 @@ ja.StepOf=手順 %1 / %2
 ja.StepPrepare=フォルダーと権限を準備しています…
 ja.StepRuntime=Python ランタイムをインストールしています（初回は約 30 MB をダウンロード）…
 ja.StepDependencies=RetailGuard Edge のコンポーネントをインストールしています…
-ja.StepFfmpeg=映像処理用の ffmpeg を準備しています（初回は約 100 MB をダウンロード）…
+ja.StepFfmpeg=映像処理用の ffmpeg を準備しています…
+ja.DownloadTitle=ffmpeg をダウンロードしています
+ja.DownloadSubtitle=ffmpeg はカメラ映像の読み取りに使用します。github.com から約 110 MB を一度だけダウンロードします。
+ja.DownloadFailed=ffmpeg をダウンロードできませんでした:%n%n%1%n%nインターネット接続（github.com への接続）を確認して、もう一度「インストール」をクリックしてください。
 ja.StepConfigure=設定を書き込んでいます…
 ja.StepService=バックグラウンドサービスを開始しています…
 ja.PhaseFailed=次の手順を完了できませんでした:%n%n%1%n%n詳細は %2 を確認してください。
@@ -177,6 +186,8 @@ const
   EnvKey = 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment';
 
 var
+  DownloadPage: TDownloadWizardPage;
+  FfmpegDownloaded: Boolean;
   ServerPage: TInputQueryWizardPage;
   ConnectPage: TInputQueryWizardPage;
   PairLaterBox: TNewCheckBox;
@@ -190,6 +201,19 @@ function SetupLog: String; begin Result := DataDir + '\logs\setup.log'; end;
 function AgentExe: String; begin Result := ExpandConstant('{app}\.venv\Scripts\retailguard-edge.exe'); end;
 function IsPaired: Boolean; begin Result := FileExists(StateDir + '\edge.json'); end;
 function IsConnected: Boolean; begin Result := (not SetupFailed) and IsPaired; end;
+function FfmpegZip: String; begin Result := ExpandConstant('{tmp}\ffmpeg.zip'); end;
+
+{ ffmpeg and ffprobe already installed by an earlier run, or on PATH. }
+function FfmpegPresent: Boolean;
+begin
+  Result := (FileExists(ExpandConstant('{app}\ffmpeg\bin\ffmpeg.exe')) and FileExists(ExpandConstant('{app}\ffmpeg\bin\ffprobe.exe')))
+    or ((FileSearch('ffmpeg.exe', GetEnv('PATH')) <> '') and (FileSearch('ffprobe.exe', GetEnv('PATH')) <> ''));
+end;
+
+function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+begin
+  Result := True;
+end;
 
 function UninstallKey: String;
 begin
@@ -271,6 +295,7 @@ procedure InitializeWizard;
 var
   Server, Name: String;
 begin
+  DownloadPage := CreateDownloadPage(CustomMessage('DownloadTitle'), CustomMessage('DownloadSubtitle'), @OnDownloadProgress);
   if Upgrading then
     WizardForm.WelcomeLabel2.Caption := FmtMessage(CustomMessage('UpdateWelcome'), [PrevVersion, '{#AppVersion}']);
 
@@ -331,7 +356,7 @@ begin
     ewWaitUntilTerminated, Code);
 end;
 
-function RunPhase(const Phase, MsgName: String; Index, Count: Integer): Boolean;
+function RunPhase(const Phase, MsgName, Extra: String; Index, Count: Integer): Boolean;
 var
   Code: Integer;
   Line: String;
@@ -341,7 +366,7 @@ begin
   { Windows PowerShell 5.1 must not inherit a PowerShell 7 module path (setup started from pwsh). }
   Line := 'set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
     ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(ExpandConstant('{app}\deploy\install-windows.ps1')) +
-    ' -Api ' + Quoted(ServerUrl) + ' -Phase ' + Phase + ' >> ' + Quoted(SetupLog) + ' 2>&1';
+    ' -Api ' + Quoted(ServerUrl) + ' -Phase ' + Phase + Extra + ' >> ' + Quoted(SetupLog) + ' 2>&1';
   Log('Phase ' + Phase);
   Result := RunHidden(Line, Code) and (Code = 0);
   if not Result then
@@ -369,6 +394,7 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var
   Phases, Msgs: TArrayOfString;
   I: Integer;
+  Extra: String;
 begin
   if CurStep <> ssPostInstall then Exit;
   ForceDirectories(DataDir + '\logs');
@@ -383,11 +409,15 @@ begin
   Phases[5] := 'Service';      Msgs[5] := 'StepService';
   WizardForm.ProgressGauge.Style := npbstMarquee;
   for I := 0 to GetArrayLength(Phases) - 1 do
-    if not RunPhase(Phases[I], Msgs[I], I + 1, GetArrayLength(Phases)) then
+  begin
+    Extra := '';
+    if (Phases[I] = 'Ffmpeg') and FfmpegDownloaded then Extra := ' -FfmpegZip ' + Quoted(FfmpegZip);
+    if not RunPhase(Phases[I], Msgs[I], Extra, I + 1, GetArrayLength(Phases)) then
     begin
       SetupFailed := True;
       Break;
     end;
+  end;
   WizardForm.ProgressGauge.Style := npbstNormal;
   WizardForm.ProgressGauge.Position := WizardForm.ProgressGauge.Max;
   if SetupFailed then
@@ -427,7 +457,26 @@ var
   Code: Integer;
 begin
   Result := True;
-  if CurPageID = ServerPage.ID then
+  if (CurPageID = wpReady) and not FfmpegPresent and not FfmpegDownloaded then
+  begin
+    { Download with a visible progress bar before anything is changed; verified by SHA-256. }
+    DownloadPage.Clear;
+    DownloadPage.Add('{#FfmpegUrl}', 'ffmpeg.zip', '{#FfmpegSha256}');
+    DownloadPage.Show;
+    try
+      try
+        DownloadPage.Download;
+        FfmpegDownloaded := True;
+      except
+        if not DownloadPage.AbortedByUser then
+          SuppressibleMsgBox(FmtMessage(CustomMessage('DownloadFailed'), [GetExceptionMessage]), mbError, MB_OK, IDOK);
+        Result := False;
+      end;
+    finally
+      DownloadPage.Hide;
+    end;
+  end
+  else if CurPageID = ServerPage.ID then
   begin
     Url := ServerUrl;
     if (Pos('https://', Lowercase(Url)) <> 1) or (Length(Url) < 12) or (Pos(' ', Url) > 0) then
