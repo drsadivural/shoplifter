@@ -107,10 +107,74 @@ jobs:
           Get-Process | Where-Object { $_.Path -like "*RetailGuard*" } | Format-Table Id, Path
           & "$dir\deploy\uninstall-windows.ps1" -RemoveData
           if (Test-Path "$env:ProgramFiles\RetailGuard\Edge") { throw "not removed" }
+      - name: Build the setup wizard (Inno Setup)
+        working-directory: services/edge
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress | Out-Null
+          $v = uv run python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=$v" /O"dist" deploy\windows\RetailGuardEdge.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
+          Get-ChildItem dist
+      - name: Wizard screenshots (fresh install, English and Japanese)
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $setup = (Get-ChildItem services/edge/dist/RetailGuardEdgeSetup-*.exe).FullName
+          ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang en -Mode fresh
+          ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang ja -Mode fresh
+      - name: Setup wizard — silent install, update, bad code, uninstall
+        shell: pwsh
+        run: |
+          $setup = (Get-ChildItem services/edge/dist/RetailGuardEdgeSetup-*.exe).FullName
+          function RunSetup([string[]]$a, [string]$log) {
+            $p = Start-Process $setup -ArgumentList (@('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=$log") + $a) -Wait -PassThru
+            if ($p.ExitCode -ne 0) { Get-Content $log -Tail 60; throw "setup exit $($p.ExitCode)" }
+          }
+          $cli = "$env:ProgramFiles\RetailGuard\Edge\bin\retailguard-edge.cmd"
+          $key = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{8E3C2F4A-6C1B-4B7E-9F0A-5D2E7C1A9B30}_is1"
+          RunSetup @('/SERVER=https://shoplifter.ayonix.com') C:\setup-1.log
+          Get-Content "$env:ProgramData\RetailGuard\Edge\logs\setup.log" -Tail 15
+          & $cli status; if ($LASTEXITCODE -ne 0) { throw "status failed" }
+          if ((Get-ItemProperty $key).DisplayVersion -eq $null) { throw "not registered" }
+          if (-not (Get-ScheduledTask -TaskName "RetailGuard Edge")) { throw "task missing" }
+          Get-Content "$env:ProgramData\RetailGuard\Edge\config.toml" | Select-String api_base_url, ffmpeg_path
+          # Second run = update; the config stays as it was.
+          $before = Get-FileHash "$env:ProgramData\RetailGuard\Edge\config.toml"
+          RunSetup @() C:\setup-2.log
+          if ((Get-FileHash "$env:ProgramData\RetailGuard\Edge\config.toml").Hash -ne $before.Hash) { throw "config changed on update" }
+          & $cli status; if ($LASTEXITCODE -ne 0) { throw "status after update failed" }
+          # A rejected pairing code leaves the PC installed and unpaired (silent mode continues).
+          RunSetup @('/CODE=AAAA-BBBB-CCCC', '/NAME=ci') C:\setup-3.log
+          if (-not (Select-String -Path C:\setup-3.log -Pattern "pairing failed")) { throw "pairing failure not logged" }
+          if (Test-Path "$env:ProgramData\RetailGuard\Edge\state\edge.json") { throw "must not be paired" }
+      - name: Wizard screenshots (update, installing, connect page, rejected code)
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $setup = (Get-ChildItem services/edge/dist/RetailGuardEdgeSetup-*.exe).FullName
+          ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang en -Mode update
+          ./services/edge/deploy/windows/ci/screenshots.ps1 -Setup $setup -Out shots -Lang ja -Mode update
+      - name: Setup wizard — uninstall
+        shell: pwsh
+        run: |
+          $un = "$env:ProgramFiles\RetailGuard\Edge\unins000.exe"
+          Start-Process $un -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART' -Wait
+          for ($i = 0; $i -lt 60 -and (Test-Path "$env:ProgramFiles\RetailGuard\Edge\.venv"); $i++) { Start-Sleep 2 }
+          if (Test-Path "$env:ProgramFiles\RetailGuard\Edge\.venv") { throw "not removed" }
+          if (Get-ScheduledTask -TaskName "RetailGuard Edge" -ErrorAction SilentlyContinue) { throw "task not removed" }
+          if (-not (Test-Path "$env:ProgramData\RetailGuard\Edge\config.toml")) { throw "data must be kept by default" }
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: edge-packages
           path: services/edge/dist/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: setup-screenshots
+          path: shots/
+          if-no-files-found: ignore
 
   web:
     runs-on: ubuntu-24.04
