@@ -16,8 +16,13 @@ param(
     [string]$Api = "https://shoplifter.ayonix.com",
     [ValidateSet("All", "Prepare", "Runtime", "Dependencies", "Ffmpeg", "Configure", "Service")]
     [string]$Phase = "All",
-    [string]$FfmpegZipUrl = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+    # A zip already downloaded (and checksum-verified) by the setup wizard.
+    [string]$FfmpegZip = ""
 )
+# Pinned ffmpeg build (gyan.dev "essentials", GPLv3) from GitHub's CDN; only ffmpeg.exe, ffprobe.exe and
+# the license are unpacked. The download is verified against this SHA-256.
+$FfmpegUrl = "https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/ffmpeg-9.0.2-essentials_build.zip"
+$FfmpegSha256 = "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba"
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
@@ -111,20 +116,40 @@ if (Want "Dependencies") {
     } finally { Pop-Location }
 }
 
+function Install-FfmpegFromZip([string]$zip) {
+    $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant()
+    if ($hash -ne $FfmpegSha256) { throw "ffmpeg download is corrupt or not the expected build (SHA-256 $hash)" }
+    $bundled = Join-Path $Prefix "ffmpeg\bin"
+    New-Item -ItemType Directory -Force -Path $bundled | Out-Null
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [IO.Compression.ZipFile]::OpenRead($zip)
+    try {
+        $wanted = $archive.Entries | Where-Object { $_.FullName -match '/bin/(ffmpeg|ffprobe)\.exe$' -or $_.FullName -match '^[^/]+/LICENSE$' }
+        if (@($wanted | Where-Object { $_.Name -like "*.exe" }).Count -ne 2) { throw "ffmpeg.exe/ffprobe.exe not found in the archive" }
+        foreach ($e in $wanted) {
+            $dest = if ($e.Name -eq "LICENSE") { Join-Path (Split-Path $bundled) "LICENSE.txt" } else { Join-Path $bundled $e.Name }
+            [IO.Compression.ZipFileExtensions]::ExtractToFile($e, $dest, $true)
+        }
+    } finally { $archive.Dispose() }
+}
+
 if (Want "Ffmpeg") {
     Step "ffmpeg"
-    if (-not (Get-Ffmpeg)) {
-        $bundled = Join-Path $Prefix "ffmpeg\bin"
+    if ($FfmpegZip) {
+        Install-FfmpegFromZip $FfmpegZip
+    } elseif (-not (Get-Ffmpeg)) {
         $zip = Join-Path $env:TEMP "retailguard-ffmpeg.zip"
-        $tmp = Join-Path $env:TEMP "retailguard-ffmpeg"
-        Invoke-WebRequest -Uri $FfmpegZipUrl -OutFile $zip -UseBasicParsing
-        if (Test-Path $tmp) { Remove-Item -Recurse -Force $tmp }
-        Expand-Archive -Path $zip -DestinationPath $tmp
-        $exeFound = Get-ChildItem -Path $tmp -Recurse -Filter ffmpeg.exe | Select-Object -First 1
-        if (-not $exeFound) { throw "ffmpeg.exe not found in $FfmpegZipUrl" }
-        New-Item -ItemType Directory -Force -Path $bundled | Out-Null
-        Copy-Item -Path (Join-Path $exeFound.DirectoryName "*") -Destination $bundled -Recurse -Force
-        Remove-Item -Recurse -Force $tmp, $zip
+        $curl = Join-Path $env:SystemRoot "System32\curl.exe"
+        Write-Host "Downloading $FfmpegUrl"
+        if (Test-Path $curl) {
+            # Give up instead of hanging when the transfer stalls (< 10 KB/s for 60 s).
+            & $curl -L --fail --retry 3 --retry-delay 5 --connect-timeout 30 --speed-time 60 --speed-limit 10240 `
+                --silent --show-error -o $zip $FfmpegUrl
+            if ($LASTEXITCODE -ne 0) { throw "ffmpeg download failed (curl exit $LASTEXITCODE)" }
+        } else {
+            Invoke-WebRequest -Uri $FfmpegUrl -OutFile $zip -UseBasicParsing -TimeoutSec 900
+        }
+        try { Install-FfmpegFromZip $zip } finally { Remove-Item -Force $zip -ErrorAction SilentlyContinue }
     }
 }
 

@@ -83,7 +83,7 @@ powershell -ExecutionPolicy Bypass -File .\deploy\install-windows.ps1 -Api https
 ```
 
 It installs uv, Python 3.12 and the locked dependencies under `%ProgramFiles%\RetailGuard\Edge`, ffmpeg
-(unless already on `PATH`; otherwise the gyan.dev release-essentials build), config and state under
+(unless already on `PATH`; otherwise the pinned gyan.dev "essentials" build 9.0.2 from GitHub, SHA-256 verified; only `ffmpeg.exe`, `ffprobe.exe` and its GPLv3 license are unpacked), config and state under
 `%ProgramData%\RetailGuard\Edge` (ACL: SYSTEM and Administrators only, the Windows counterpart of the
 `0600`/`0700` modes), a `RetailGuard Edge` scheduled task (SYSTEM, at startup, restarted on failure, log
 `%ProgramData%\RetailGuard\Edge\logs\edge.log`) and a `retailguard-edge` command. USB cameras are
