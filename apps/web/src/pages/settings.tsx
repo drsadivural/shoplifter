@@ -5,6 +5,7 @@
 // with links to the screens that own them.
 import '../styles/group-d.css';
 import { useEffect, useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router';
 import { endpoints } from '../api/endpoints';
 import { useApiQuery, useMutation } from '../api/hooks';
 import type { Locale, SessionInfo, ThemePreference } from '../api/types';
@@ -13,7 +14,7 @@ import { apiErrorText, fieldMessage, isVersionConflict } from '../components/gro
 import { SelectField, TextField, Toggle } from '../components/forms';
 import { ConfirmDialog } from '../components/Modal';
 import { PageHeader } from '../components/PageHeader';
-import { Badge, Button, ButtonLink, Card, FilterTabs, KeyValueList, Notice, StatusPill } from '../components/primitives';
+import { Badge, Button, ButtonLink, Card, FilterTabs, KeyValueList, Notice } from '../components/primitives';
 import { RouteStateBoundary } from '../components/RouteStateBoundary';
 import { ConflictBanner, EmptyState } from '../components/states';
 import { useToast } from '../components/Toast';
@@ -27,6 +28,8 @@ export default function SettingsPage() {
   const { can } = useSession();
   // Bumped after a password change so the session list reflects the signed-out sessions.
   const [sessionsVersion, setSessionsVersion] = useState(0);
+  // Bumped when the two-step card changes the organization setting, so the form reloads it.
+  const [orgVersion, setOrgVersion] = useState(0);
   return (
     <>
       <PageHeader screenId="web-49" />
@@ -34,11 +37,11 @@ export default function SettingsPage() {
         <div className="gd-stack">
           <PersonalPreferences />
           <ChangePasswordCard onChanged={() => setSessionsVersion((v) => v + 1)} />
-          <TwoStepCard />
+          <TwoStepCard onOrgChanged={() => setOrgVersion((v) => v + 1)} />
           <SessionsCard version={sessionsVersion} />
         </div>
         <div className="gd-stack">
-          <OrgGeneral />
+          <OrgGeneral version={orgVersion} />
           <ScopeCard />
           {!can('org.manage') ? <Notice tone="info">{t('Organization-wide settings are managed by organization admins. Your language and appearance apply only to you.')}</Notice> : null}
         </div>
@@ -207,17 +210,19 @@ function ChangePasswordCard({ onChanged }: { onChanged: () => void }) {
   );
 }
 
-function TwoStepCard() {
+function TwoStepCard({ onOrgChanged }: { onOrgChanged: () => void }) {
   const { t } = useI18n();
-  const { me, reload } = useSession();
-  const [turningOff, setTurningOff] = useState(false);
+  const { me, reload, can } = useSession();
+  const navigate = useNavigate();
+  // 'off' = confirm with password + code; 'required' = the organization requires it for this role.
+  const [panel, setPanel] = useState<null | 'off' | 'required'>(null);
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [useRecovery, setUseRecovery] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const reset = () => {
-    setTurningOff(false);
+    setPanel(null);
     setPassword('');
     setCode('');
     setUseRecovery(false);
@@ -243,7 +248,12 @@ function TwoStepCard() {
         setFormError(t('Too many attempts. Wait a few minutes and try again.'));
         return true;
       }
-      if (e.code === 'mfa_required_by_policy' || e.code === 'mfa_not_enabled') {
+      if (e.code === 'mfa_required_by_policy') {
+        setPanel('required');
+        reload();
+        return true;
+      }
+      if (e.code === 'mfa_not_enabled') {
         reset();
         reload();
         return false;
@@ -251,8 +261,33 @@ function TwoStepCard() {
       return false;
     },
   });
+  // Organization admins can make it optional for the organization from here (same setting as
+  // Organization settings), then turn off their own.
+  const makeOptional = useMutation(
+    async () => {
+      const cur = await gd.org.getGeneral();
+      return gd.org.putGeneral({ expected_version: cur.version, settings: { ...cur.settings, require_mfa_for_privileged_roles: false } });
+    },
+    {
+      successMessage: t('Two-step verification is now optional in this organization.'),
+      onSuccess: () => {
+        setPanel('off');
+        reload();
+        onOrgChanged();
+      },
+    },
+  );
   if (!me) return null;
   const { mfa_enabled: enabled, mfa_required: required } = me.user;
+  const enrollPath = `/web/mfa?enroll=1&optional=1&next=${encodeURIComponent(screenPath('web-49'))}`;
+
+  const toggle = (on: boolean) => {
+    if (on) {
+      navigate(enrollPath);
+      return;
+    }
+    setPanel(required ? 'required' : 'off');
+  };
 
   const submit = (ev: FormEvent) => {
     ev.preventDefault();
@@ -268,34 +303,36 @@ function TwoStepCard() {
   };
 
   return (
-    <Card
-      title={t('Two-step verification')}
-      titleAddon={enabled ? <StatusPill tone="ok">{t('On')}</StatusPill> : <StatusPill tone="neutral">{t('Off')}</StatusPill>}
-    >
-      <p className="muted">
-        {enabled
-          ? t('Sign-in asks for a code from your authenticator app after your password.')
-          : t('Sign-in asks only for your password. Turn this on to also require a code from an authenticator app.')}
-      </p>
-      {enabled && required ? (
-        <Notice tone="info">{t('Your organization requires two-step verification for your role, so it cannot be turned off.')}</Notice>
-      ) : null}
-      {!enabled ? (
-        <>
-          <p className="muted small">{t('Evidence export requires two-step verification.')}</p>
+    <Card title={t('Two-step verification')}>
+      <Toggle
+        label={t('Ask for a code from my authenticator app at sign-in')}
+        hint={
+          enabled
+            ? t('Sign-in asks for a code from your authenticator app after your password.')
+            : t('Sign-in asks only for your password. Turn this on to also require a code from an authenticator app.')
+        }
+        checked={enabled}
+        onChange={toggle}
+      />
+      {!enabled ? <p className="muted small">{t('Evidence export requires two-step verification.')}</p> : null}
+      {enabled && panel === 'required' ? (
+        <Notice tone="info" title={t('Required by your organization')}>
+          {can('org.manage')
+            ? t('Your organization requires two-step verification for admins and investigators. Make it optional for the organization first; then you can turn yours off.')
+            : t('Your organization requires two-step verification for your role. Ask an organization admin if it should be optional.')}
           <div className="action-row">
-            <ButtonLink variant="primary" to={`/web/mfa?enroll=1&optional=1&next=${encodeURIComponent(screenPath('web-49'))}`}>{t('Turn on')}</ButtonLink>
+            {can('org.manage') ? (
+              <Button variant="danger" pending={makeOptional.pending} onClick={() => void makeOptional.run(undefined)}>
+                {t('Make it optional for the organization')}
+              </Button>
+            ) : null}
+            <Button variant="secondary" onClick={reset}>
+              {t('Keep it on')}
+            </Button>
           </div>
-        </>
+        </Notice>
       ) : null}
-      {enabled && !required && !turningOff ? (
-        <div className="action-row">
-          <Button variant="secondary" onClick={() => setTurningOff(true)}>
-            {t('Turn off')}
-          </Button>
-        </div>
-      ) : null}
-      {enabled && !required && turningOff ? (
+      {enabled && panel === 'off' ? (
         <form onSubmit={submit} noValidate className="gd-form">
           <p className="muted small">{t('To turn off two-step verification, confirm your password and a current code from your authenticator app.')}</p>
           <TextField
@@ -409,11 +446,11 @@ const toGeneralForm = (s: GeneralSettingsD): GeneralForm => ({
   require_mfa: s.require_mfa_for_privileged_roles,
 });
 
-function OrgGeneral() {
+function OrgGeneral({ version }: { version: number }) {
   const { t, locale } = useI18n();
   const { can } = useSession();
   const editable = can('org.manage');
-  const q = useApiQuery((signal) => gd.org.getGeneral({ signal }), []);
+  const q = useApiQuery((signal) => gd.org.getGeneral({ signal }), [version]);
   const [form, setForm] = useState<GeneralForm | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [conflict, setConflict] = useState(false);

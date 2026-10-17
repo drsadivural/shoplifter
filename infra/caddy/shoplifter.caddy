@@ -34,10 +34,18 @@ http://shoplifter.ayonix.com:8730 {
 		reverse_proxy 127.0.0.1:8720
 	}
 
+	# Hashed build assets never change: cache forever. A missing asset is a 404, never the app page
+	# (a cached HTML response under an asset name would break the next deploy).
+	handle /assets/* {
+		root * /srv/retailguard/web
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+	# Everything else (the app page for every /web/... route, favicon, theme script) is revalidated
+	# on each load, so a deploy is visible without a hard refresh.
 	handle {
 		root * /srv/retailguard/web
-		header /assets/* Cache-Control "public, max-age=31536000, immutable"
-		header /index.html Cache-Control "no-cache"
+		header Cache-Control "no-cache"
 		header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
 		try_files {path} /index.html
 		file_server

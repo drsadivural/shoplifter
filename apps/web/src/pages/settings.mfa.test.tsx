@@ -1,4 +1,5 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { Route, Routes, useLocation } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fakeSession, makeMe, mockFetch, renderWithProviders } from '../test/utils';
 import SettingsPage from './settings';
@@ -23,19 +24,54 @@ function sessionWith(user: { mfa_enabled: boolean; mfa_required: boolean }, relo
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Settings › Two-step verification (web-49)', () => {
-  it('explains that a required authenticator cannot be turned off', async () => {
-    mockFetch({ 'GET /v1/me/sessions': { body: { items: [] } }, 'GET /v1/org/settings/general': { body: GENERAL } });
-    renderWithProviders(<SettingsPage />, { route: '/web/settings', session: sessionWith({ mfa_enabled: true, mfa_required: true }).session });
+  it('switching off a required authenticator lets an org admin make it optional, then confirm', async () => {
+    const fetchMock = mockFetch({
+      'GET /v1/me/sessions': { body: { items: [] } },
+      'GET /v1/org/settings/general': { body: GENERAL },
+      'PUT /v1/org/settings/general': (init) => ({ body: { ...GENERAL, version: 4, settings: JSON.parse(String(init?.body)).settings } }),
+    });
+    const { session, reload } = sessionWith({ mfa_enabled: true, mfa_required: true });
+    renderWithProviders(<SettingsPage />, { route: '/web/settings', session });
+    const sw = within(twoStepCard()).getByRole('switch', { name: 'Ask for a code from my authenticator app at sign-in' });
+    expect(sw).toHaveAttribute('aria-checked', 'true');
+    fireEvent.click(sw);
     const card = twoStepCard();
-    expect(within(card).getByText(/cannot be turned off/)).toBeInTheDocument();
-    expect(within(card).queryByRole('button', { name: 'Turn off' })).toBeNull();
+    expect(within(card).getByText('Required by your organization')).toBeInTheDocument();
+    fireEvent.click(within(card).getByRole('button', { name: 'Make it optional for the organization' }));
+    expect(await within(card).findByLabelText('Password')).toBeInTheDocument();
+    const put = fetchMock.mock.calls.find(([u, i]) => String(u).includes('/v1/org/settings/general') && (i as RequestInit)?.method === 'PUT')!;
+    expect(JSON.parse(String((put[1] as RequestInit).body))).toMatchObject({ expected_version: 3, settings: { require_mfa_for_privileged_roles: false } });
+    expect(reload).toHaveBeenCalled();
   });
 
-  it('links to enrollment when off', () => {
+  it('a person who cannot manage the organization is told to ask an admin', () => {
     mockFetch({ 'GET /v1/me/sessions': { body: { items: [] } }, 'GET /v1/org/settings/general': { body: GENERAL } });
-    renderWithProviders(<SettingsPage />, { route: '/web/settings', session: sessionWith({ mfa_enabled: false, mfa_required: false }).session });
-    const link = within(twoStepCard()).getByRole('link', { name: 'Turn on' });
-    expect(link.getAttribute('href')).toBe('/web/mfa?enroll=1&optional=1&next=%2Fweb%2Fsettings');
+    const base = makeMe();
+    const me = makeMe({ user: { ...base.user, mfa_enabled: true, mfa_required: true }, permissions: base.permissions.filter((p) => p !== 'org.manage') });
+    renderWithProviders(<SettingsPage />, { route: '/web/settings', session: fakeSession(me) });
+    fireEvent.click(within(twoStepCard()).getByRole('switch'));
+    expect(within(twoStepCard()).getByText(/Ask an organization admin/)).toBeInTheDocument();
+    expect(within(twoStepCard()).queryByRole('button', { name: 'Make it optional for the organization' })).toBeNull();
+  });
+
+  it('switching on opens enrollment', async () => {
+    mockFetch({ 'GET /v1/me/sessions': { body: { items: [] } }, 'GET /v1/org/settings/general': { body: GENERAL } });
+    const session = sessionWith({ mfa_enabled: false, mfa_required: false }).session;
+    function Where() {
+      const loc = useLocation();
+      return <p>at {loc.pathname + loc.search}</p>;
+    }
+    renderWithProviders(
+      <Routes>
+        <Route path="/web/settings" element={<SettingsPage />} />
+        <Route path="/web/mfa" element={<Where />} />
+      </Routes>,
+      { route: '/web/settings', session },
+    );
+    const sw = within(twoStepCard()).getByRole('switch');
+    expect(sw).toHaveAttribute('aria-checked', 'false');
+    fireEvent.click(sw);
+    expect(await screen.findByText('at /web/mfa?enroll=1&optional=1&next=%2Fweb%2Fsettings')).toBeInTheDocument();
   });
 
   it('turns off with password and code, showing field errors first', async () => {
@@ -50,7 +86,7 @@ describe('Settings › Two-step verification (web-49)', () => {
     });
     const { session, reload } = sessionWith({ mfa_enabled: true, mfa_required: false });
     renderWithProviders(<SettingsPage />, { route: '/web/settings', session });
-    fireEvent.click(within(twoStepCard()).getByRole('button', { name: 'Turn off' }));
+    fireEvent.click(within(twoStepCard()).getByRole('switch'));
     const card = twoStepCard();
     fireEvent.click(within(card).getByRole('button', { name: 'Turn off two-step verification' }));
     expect(await within(card).findByText('Enter your password.')).toBeInTheDocument();
