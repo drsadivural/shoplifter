@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
 from typing import Iterable
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
@@ -62,12 +63,18 @@ class RedactingFilter(logging.Filter):
         return True
 
 
-def configure_logging(level: str = "INFO") -> None:
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
-    handler.addFilter(RedactingFilter())
+def configure_logging(level: str = "INFO", log_file: str | None = None) -> None:
+    """Log to stderr (journald on Linux) and, when given, to a rotating file (Windows task)."""
+    handlers: list[logging.Handler] = [logging.StreamHandler()]
+    if log_file:
+        from logging.handlers import RotatingFileHandler
+        os.makedirs(os.path.dirname(os.path.abspath(log_file)), exist_ok=True)
+        handlers.append(RotatingFileHandler(log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"))
+    for handler in handlers:
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+        handler.addFilter(RedactingFilter())
     root = logging.getLogger()
-    root.handlers[:] = [handler]
+    root.handlers[:] = handlers
     root.setLevel(getattr(logging, level.upper(), logging.INFO))
     # httpx logs full request URLs at INFO; keep it at WARNING.
     logging.getLogger("httpx").setLevel(logging.WARNING)

@@ -31,7 +31,8 @@ ZONE_TYPES = ("shelf", "checkout", "exit_line", "privacy_mask")
 RTSP_PATH = re.compile(r"^/[A-Za-z0-9._~!$&'()*+,;=:@/%-]{0,200}$")
 # Path and query of an operator-entered RTSP URL (no userinfo, no spaces).
 RTSP_TARGET = re.compile(r"^/[A-Za-z0-9._~!$&'()*+,;=:/%?-]{0,300}$")
-USB_DEVICE = re.compile(r"^/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})$")
+# Linux V4L2 device path, or "dshow:" + a Windows DirectShow device (no quotes, ":" or control chars).
+USB_DEVICE = re.compile(r'^(/dev/(v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200}|video\d{1,3})|dshow:[^":\x00-\x1f]{1,300})$')
 
 
 class CameraIn(BaseModel):

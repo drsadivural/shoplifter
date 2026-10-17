@@ -3,8 +3,11 @@ import os
 import pytest
 
 from retailguard_edge.stream import StreamError, StreamSource, input_args, probe_readiness
-from retailguard_edge.usb import list_usb_cameras
+from retailguard_edge.usb import list_v4l2_cameras, parse_dshow_devices
 from test_agent import make_agent
+
+
+needs_symlinks = pytest.mark.skipif(os.name == "nt", reason="sysfs/udev layout is Linux-only")
 
 
 def _sysfs(tmp_path):
@@ -24,13 +27,14 @@ def _sysfs(tmp_path):
     return str(sys_root), str(dev_root)
 
 
+@needs_symlinks
 def test_lists_capture_nodes_with_stable_links(tmp_path):
     sys_root, dev_root = _sysfs(tmp_path)
-    cams = list_usb_cameras(sys_root, dev_root)
+    cams = list_v4l2_cameras(sys_root, dev_root)
     assert [c["device"] for c in cams] == [
         "/dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_ABC123-video-index0", "/dev/video2", "/dev/video10"]
     assert cams[0]["name"] == "HD Pro Webcam C920" and cams[0]["node"] == "/dev/video0"
-    assert list_usb_cameras(str(tmp_path / "missing"), dev_root) == []
+    assert list_v4l2_cameras(str(tmp_path / "missing"), dev_root) == []
 
 
 def test_v4l2_source_arguments_are_restricted_to_device_paths():
@@ -77,3 +81,36 @@ def test_agent_provisions_usb_camera(state_dir, video_12s):
     status, _, error = agent.execute("provision_camera", {"camera_id": "usb-3", "address": "/etc/passwd",
                                                           "source_type": "usb"})
     assert (status, error) == ("failed", "invalid_device")
+
+
+DSHOW_NEW = r"""[dshow @ 000001c8] "Integrated Camera" (video)
+[dshow @ 000001c8]   Alternative name "@device_pnp_\\?\usb#vid_04f2&pid_b6be&mi_00#6&2e0c5b07&0&0000#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\global"
+[dshow @ 000001c8] "OBS Virtual Camera" (none)
+[dshow @ 000001c8] "Microphone (Realtek(R) Audio)" (audio)
+[dshow @ 000001c8]   Alternative name "@device_cm_{33D9A762-90C8-11D0-BD43-00A0C911CE86}\wave_{1}"
+dummy: Immediate exit requested
+"""
+
+DSHOW_OLD = r"""[dshow @ 0000] DirectShow video devices (some may be both video and audio devices)
+[dshow @ 0000]  "USB2.0 HD UVC WebCam"
+[dshow @ 0000]     Alternative name "@device_pnp_\\?\usb#vid_0bda&pid_58c2&mi_00#6&1a2b3c&0&0000#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\global"
+[dshow @ 0000] DirectShow audio devices
+[dshow @ 0000]  "Microphone Array"
+"""
+
+
+def test_parses_directshow_video_devices_only():
+    cams = parse_dshow_devices(DSHOW_NEW)
+    assert [c["name"] for c in cams] == ["Integrated Camera"]
+    assert cams[0]["device"].startswith("dshow:@device_pnp_") and cams[0]["device"].endswith("\\global")
+    old = parse_dshow_devices(DSHOW_OLD)
+    assert [c["name"] for c in old] == ["USB2.0 HD UVC WebCam"] and old[0]["device"].startswith("dshow:@device_pnp_")
+    assert parse_dshow_devices("") == []
+
+
+def test_dshow_source_arguments():
+    dev = r"dshow:@device_pnp_\\?\usb#vid_04f2&pid_b6be#{65e8773d}\global"
+    assert input_args(StreamSource(dev)) == ["-f", "dshow", "-i", "video=" + dev[len("dshow:"):]]
+    for bad in ('dshow:cam" -i x', "dshow:video=a:audio=b", "dshow:", "dshow:a\nb"):
+        with pytest.raises(StreamError):
+            input_args(StreamSource(bad))

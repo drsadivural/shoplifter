@@ -15,6 +15,7 @@ appliance (one socket, one window), so operators do not need to know the applian
 from __future__ import annotations
 
 import ipaddress
+import os
 import socket
 import time
 import uuid
@@ -109,21 +110,29 @@ def filter_permitted(device: dict[str, Any], policy: SubnetPolicy, cidr: ipaddre
     return {**device, "xaddrs": kept, "xaddrs_rejected": rejected}
 
 
+def _keep(addr: str, found: list[str]) -> None:
+    ip = ipaddress.ip_address(addr)
+    if ip.version == 4 and ip.is_private and not (ip.is_loopback or ip.is_link_local) and addr not in found:
+        found.append(addr)
+
+
 def local_ipv4_addresses() -> list[str]:
-    """Private, non-loopback IPv4 addresses of this host's interfaces (Linux SIOCGIFADDR)."""
+    """Private, non-loopback IPv4 addresses of this host's interfaces."""
+    found: list[str] = []
+    if os.name == "nt":
+        # Windows: the host name resolves to every configured IPv4 address.
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET, socket.SOCK_DGRAM):
+            _keep(str(info[4][0]), found)
+        return found
     import fcntl
     import struct
-    found: list[str] = []
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         for _, name in socket.if_nameindex():
             try:
                 packed = fcntl.ioctl(s.fileno(), 0x8915, struct.pack("256s", name.encode()[:15]))  # SIOCGIFADDR
             except OSError:
                 continue  # interface without an IPv4 address
-            addr = socket.inet_ntoa(packed[20:24])
-            ip = ipaddress.ip_address(addr)
-            if ip.is_private and not (ip.is_loopback or ip.is_link_local) and addr not in found:
-                found.append(addr)
+            _keep(socket.inet_ntoa(packed[20:24]), found)
     return found
 
 

@@ -1,0 +1,68 @@
+Ayonix RetailGuard edge appliance — Linux package
+==================================================
+
+Requirements
+- Ubuntu 22.04/24.04 or Debian 12 (x86_64 or arm64), run as root
+- The appliance is on the store camera network (or has an interface on it)
+- Outbound HTTPS to your RetailGuard server and to the internet during installation
+  (Ubuntu packages, uv and Python are downloaded)
+
+1. Install (also updates an existing installation; the config is kept)
+
+   tar xzf retailguard-edge-VERSION-linux.tar.gz
+   sudo bash retailguard-edge-VERSION/deploy/install.sh --api https://shoplifter.ayonix.com
+
+2. Pair with the store. In the RetailGuard console open the store, choose
+   "Connect edge appliance" and create a pairing code (single use, valid 15 minutes):
+
+   sudo retailguard-edge pair --api https://shoplifter.ayonix.com --code XXXX-XXXX-XXXX --name "Store 1 edge"
+
+3. Start the service and check it
+
+   sudo systemctl enable --now retailguard-edge
+   sudo retailguard-edge status
+   journalctl -u retailguard-edge -f
+
+4. Add cameras in the console: Cameras > Discover. The appliance searches its networks for ONVIF
+   cameras and lists USB cameras plugged into it; cameras it cannot find can be added with their
+   RTSP URL.
+
+Uninstall
+   sudo systemctl disable --now retailguard-edge
+   sudo rm -rf /opt/retailguard-edge /etc/systemd/system/retailguard-edge.service /usr/local/bin/retailguard-edge
+   (pairing identity and camera credentials: /var/lib/retailguard-edge, config: /etc/retailguard-edge)
+
+
+Ayonix RetailGuard エッジ端末 — Linux パッケージ
+================================================
+
+動作要件
+- Ubuntu 22.04/24.04 または Debian 12（x86_64 / arm64）、root で実行
+- エッジ端末が店舗のカメラネットワークに接続されていること
+- RetailGuard サーバーへの HTTPS 通信、およびインストール時のインターネット接続
+  （Ubuntu パッケージ、uv、Python をダウンロードします）
+
+1. インストール（既存環境の更新にも使用できます。設定ファイルは保持されます）
+
+   tar xzf retailguard-edge-VERSION-linux.tar.gz
+   sudo bash retailguard-edge-VERSION/deploy/install.sh --api https://shoplifter.ayonix.com
+
+2. 店舗とのペアリング。RetailGuard コンソールで店舗を開き「エッジ端末を接続」から
+   ペアリングコードを作成します（1回限り、15分間有効）。
+
+   sudo retailguard-edge pair --api https://shoplifter.ayonix.com --code XXXX-XXXX-XXXX --name "店舗1 エッジ"
+
+3. サービスの起動と確認
+
+   sudo systemctl enable --now retailguard-edge
+   sudo retailguard-edge status
+   journalctl -u retailguard-edge -f
+
+4. コンソールの「カメラ」>「検索」でカメラを追加します。エッジ端末がネットワーク上の ONVIF
+   カメラを検索し、端末に接続された USB カメラも表示します。見つからないカメラは RTSP URL で
+   追加できます。
+
+アンインストール
+   sudo systemctl disable --now retailguard-edge
+   sudo rm -rf /opt/retailguard-edge /etc/systemd/system/retailguard-edge.service /usr/local/bin/retailguard-edge
+   （ペアリング情報とカメラ認証情報: /var/lib/retailguard-edge、設定: /etc/retailguard-edge）

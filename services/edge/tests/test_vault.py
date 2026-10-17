@@ -12,6 +12,7 @@ from retailguard_edge.identity import load_or_create_keys
 from retailguard_edge.redact import RedactingFilter, redact_text, redact_url
 from retailguard_edge.stream import StreamSource, probe_readiness
 from retailguard_edge.vault import Credentials, CredentialVault, VaultError
+from conftest import has_mode
 
 PASSWORD = "S3cr3t:p@ss/w%rd"
 
@@ -29,8 +30,8 @@ def test_sealedbox_round_trip_and_at_rest_encryption(state_dir):
     raw = (state_dir / "vault.json").read_bytes()
     assert PASSWORD.encode() not in raw and b"viewer" not in raw
     for name in ("vault.json", "vault.key", "sign.key", "box.key"):
-        assert stat.S_IMODE(os.stat(state_dir / name).st_mode) == 0o600
-    assert stat.S_IMODE(os.stat(state_dir).st_mode) == 0o700
+        assert has_mode(state_dir / name, 0o600)
+    assert has_mode(state_dir, 0o700)
     # survives re-instantiation (same local key)
     assert CredentialVault(state_dir, keys.box_key).get("cam-1").password == PASSWORD
     vault.delete("cam-1")

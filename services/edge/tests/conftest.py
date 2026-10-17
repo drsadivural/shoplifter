@@ -49,6 +49,10 @@ def private_ip() -> str:
                     return str(ip)
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError):
         pass
+    from retailguard_edge.discovery import local_ipv4_addresses  # Windows / no iproute2
+    addrs = local_ipv4_addresses()
+    if addrs:
+        return addrs[0]
     pytest.skip("no private non-loopback IPv4 address on this host")
 
 
@@ -56,3 +60,11 @@ def private_ip() -> str:
 def state_dir(tmp_path) -> Path:
     from retailguard_edge.config import ensure_state_dir
     return ensure_state_dir(tmp_path / "state")
+
+
+def has_mode(path, mode: int) -> bool:
+    """POSIX permission bits. On Windows they are not meaningful: the installer protects the data
+    folder with an ACL (SYSTEM + Administrators), so only Linux checks the bits."""
+    import os
+    import stat
+    return os.name == "nt" or stat.S_IMODE(os.stat(path).st_mode) == mode

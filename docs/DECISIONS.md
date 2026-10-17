@@ -88,3 +88,12 @@ frames); USB adds MJPEG/raw YUV to the accepted codecs. Discovery no longer asks
 network interface (user request): without one the edge probes from every private IPv4 interface.
 The design contract for web-11 listed "Network interface" and "Scan timeout"; both were removed at the
 user's request (timeout fixed at 5 s).
+
+## ADR-011 Edge on Windows
+Customers may run the edge agent on a Windows PC. The same Python package runs there: default paths move
+to `%ProgramData%\RetailGuard\Edge`, protected by an ACL (SYSTEM + Administrators) instead of POSIX modes;
+interfaces come from the host's resolved IPv4 addresses instead of `SIOCGIFADDR`; USB cameras are
+DirectShow devices (`dshow:` + the device's alternative name, which stays unique for identical cameras;
+quotes, `:` and control characters are refused so a value cannot select a second device). The agent runs
+as a SYSTEM scheduled task (no third-party service wrapper). Linux remains the reference appliance
+(systemd hardening has no exact Windows equivalent).

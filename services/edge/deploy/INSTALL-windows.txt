@@ -1,0 +1,79 @@
+Ayonix RetailGuard edge appliance — Windows package
+====================================================
+
+Requirements
+- Windows 10/11 or Windows Server 2019/2022 (x64), an administrator account
+- The PC is on the store camera network
+- Outbound HTTPS to your RetailGuard server and to the internet during installation
+  (uv, Python and ffmpeg are downloaded)
+
+1. Extract the zip, e.g. to C:\retailguard-edge-VERSION
+
+2. Open PowerShell as administrator (right-click > Run as administrator) and run:
+
+   cd C:\retailguard-edge-VERSION
+   powershell -ExecutionPolicy Bypass -File .\deploy\install-windows.ps1 -Api https://shoplifter.ayonix.com
+
+   The same command updates an existing installation; the config is kept.
+
+3. Pair with the store. In the RetailGuard console open the store, choose
+   "Connect edge appliance" and create a pairing code (single use, valid 15 minutes).
+   In a NEW administrator PowerShell window:
+
+   retailguard-edge pair --api https://shoplifter.ayonix.com --code XXXX-XXXX-XXXX --name "Store 1 edge"
+
+4. Start the agent and check it. It runs as the scheduled task "RetailGuard Edge"
+   (as SYSTEM, at every startup, restarted if it stops):
+
+   Start-ScheduledTask -TaskName "RetailGuard Edge"
+   retailguard-edge status
+   Get-Content C:\ProgramData\RetailGuard\Edge\logs\edge.log -Wait
+
+5. Add cameras in the console: Cameras > Discover. The PC searches its networks for ONVIF
+   cameras and lists USB cameras (webcams) connected to it; cameras it cannot find can be added
+   with their RTSP URL. Allow "Python" through Windows Defender Firewall on private networks if
+   the camera search finds nothing.
+
+Uninstall
+   powershell -ExecutionPolicy Bypass -File .\deploy\uninstall-windows.ps1
+   (add -RemoveData to also delete the pairing identity, config and camera credentials)
+
+
+Ayonix RetailGuard エッジ端末 — Windows パッケージ
+==================================================
+
+動作要件
+- Windows 10/11 または Windows Server 2019/2022（x64）、管理者アカウント
+- PC が店舗のカメラネットワークに接続されていること
+- RetailGuard サーバーへの HTTPS 通信、およびインストール時のインターネット接続
+  （uv、Python、ffmpeg をダウンロードします）
+
+1. zip を展開します（例: C:\retailguard-edge-VERSION）
+
+2. PowerShell を管理者として開き（右クリック >「管理者として実行」）、次を実行します:
+
+   cd C:\retailguard-edge-VERSION
+   powershell -ExecutionPolicy Bypass -File .\deploy\install-windows.ps1 -Api https://shoplifter.ayonix.com
+
+   同じコマンドで既存環境を更新できます。設定ファイルは保持されます。
+
+3. 店舗とのペアリング。RetailGuard コンソールで店舗を開き「エッジ端末を接続」から
+   ペアリングコードを作成します（1回限り、15分間有効）。新しく開いた管理者 PowerShell で:
+
+   retailguard-edge pair --api https://shoplifter.ayonix.com --code XXXX-XXXX-XXXX --name "店舗1 エッジ"
+
+4. エージェントの起動と確認。タスク スケジューラの「RetailGuard Edge」として
+   SYSTEM 権限で起動時に毎回実行され、停止した場合は再起動されます:
+
+   Start-ScheduledTask -TaskName "RetailGuard Edge"
+   retailguard-edge status
+   Get-Content C:\ProgramData\RetailGuard\Edge\logs\edge.log -Wait
+
+5. コンソールの「カメラ」>「検索」でカメラを追加します。PC がネットワーク上の ONVIF カメラを
+   検索し、接続された USB カメラ（Web カメラ）も表示します。見つからないカメラは RTSP URL で
+   追加できます。カメラが検索で見つからない場合は、Windows Defender ファイアウォールで
+   プライベート ネットワークに対する「Python」の通信を許可してください。
+
+アンインストール
+   powershell -ExecutionPolicy Bypass -File .\deploy\uninstall-windows.ps1
+   （-RemoveData を付けると、ペアリング情報・設定・カメラ認証情報も削除します）

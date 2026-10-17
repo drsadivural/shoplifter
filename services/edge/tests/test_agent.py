@@ -14,6 +14,7 @@ from retailguard_edge.client import EdgeClient, canonical_string
 from retailguard_edge.config import EdgeConfig
 from retailguard_edge.identity import IdentityError, PairingState, load_or_create_keys, load_pairing, pair
 from retailguard_edge.stream import StreamSource, capture_masked_snapshot, probe_readiness
+from conftest import has_mode
 
 HEARTBEAT_KEYS = {"software_version", "clock_offset_ms", "health", "cameras", "models"}
 HEALTH_KEYS = {"disk_free_bytes", "disk_total_bytes", "gpu_utilization", "decode_latency_ms_p95", "queue_age_s",
@@ -160,7 +161,7 @@ def test_heartbeat_matches_contract(state_dir):
     assert set(cam) <= CAMERA_KEYS and cam["readiness"] == "ready" and cam["analysis_state"] == "unavailable"
     status = json.loads((state_dir / "status.json").read_text())
     assert status["outbox"]["pending"] == 0
-    assert stat.S_IMODE(os.stat(state_dir / "status.json").st_mode) == 0o600
+    assert has_mode(state_dir / "status.json", 0o600)
 
 
 def test_provision_end_to_end_with_fake_onvif(state_dir, private_ip, video_12s):
@@ -224,7 +225,7 @@ def test_pairing_persists_identity(tmp_path, caplog):
     assert base64.b64decode(seen["body"]["box_public_key"]) == bytes(keys.box_key.public_key)
     assert seen["body"]["code"] == "PAIR-CODE-123" and seen["body"]["device_name"] == "Store 1 edge"
     assert "PAIR-CODE-123" not in caplog.text and "PAIR-CODE-123" not in (sd / "edge.json").read_text()
-    assert stat.S_IMODE(os.stat(sd / "edge.json").st_mode) == 0o600
+    assert has_mode(sd / "edge.json", 0o600)
     with pytest.raises(IdentityError) as ei:
         pair("https://api.test", "x", "y", sd, transport=httpx.MockTransport(handler))
     assert ei.value.code == "already_paired"
