@@ -357,9 +357,14 @@ end;
 
 { Runs `cmd /S /C "<line>"` hidden; output is appended to the setup log. }
 function RunHidden(const Line: String; var Code: Integer): Boolean;
+var
+  Dir: String;
 begin
-  Result := Exec(ExpandConstant('{cmd}'), '/S /C "' + Line + '"', ExpandConstant('{app}'), SW_HIDE,
-    ewWaitUntilTerminated, Code);
+  { The install folder does not exist yet before a first installation. }
+  Dir := ExpandConstant('{app}');
+  if not DirExists(Dir) then Dir := ExpandConstant('{tmp}');
+  Result := Exec(ExpandConstant('{cmd}'), '/S /C "' + Line + '"', Dir, SW_HIDE, ewWaitUntilTerminated, Code);
+  if not Result then Log('could not start: ' + SysErrorMessage(Code));
 end;
 
 function RunPhase(const Phase, MsgName, Extra: String; Index, Count: Integer): Boolean;
@@ -405,6 +410,7 @@ procedure StopStaleSetup;
 var
   Script: String;
   Code: Integer;
+  Output: AnsiString;
 begin
   Script := ExpandConstant('{tmp}\stop-stale.ps1');
   SaveStringToFile(Script,
@@ -417,7 +423,8 @@ begin
     '} | ForEach-Object { Write-Output "stopping $($_.ProcessId) $($_.Name)"; Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }' + #13#10,
     False);
   RunHidden('set "PSModulePath=" && ' + Quoted(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) +
-    ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(Script), Code);
+    ' -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + Quoted(Script) + ' > ' + Quoted(Script + '.log') + ' 2>&1', Code);
+  if LoadStringFromFile(Script + '.log', Output) then Log('stale setup cleanup: ' + Trim(String(Output)));
   Log('stale setup cleanup exit ' + IntToStr(Code));
 end;
 
