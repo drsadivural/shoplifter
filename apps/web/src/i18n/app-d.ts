@@ -163,6 +163,15 @@ export const APP_JA_D: Record<string, string> = {
   'Add USB camera': 'USBカメラを追加',
   'The edge appliance reads this camera directly over USB. No user name or password is needed.':
     'エッジ端末がUSB経由でこのカメラを直接読み取ります。ユーザー名とパスワードは不要です。',
+  'Two-step verification is now optional in this organization.': 'この組織では2段階認証が任意になりました。',
+  'Ask for a code from my authenticator app at sign-in': 'サインイン時に認証アプリのコードを求める',
+  'Required by your organization': '組織の設定で必須になっています',
+  'Your organization requires two-step verification for admins and investigators. Make it optional for the organization first; then you can turn yours off.':
+    '組織の設定により、管理者と調査担当者には2段階認証が必須です。先に組織全体で任意にすると、ご自身の2段階認証をオフにできます。',
+  'Your organization requires two-step verification for your role. Ask an organization admin if it should be optional.':
+    '組織の設定により、あなたの権限では2段階認証が必須です。任意にする必要がある場合は、組織管理者に相談してください。',
+  'Make it optional for the organization': '組織全体で任意にする',
+  'Keep it on': 'オンのままにする',
   'Required': '必須',
   'Optional': '任意',
   'New password': '新しいパスワード',

@@ -10,7 +10,7 @@ runs; nothing here measures theft-detection or face-matching performance (no lic
 |---|---|---|
 | API integration (real PostgreSQL 17, production roles + RLS, fresh DB per run) | `cd services/api && uv run pytest` | **35 passed** |
 | Edge appliance (incl. 6 real RTSP tests against mediamtx in Docker, ffmpeg-generated H.264) | `cd services/edge && uv run pytest` | **131 passed** |
-| Web console unit + smoke (51 screens × API 500/403/503) | `cd apps/web && npm test -- --run` | **217 passed** (13 files) |
+| Web console unit + smoke (51 screens × API 500/403/503) | `cd apps/web && npm test -- --run` | **218 passed** (13 files) |
 | Web typecheck + production build | `npm run typecheck && npm run build` | pass |
 | iOS core package (Linux, Swift 6.1.3) | `cd apps/ios/RetailGuardCore && swift test` | **65 passed** |
 | iOS app target compile (macOS 15 runner, Xcode, iOS Simulator SDK, no signing) | CI job `ios-app` | **BUILD SUCCEEDED** |
