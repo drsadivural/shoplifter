@@ -35,6 +35,8 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.17763
 WizardStyle=modern
+DisableWelcomePage=no
+DisableReadyPage=no
 WizardSizePercent=110
 WizardImageFile=art\side-100.bmp,art\side-125.bmp,art\side-150.bmp,art\side-175.bmp,art\side-200.bmp,art\side-225.bmp,art\side-250.bmp
 WizardSmallImageFile=art\small-100.bmp,art\small-125.bmp,art\small-150.bmp,art\small-175.bmp,art\small-200.bmp,art\small-225.bmp,art\small-250.bmp
@@ -65,7 +67,8 @@ en.ConnectSubtitle=Pair the edge appliance with its store.
 en.ConnectIntro=In the RetailGuard console open the store, choose "Connect edge appliance" and create a pairing code. The code works once and is valid for 15 minutes.
 en.CodeLabel=Pairing code:
 en.NameLabel=Appliance name (shown in the console):
-en.PairLater=Pair later (run this setup again with a code)
+en.PairLater=&Pair later (run this setup again with a code)
+en.UpdateButton=&Update
 en.CodeInvalid=Enter the pairing code shown in the console, for example ABCD-EFGH-JKLM.
 en.NameInvalid=Enter a name for this appliance.
 en.PairRejected=The server did not accept this pairing code. It may be mistyped, already used or expired (codes are valid for 15 minutes). Create a new code in the console and try again.
@@ -100,7 +103,8 @@ ja.ConnectSubtitle=エッジ端末を店舗とペアリングします。
 ja.ConnectIntro=RetailGuard コンソールで店舗を開き「エッジ端末を接続」からペアリングコードを作成してください。コードは1回限り、15分間有効です。
 ja.CodeLabel=ペアリングコード:
 ja.NameLabel=エッジ端末の名前（コンソールに表示されます）:
-ja.PairLater=後でペアリングする（コードを用意してこのセットアップを再実行）
+ja.PairLater=後でペアリングする（コードを用意してこのセットアップを再実行）(&P)
+ja.UpdateButton=更新(&U)
 ja.CodeInvalid=コンソールに表示されたペアリングコードを入力してください（例: ABCD-EFGH-JKLM）。
 ja.NameInvalid=このエッジ端末の名前を入力してください。
 ja.PairRejected=サーバーがこのペアリングコードを受け付けませんでした。入力間違い、使用済み、または有効期限切れ（15分）の可能性があります。コンソールで新しいコードを作成して、もう一度お試しください。
@@ -471,6 +475,8 @@ end;
 
 procedure CurPageChanged(CurPageID: Integer);
 begin
+  if (CurPageID = wpReady) and Upgrading then
+    WizardForm.NextButton.Caption := CustomMessage('UpdateButton');
   if CurPageID = wpFinished then
   begin
     if SetupFailed then

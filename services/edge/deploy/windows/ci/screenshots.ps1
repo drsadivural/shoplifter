@@ -59,7 +59,7 @@ try {
         $log = "$env:ProgramData\RetailGuard\Edge\logs\setup.log"
         $offset = (Get-Item $log).Length
         Keys "{ENTER}"                                   # install (update) starts
-        Start-Sleep -Seconds 4; Shot "3-installing"
+        Start-Sleep -Milliseconds 300; Shot "3-installing"
         # wait until this run's last phase has written to the log: the "Connect" page follows
         for ($i = 0; $i -lt 150; $i++) {
             Start-Sleep -Seconds 2
@@ -70,6 +70,9 @@ try {
         Start-Sleep -Seconds 6; Shot "4-connect"
         Keys "AAAA-BBBB-CCCC"; Keys "{ENTER}"            # a code the server rejects
         Start-Sleep -Seconds 6; Shot "5-pair-error"
+        Keys "{ENTER}"; Start-Sleep -Seconds 1           # dismiss the message
+        Keys "%p"; Keys "{ENTER}"                        # Pair later > Finished
+        Shot "6-finished"
     }
 } finally {
     Get-Process | Where-Object { $_.MainWindowTitle -like "*RetailGuard Edge*" -or $_.Path -like "*\is-*.tmp\*" } |
