@@ -12,7 +12,7 @@ import hashlib
 import json
 import logging
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 import httpx
@@ -88,6 +88,15 @@ def load_pairing(state_dir: Path) -> PairingState | None:
         return None
     data = json.loads(path.read_text("utf-8"))
     return PairingState(**data)
+
+
+def update_allowed_subnets(state_dir: Path, pairing: PairingState, cidrs: list[str]) -> PairingState:
+    """Apply camera subnets announced by the API (heartbeat response). Every range must be private;
+    otherwise ValueError and nothing changes."""
+    parse_allowed_subnets(cidrs)
+    state = replace(pairing, allowed_subnets=list(cidrs))
+    write_private_file(state_dir / "edge.json", json.dumps(asdict(state), indent=2).encode())
+    return state
 
 
 def subnet_policy(pairing: PairingState | None) -> SubnetPolicy:

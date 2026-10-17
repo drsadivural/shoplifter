@@ -127,7 +127,7 @@ All other edge calls are signed. Headers:
 
 | Method | Path | Body |
 |---|---|---|
-| POST | `/v1/edge/heartbeat` | `{software_version, clock_offset_ms?, health: {disk_free_bytes?, disk_total_bytes?, gpu_utilization?, decode_latency_ms_p95?, queue_age_s?, spool_pending?}, cameras: [{camera_id, readiness, analysis_state, channels: {...}, last_frame_at?, fps?, width?, height?, codec?, error?}], models: [{name, version, sha256}]}` → `{ok, config_version}` |
+| POST | `/v1/edge/heartbeat` | `{software_version, clock_offset_ms?, health: {disk_free_bytes?, disk_total_bytes?, gpu_utilization?, decode_latency_ms_p95?, queue_age_s?, spool_pending?}, cameras: [{camera_id, readiness, analysis_state, channels: {...}, last_frame_at?, fps?, width?, height?, codec?, error?}], models: [{name, version, sha256}]}` → `{ok, config_version, allowed_subnets}`. `allowed_subnets` = `EDGE_ALLOWED_SUBNETS`, or the RFC 1918 ranges when unset (the same addresses the API accepts); the edge applies changes without re-pairing |
 | GET | `/v1/edge/commands` | → `{items: [{id, kind, payload, created_at}]}` kinds `discover`, `provision_camera`, `activate_camera`, `pause_camera`, `update_zones`, `model_rollout`, `gallery_update` |
 | POST | `/v1/edge/commands/{id}/ack` | `{status: "succeeded"|"failed", result: {...}, error?: str}` |
 | POST | `/v1/edge/events` | `contracts/event.schema.json`; header `Idempotency-Key: <event_id>`. Same event_id twice → 200 with same incident (no duplicate). |

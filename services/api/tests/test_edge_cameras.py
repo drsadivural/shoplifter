@@ -268,3 +268,19 @@ def test_add_camera_by_rtsp_url_seals_credentials_and_allows_nvr_channels(org):
     assert r.status_code == 201 and r.json()["has_credentials"] is True
     audit = admin.get("/v1/audit?action=camera.created_pending").json()["items"]
     assert "p@ss" not in json.dumps(audit) and "pw2" not in json.dumps(audit)
+
+
+def test_heartbeat_announces_allowed_camera_subnets(org):
+    from retailguard_api.settings import get_settings
+    edge = paired_edge(org)
+    r = edge.req("POST", "/v1/edge/heartbeat", {"software_version": "t", "cameras": []})
+    configured = [str(n) for n in get_settings().edge_allowed_subnets]
+    assert r.json()["allowed_subnets"] == (configured or ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+    assert edge.info["allowed_subnets"] == r.json()["allowed_subnets"]
+
+
+def test_unconfigured_subnets_mean_private_ranges(monkeypatch):
+    from types import SimpleNamespace
+    from retailguard_api.routers import edge as edge_router
+    monkeypatch.setattr(edge_router, "get_settings", lambda: SimpleNamespace(edge_allowed_subnets=()))
+    assert edge_router.allowed_subnets() == ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]

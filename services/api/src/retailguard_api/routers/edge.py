@@ -63,8 +63,14 @@ def edge_out(row: dict) -> dict:
             "models": row["models"], "clock_offset_ms": row["clock_offset_ms"], "created_at": iso(row["created_at"])}
 
 
+# Without EDGE_ALLOWED_SUBNETS the API accepts any private camera address; the appliance is told the
+# same thing explicitly (an empty list means "nothing allowed" on the edge).
+PRIVATE_CAMERA_RANGES = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+
+
 def allowed_subnets() -> list[str]:
-    return [str(n) for n in get_settings().edge_allowed_subnets]
+    nets = get_settings().edge_allowed_subnets
+    return [str(n) for n in nets] if nets else list(PRIVATE_CAMERA_RANGES)
 
 
 # ---- console endpoints -------------------------------------------------------------------
@@ -296,7 +302,8 @@ def heartbeat(e: EdgeCtx = Depends(edge_ctx)) -> dict:
             e.tx.run("""INSERT INTO camera_analysis_time (org_id, camera_id, day, seconds) VALUES (%s,%s,%s,%s)
                         ON CONFLICT (org_id, camera_id, day) DO UPDATE SET seconds = camera_analysis_time.seconds + EXCLUDED.seconds""",
                      (e.org_id, cid, date.today(), elapsed))
-    return {"ok": True, "config_version": e.tx.scalar("SELECT config_version FROM stores WHERE id=%s", (e.store_id,))}
+    return {"ok": True, "config_version": e.tx.scalar("SELECT config_version FROM stores WHERE id=%s", (e.store_id,)),
+            "allowed_subnets": allowed_subnets()}
 
 
 @router.get("/edge/commands")

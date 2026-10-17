@@ -69,7 +69,8 @@ sudo retailguard-edge pair --api https://shoplifter.ayonix.com --code ABCD-1234-
 ```
 
 This generates the keys (never leave the appliance), sends the public keys, and stores
-`edge_id`, `org_id`, `store_id` and `allowed_subnets` in `edge.json` (`0600`). The printed
+`edge_id`, `org_id`, `store_id` and `allowed_subnets` in `edge.json` (`0600`); every heartbeat
+response re-announces `allowed_subnets`, and a changed (valid, private-only) list is applied and saved. The printed
 `fingerprint` (SHA-256 of the Ed25519 public key) can be compared with the API's edge record.
 Re-pairing requires deliberately removing `edge.json` (the old edge should be revoked in the
 console first). The pairing code is not logged or stored.
